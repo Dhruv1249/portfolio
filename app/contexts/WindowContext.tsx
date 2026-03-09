@@ -107,16 +107,23 @@ export function WindowProvider({ children }: { children: ReactNode }) {
     
     // Remove after animation
     setTimeout(() => {
-      setWindows(prev => prev.filter(w => w.id !== id));
-      setFocusedWindowId(prev => {
-        if (prev === id) {
-          const remaining = windows.filter(w => w.id !== id && w.workspace === activeWorkspace);
-          return remaining.length > 0 ? remaining[remaining.length - 1].id : null;
-        }
-        return prev;
+      setWindows(prev => {
+        const remaining = prev.filter(w => w.id !== id);
+        // Update focus based on fresh state
+        setFocusedWindowId(fid => {
+          if (fid === id) {
+            const candidates = remaining.filter(w => !w.isMinimized && !w.isClosing);
+            if (candidates.length > 0) {
+              return candidates.reduce((a, b) => a.zIndex > b.zIndex ? a : b).id;
+            }
+            return null;
+          }
+          return fid;
+        });
+        return remaining;
       });
     }, 200);
-  }, [windows, activeWorkspace]);
+  }, []);
 
   const focusWindow = useCallback((id: string) => {
     zIndexCounter++;
@@ -130,6 +137,8 @@ export function WindowProvider({ children }: { children: ReactNode }) {
     setWindows(prev =>
       prev.map(w => w.id === id ? { ...w, isMinimized: !w.isMinimized } : w)
     );
+    // Clear focus if minimizing the focused window
+    setFocusedWindowId(prev => prev === id ? null : prev);
   }, []);
 
   const maximizeWindow = useCallback((id: string) => {

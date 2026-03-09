@@ -9,7 +9,7 @@ interface HistoryEntry {
   path: string;
 }
 
-export default function Terminal() {
+const Terminal = React.memo(function Terminal() {
   const [history, setHistory] = useState<HistoryEntry[]>([]);
   const [input, setInput] = useState('');
   const [currentPath, setCurrentPath] = useState('~');
@@ -18,6 +18,12 @@ export default function Terminal() {
   
   const inputRef = useRef<HTMLInputElement>(null);
   const terminalRef = useRef<HTMLDivElement>(null);
+
+  // DEBUG: Track mount/unmount to diagnose reload issue
+  useEffect(() => {
+    console.log('[Terminal] MOUNTED');
+    return () => console.log('[Terminal] UNMOUNTED');
+  }, []);
 
   // Auto-focus input
   useEffect(() => {
@@ -147,4 +153,6 @@ export default function Terminal() {
       </div>
     </div>
   );
-}
+});
+
+export default Terminal;

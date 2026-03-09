@@ -9,8 +9,10 @@ import { useWindowManager } from '../../contexts/WindowContext';
 export default function Desktop() {
   const { closeAppLauncher } = useWindowManager();
 
-  const handleDesktopClick = () => {
-    closeAppLauncher();
+  const handleDesktopClick = (e: React.MouseEvent) => {
+    if (e.target === e.currentTarget) {
+      closeAppLauncher();
+    }
   };
 
   return (

@@ -159,7 +159,7 @@ const highlightCode = (code: string, language: string): React.ReactNode[] => {
       remaining = remaining.slice(1);
     }
     
-    return <>{tokens}</>;
+    return <React.Fragment key={`line-${i}`}>{tokens}</React.Fragment>;
   });
 };
 
