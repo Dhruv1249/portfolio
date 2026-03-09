@@ -19,12 +19,6 @@ const Terminal = React.memo(function Terminal() {
   const inputRef = useRef<HTMLInputElement>(null);
   const terminalRef = useRef<HTMLDivElement>(null);
 
-  // DEBUG: Track mount/unmount to diagnose reload issue
-  useEffect(() => {
-    console.log('[Terminal] MOUNTED');
-    return () => console.log('[Terminal] UNMOUNTED');
-  }, []);
-
   // Auto-focus input
   useEffect(() => {
     inputRef.current?.focus();

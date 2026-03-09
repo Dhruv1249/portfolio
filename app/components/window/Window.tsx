@@ -102,24 +102,6 @@ export default function Window({
               <path d="M3.5 3.5l5 5m0-5l-5 5" stroke="currentColor" strokeWidth="1.5" />
             </svg>
           </button>
-          <button 
-            className="window-control minimize"
-            onClick={handleMinimize}
-            title="Minimize"
-          >
-            <svg viewBox="0 0 12 12" fill="currentColor">
-              <path d="M2 6h8" stroke="currentColor" strokeWidth="1.5" />
-            </svg>
-          </button>
-          <button 
-            className="window-control maximize"
-            onClick={handleMaximize}
-            title="Maximize"
-          >
-            <svg viewBox="0 0 12 12" fill="currentColor">
-              <rect x="2" y="2" width="8" height="8" stroke="currentColor" strokeWidth="1.5" fill="none" />
-            </svg>
-          </button>
         </div>
         <div className="window-title">{title}</div>
         <div style={{ width: 52 }} /> {/* Spacer for centering */}

@@ -3,7 +3,11 @@
 import React, { useState, useEffect } from 'react';
 import { useWindowManager } from '../../contexts/WindowContext';
 
-export default function TopBar() {
+interface TopBarProps {
+  onShowTutorial: () => void;
+}
+
+export default function TopBar({ onShowTutorial }: TopBarProps) {
   const { activeWorkspace, setActiveWorkspace, windows } = useWindowManager();
   const [time, setTime] = useState('');
   const [date, setDate] = useState('');
@@ -61,6 +65,14 @@ export default function TopBar() {
       </div>
 
       <div className="topbar-right">
+        <button className="topbar-tutorial-btn" onClick={onShowTutorial} title="Show Tutorial">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+            <circle cx="12" cy="12" r="10" />
+            <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3" />
+            <line x1="12" y1="17" x2="12.01" y2="17" />
+          </svg>
+          Guide
+        </button>
         <div className="topbar-icon" title="WiFi">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
             <path d="M5 12.55a11 11 0 0 1 14.08 0" />

@@ -174,16 +174,12 @@ export default function Settings() {
 
             <div style={{ display: 'grid', gap: '8px' }}>
               {[
-                { keys: ['Ctrl', 'Enter'], action: 'Open Terminal' },
-                { keys: ['Ctrl', 'W'], action: 'Close Window' },
-                { keys: ['Ctrl', '1-4'], action: 'Switch Workspace' },
+                { keys: ['Alt', 'Enter'], action: 'Open Terminal' },
+                { keys: ['Alt', 'W'], action: 'Close Window' },
+                { keys: ['Alt', '1-4'], action: 'Switch Workspace' },
                 { keys: ['Alt', 'D'], action: 'Open App Launcher' },
                 { keys: ['Alt', 'J/K'], action: 'Focus Next/Prev Window' },
-                { keys: ['F11'], action: 'Toggle Fullscreen' },
-                { keys: ['Alt', 'Shift', 'T'], action: 'New Terminal' },
-                { keys: ['Alt', 'Shift', 'B'], action: 'New Browser' },
-                { keys: ['Alt', 'Shift', 'F'], action: 'New File Manager' },
-                { keys: ['Alt', 'Shift', 'E'], action: 'New Neovim' },
+                { keys: ['Esc'], action: 'Close Launcher / Tutorial' },
               ].map(({ keys, action }) => (
                 <div key={action} className="settings-option" style={{ padding: '12px 16px' }}>
                   <div className="settings-option-info">
@@ -212,7 +208,7 @@ export default function Settings() {
             </div>
 
             <p style={{ color: 'var(--text-muted)', marginTop: '16px', fontSize: '13px' }}>
-              💡 On Mac, use ⌘ (Cmd) instead of Ctrl
+              💡 All shortcuts use Alt — no conflicts with browser shortcuts!
             </p>
           </div>
         );

@@ -43,11 +43,11 @@ export function KeyboardProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      const modPressed = isMac ? e.metaKey : e.ctrlKey;
       const altPressed = e.altKey;
       const shiftPressed = e.shiftKey;
       
-      // Create key identifier
+      // Create key identifier for custom shortcuts
+      const modPressed = isMac ? e.metaKey : e.ctrlKey;
       const keyId = `${modPressed ? 'mod+' : ''}${altPressed ? 'alt+' : ''}${shiftPressed ? 'shift+' : ''}${e.key.toLowerCase()}`;
       
       // Check custom shortcuts first
@@ -57,32 +57,12 @@ export function KeyboardProvider({ children }: { children: ReactNode }) {
         return;
       }
 
-      // Built-in shortcuts
-      
-      // Mod + Enter: Open terminal
-      if (modPressed && e.key === 'Enter') {
-        e.preventDefault();
-        windowManager.openWindow('terminal');
-        return;
-      }
+      // All shortcuts use Alt to avoid conflicting with browser shortcuts
+      if (!altPressed) return;
 
-      // Mod + W: Close focused window
-      if (modPressed && e.key.toLowerCase() === 'w') {
-        e.preventDefault();
-        if (windowManager.focusedWindowId) {
-          windowManager.closeWindow(windowManager.focusedWindowId);
-        }
-        return;
-      }
+      const key = e.key.toLowerCase();
 
-      // Mod + D or Alt + D: Toggle app launcher
-      if ((modPressed || altPressed) && e.key.toLowerCase() === 'd') {
-        e.preventDefault();
-        windowManager.toggleAppLauncher();
-        return;
-      }
-
-      // Escape: Close app launcher
+      // Escape: Close app launcher (works without Alt too)
       if (e.key === 'Escape') {
         if (windowManager.showAppLauncher) {
           e.preventDefault();
@@ -91,15 +71,40 @@ export function KeyboardProvider({ children }: { children: ReactNode }) {
         }
       }
 
-      // Workspace switching: Mod + 1-4 or Ctrl + 1-4
-      if (modPressed && ['1', '2', '3', '4'].includes(e.key)) {
+      // Alt + Enter: Open terminal
+      if (e.key === 'Enter') {
         e.preventDefault();
-        windowManager.setActiveWorkspace(parseInt(e.key));
+        windowManager.openWindow('terminal');
+        return;
+      }
+
+      // Alt + W: Close focused window
+      if (key === 'w') {
+        e.preventDefault();
+        if (windowManager.focusedWindowId) {
+          windowManager.closeWindow(windowManager.focusedWindowId);
+        }
+        return;
+      }
+
+      // Alt + D: Toggle app launcher
+      if (key === 'd') {
+        e.preventDefault();
+        windowManager.toggleAppLauncher();
+        return;
+      }
+
+      // Alt + M: Toggle maximize/fullscreen
+      if (key === 'm') {
+        e.preventDefault();
+        if (windowManager.focusedWindowId) {
+          windowManager.maximizeWindow(windowManager.focusedWindowId);
+        }
         return;
       }
 
       // Alt + J/K: Focus next/prev window (vim-style)
-      if (altPressed && (e.key.toLowerCase() === 'j' || e.key.toLowerCase() === 'k')) {
+      if (key === 'j' || key === 'k') {
         e.preventDefault();
         const currentWindows = windowManager.windows.filter(
           w => w.workspace === windowManager.activeWorkspace && !w.isMinimized
@@ -111,7 +116,7 @@ export function KeyboardProvider({ children }: { children: ReactNode }) {
           );
           
           let nextIndex: number;
-          if (e.key.toLowerCase() === 'j') {
+          if (key === 'j') {
             nextIndex = (currentIndex + 1) % currentWindows.length;
           } else {
             nextIndex = (currentIndex - 1 + currentWindows.length) % currentWindows.length;
@@ -122,33 +127,28 @@ export function KeyboardProvider({ children }: { children: ReactNode }) {
         return;
       }
 
-      // F11: Toggle fullscreen of focused window
-      if (e.key === 'F11') {
+      // Alt + 1-4: Switch workspace
+      if (['1', '2', '3', '4'].includes(e.key)) {
         e.preventDefault();
-        if (windowManager.focusedWindowId) {
-          windowManager.maximizeWindow(windowManager.focusedWindowId);
-        }
-        return;
-      }
-
-      // Quick app launchers
-      const appShortcuts: Record<string, AppType> = {
-        't': 'terminal',
-        'b': 'browser',
-        'f': 'filemanager',
-        'e': 'neovim',
-        's': 'settings',
-      };
-
-      if (altPressed && shiftPressed && appShortcuts[e.key.toLowerCase()]) {
-        e.preventDefault();
-        windowManager.openWindow(appShortcuts[e.key.toLowerCase()]);
+        windowManager.setActiveWorkspace(parseInt(e.key));
         return;
       }
     };
 
+    // Escape handler (works without Alt)
+    const handleEscape = (e: KeyboardEvent) => {
+      if (e.key === 'Escape' && windowManager.showAppLauncher) {
+        e.preventDefault();
+        windowManager.closeAppLauncher();
+      }
+    };
+
     window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
+    window.addEventListener('keydown', handleEscape);
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown);
+      window.removeEventListener('keydown', handleEscape);
+    };
   }, [isMac, windowManager, customShortcuts]);
 
   return (
