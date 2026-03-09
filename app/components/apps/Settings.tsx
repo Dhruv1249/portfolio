@@ -175,10 +175,15 @@ export default function Settings() {
             <div style={{ display: 'grid', gap: '8px' }}>
               {[
                 { keys: ['Alt', 'Enter'], action: 'Open Terminal' },
+                { keys: ['Alt', 'B'], action: 'Open Browser' },
+                { keys: ['Alt', 'F'], action: 'Open File Manager' },
+                { keys: ['Alt', 'N'], action: 'Open Neovim' },
+                { keys: ['Alt', 'S'], action: 'Open Settings' },
+                { keys: ['Alt', 'Space'], action: 'Open App Launcher' },
                 { keys: ['Alt', 'W'], action: 'Close Window' },
-                { keys: ['Alt', '1-4'], action: 'Switch Workspace' },
-                { keys: ['Alt', 'D'], action: 'Open App Launcher' },
+                { keys: ['Alt', 'M'], action: 'Maximize Window' },
                 { keys: ['Alt', 'J/K'], action: 'Focus Next/Prev Window' },
+                { keys: ['Alt', '1-4'], action: 'Switch Workspace' },
                 { keys: ['Esc'], action: 'Close Launcher / Tutorial' },
               ].map(({ keys, action }) => (
                 <div key={action} className="settings-option" style={{ padding: '12px 16px' }}>

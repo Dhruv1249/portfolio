@@ -87,10 +87,38 @@ export function KeyboardProvider({ children }: { children: ReactNode }) {
         return;
       }
 
-      // Alt + D: Toggle app launcher
-      if (key === 'd') {
+      // Alt + Space: Toggle app launcher
+      if (e.key === ' ') {
         e.preventDefault();
         windowManager.toggleAppLauncher();
+        return;
+      }
+
+      // Alt + B: Open browser
+      if (key === 'b') {
+        e.preventDefault();
+        windowManager.openWindow('browser');
+        return;
+      }
+
+      // Alt + F: Open file manager
+      if (key === 'f') {
+        e.preventDefault();
+        windowManager.openWindow('filemanager');
+        return;
+      }
+
+      // Alt + N: Open neovim
+      if (key === 'n') {
+        e.preventDefault();
+        windowManager.openWindow('neovim');
+        return;
+      }
+
+      // Alt + S: Open settings
+      if (key === 's') {
+        e.preventDefault();
+        windowManager.openWindow('settings');
         return;
       }
 

@@ -136,7 +136,7 @@ const TUTORIAL_STEPS: TutorialStep[] = [
           </div>
           <div className="tutorial-shortcut-row">
             <div className="tutorial-keys">
-              <kbd>Alt</kbd> + <kbd>D</kbd>
+              <kbd>Alt</kbd> + <kbd>Space</kbd>
             </div>
             <span className="tutorial-shortcut-desc">Open App Launcher to launch new apps</span>
           </div>
@@ -169,11 +169,35 @@ const TUTORIAL_STEPS: TutorialStep[] = [
             <div className="tutorial-keys">
               <kbd>Alt</kbd> + <kbd>Enter</kbd>
             </div>
-            <span className="tutorial-shortcut-desc">Open a new Terminal</span>
+            <span className="tutorial-shortcut-desc">Open Terminal</span>
           </div>
           <div className="tutorial-shortcut-row">
             <div className="tutorial-keys">
-              <kbd>Alt</kbd> + <kbd>D</kbd>
+              <kbd>Alt</kbd> + <kbd>B</kbd>
+            </div>
+            <span className="tutorial-shortcut-desc">Open Browser</span>
+          </div>
+          <div className="tutorial-shortcut-row">
+            <div className="tutorial-keys">
+              <kbd>Alt</kbd> + <kbd>F</kbd>
+            </div>
+            <span className="tutorial-shortcut-desc">Open File Manager</span>
+          </div>
+          <div className="tutorial-shortcut-row">
+            <div className="tutorial-keys">
+              <kbd>Alt</kbd> + <kbd>N</kbd>
+            </div>
+            <span className="tutorial-shortcut-desc">Open Neovim</span>
+          </div>
+          <div className="tutorial-shortcut-row">
+            <div className="tutorial-keys">
+              <kbd>Alt</kbd> + <kbd>S</kbd>
+            </div>
+            <span className="tutorial-shortcut-desc">Open Settings</span>
+          </div>
+          <div className="tutorial-shortcut-row">
+            <div className="tutorial-keys">
+              <kbd>Alt</kbd> + <kbd>Space</kbd>
             </div>
             <span className="tutorial-shortcut-desc">Open App Launcher (search & launch any app)</span>
           </div>
