@@ -948,8 +948,10 @@ body {
 }
 
 .neovim-line {
-  height: 20px;
+  min-height: 20px;
   white-space: pre;
+  position: relative;
+  overflow: visible;
 }
 
 .neovim-line.active {
@@ -1993,3 +1995,157 @@ body {
   border: none;
   font-family: inherit;
 }
+
+/* ============================================
+   NEOVIM PROJECT SELECTOR MODAL
+   ============================================ */
+
+.neovim-project-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 100;
+  animation: fadeIn 0.15s ease;
+}
+
+.neovim-project-modal {
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+  width: 380px;
+  max-height: 420px;
+  overflow: hidden;
+  box-shadow:
+    0 16px 64px rgba(0, 0, 0, 0.5),
+    0 0 0 1px rgba(255, 255, 255, 0.05);
+}
+
+.neovim-project-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 16px;
+  border-bottom: 1px solid var(--border-color);
+  font-size: 13px;
+}
+
+.neovim-project-list {
+  overflow-y: auto;
+  max-height: 320px;
+  padding: 8px;
+  scrollbar-width: thin;
+  scrollbar-color: var(--border-color) var(--bg-secondary);
+}
+
+.neovim-project-item {
+  display: flex;
+  align-items: center;
+  padding: 12px 12px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.neovim-project-item:hover,
+.neovim-project-item.hovered {
+  background: var(--bg-tertiary);
+}
+
+.neovim-project-item.selected {
+  background: rgba(122, 162, 247, 0.12);
+  border-left: 2px solid var(--accent-primary);
+}
+
+.neovim-project-footer {
+  padding: 10px 16px;
+  border-top: 1px solid var(--border-color);
+  display: flex;
+  justify-content: space-between;
+}
+
+.neovim-project-list::-webkit-scrollbar {
+  width: 6px;
+}
+.neovim-project-list::-webkit-scrollbar-track {
+  background: var(--bg-secondary);
+}
+.neovim-project-list::-webkit-scrollbar-thumb {
+  background: var(--border-color);
+  border-radius: 3px;
+}
+.neovim-project-list::-webkit-scrollbar-thumb:hover {
+  background: var(--text-muted);
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+/* ============================================
+   NEOVIM VIM COMMAND BAR & SEARCH
+   ============================================ */
+
+.neovim-commandbar {
+  display: flex;
+  align-items: center;
+  padding: 4px 12px;
+  background: var(--bg-primary);
+  border-top: 1px solid var(--border-color);
+  font-family: "JetBrains Mono", monospace;
+  font-size: 13px;
+  flex-shrink: 0;
+}
+
+.neovim-command-input {
+  flex: 1;
+  background: transparent;
+  border: none;
+  outline: none;
+  color: var(--text-primary);
+  font-family: "JetBrains Mono", monospace;
+  font-size: 13px;
+  caret-color: var(--accent-primary);
+}
+
+.neovim-line.search-match {
+  background: rgba(224, 175, 104, 0.12);
+  border-left: 2px solid var(--accent-warning);
+}
+
+.neovim-mode.insert {
+  background: var(--accent-tertiary) !important;
+}
+
+/* ─── Neovim Cursor ─── */
+.neovim-cursor {
+  position: absolute;
+  top: 0;
+  pointer-events: none;
+  font-family: "JetBrains Mono", monospace;
+  font-size: 13px;
+  line-height: 1.6;
+  z-index: 2;
+}
+
+.neovim-cursor.normal {
+  background: rgba(192, 202, 245, 0.85);
+  color: var(--bg-primary);
+  animation: cursorBlink 1s step-end infinite;
+}
+
+.neovim-cursor.insert {
+  width: 2px !important;
+  background: var(--accent-primary);
+  animation: cursorBlink 0.6s step-end infinite;
+  height: 1.4em;
+}
+
+@keyframes cursorBlink {
+  50% { opacity: 0; }
+}
+
