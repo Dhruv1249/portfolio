@@ -52,6 +52,7 @@ export default function WindowManager() {
               focused={isOnActiveWorkspace && window.id === focusedWindowId}
               isClosing={window.isClosing}
               bootDelay={0}
+              appData={window.appData}
               style={{
                 left: `${pos.x}%`,
                 top: `${pos.y}%`,

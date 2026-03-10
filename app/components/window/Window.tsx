@@ -18,15 +18,8 @@ interface WindowProps {
   isClosing: boolean;
   style: React.CSSProperties;
   bootDelay?: number;
+  appData?: Record<string, unknown>;
 }
-
-const APP_COMPONENTS: Record<AppType, React.ComponentType> = {
-  terminal: Terminal,
-  browser: Browser,
-  filemanager: FileManager,
-  neovim: Neovim,
-  settings: Settings,
-};
 
 export default function Window({ 
   id, 
@@ -36,10 +29,10 @@ export default function Window({
   isClosing,
   style,
   bootDelay = 0,
+  appData,
 }: WindowProps) {
   const { closeWindow, focusWindow, minimizeWindow, maximizeWindow } = useWindowManager();
 
-  // Track whether the initial enter animation has completed
   const [hasAnimated, setHasAnimated] = useState(false);
 
   useEffect(() => {
@@ -66,21 +59,32 @@ export default function Window({
     maximizeWindow(id);
   }, [maximizeWindow, id]);
 
-  // Only apply enter/boot animation on initial mount, not on every re-render
   const animationClass = isClosing
     ? 'window-exit'
     : !hasAnimated
       ? 'window-enter boot-animation'
       : '';
 
-  // CRITICAL: Memoize the app content so it NEVER re-renders due to window
-  // management state changes (focus, z-index, etc.). The app component
-  // (Terminal, Browser, etc.) is only created once and the same React element
-  // reference is reused on every subsequent render of Window.
+  // Memoize app content, but include appData for Neovim file passing
   const appContent = useMemo(() => {
-    const AppComponent = APP_COMPONENTS[appType];
-    return <AppComponent />;
-  }, [appType]);
+    switch (appType) {
+      case 'terminal':
+        return <Terminal />;
+      case 'browser':
+        return <Browser />;
+      case 'filemanager':
+        return <FileManager />;
+      case 'neovim':
+        const initialFile = appData?.fileName && appData?.fileContent
+          ? { name: appData.fileName as string, content: appData.fileContent as string }
+          : undefined;
+        return <Neovim initialFile={initialFile} />;
+      case 'settings':
+        return <Settings />;
+      default:
+        return null;
+    }
+  }, [appType, appData]);
 
   return (
     <div
@@ -112,4 +116,3 @@ export default function Window({
     </div>
   );
 }
-

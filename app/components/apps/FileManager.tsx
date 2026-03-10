@@ -35,6 +35,7 @@ const getFileIcon = (node: FileNode): string => {
     'conf': '⚙️',
     'pdf': '📕',
     'sh': '📜',
+    'txt': '📄',
   };
   return fileIcons[ext || ''] || '📄';
 };
@@ -79,8 +80,15 @@ export default function FileManager() {
     if (item.type === 'directory') {
       handleItemClick(item);
     } else {
-      // Open file in neovim
-      openWindow('neovim', `Neovim — ${item.name}`);
+      // Open file in neovim with its content
+      const filePath = currentPath === '~' ? `~/${item.name}` : `${currentPath}/${item.name}`;
+      const node = getNode(filePath);
+      const content = node?.content || '(empty file)';
+      
+      openWindow('neovim', `Neovim — ${item.name}`, {
+        fileName: item.name,
+        fileContent: content,
+      });
     }
   };
 

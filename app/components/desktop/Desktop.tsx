@@ -4,6 +4,7 @@ import React, { useState, useEffect } from 'react';
 import TopBar from './TopBar';
 import AppLauncher from './AppLauncher';
 import Tutorial from './Tutorial';
+import Notifications from './Notifications';
 import WindowManager from '../window/WindowManager';
 import { useWindowManager } from '../../contexts/WindowContext';
 
@@ -39,6 +40,7 @@ export default function Desktop() {
         <WindowManager />
       </div>
       <AppLauncher />
+      <Notifications />
       <Tutorial show={showTutorial} onClose={handleCloseTutorial} />
     </div>
   );

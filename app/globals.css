@@ -977,27 +977,64 @@ body {
 .syn-keyword {
   color: var(--accent-secondary);
 }
-.syn-string {
-  color: var(--accent-tertiary);
-}
-.syn-number {
-  color: var(--accent-warning);
-}
-.syn-comment {
-  color: var(--text-muted);
+/* ─── Prism.js Tokyo Night Theme ─── */
+.token.comment,
+.token.prolog,
+.token.doctype,
+.token.cdata {
+  color: #565f89;
   font-style: italic;
 }
-.syn-function {
-  color: var(--accent-primary);
+.token.punctuation {
+  color: #9aa5ce;
 }
-.syn-variable {
-  color: var(--accent-cyan);
+.token.namespace {
+  opacity: 0.7;
 }
-.syn-operator {
-  color: var(--accent-error);
+.token.property,
+.token.tag,
+.token.boolean,
+.token.number,
+.token.constant,
+.token.symbol,
+.token.deleted {
+  color: #ff9e64;
 }
-.syn-type {
-  color: var(--accent-green);
+.token.selector,
+.token.attr-name,
+.token.string,
+.token.char,
+.token.builtin,
+.token.inserted {
+  color: #9ece6a;
+}
+.token.operator,
+.token.entity,
+.token.url,
+.language-css .token.string,
+.style .token.string {
+  color: #89ddff;
+}
+.token.atrule,
+.token.attr-value,
+.token.keyword {
+  color: #bb9af7;
+}
+.token.function,
+.token.class-name {
+  color: #7aa2f7;
+}
+.token.regex,
+.token.important,
+.token.variable {
+  color: #7dcfff;
+}
+.token.important,
+.token.bold {
+  font-weight: bold;
+}
+.token.italic {
+  font-style: italic;
 }
 
 /* ============================================
@@ -1853,4 +1890,106 @@ body {
 .topbar-tutorial-btn:hover {
   background: rgba(122, 162, 247, 0.25);
   border-color: var(--accent-primary);
+}
+
+/* ============================================
+   NEOVIM SIDEBAR & FILE TREE
+   ============================================ */
+
+.neovim-sidebar {
+  width: 200px;
+  background: var(--bg-secondary);
+  border-right: 1px solid var(--border-color);
+  overflow-y: auto;
+  flex-shrink: 0;
+}
+
+.neovim-tree-item {
+  display: flex;
+  align-items: center;
+  padding: 4px 8px;
+  cursor: pointer;
+  transition: background var(--transition-fast);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.neovim-tree-item:hover {
+  background: var(--bg-tertiary);
+}
+
+.neovim-tree-item.active {
+  background: rgba(122, 162, 247, 0.15);
+  border-right: 2px solid var(--accent-primary);
+}
+
+/* ============================================
+   NOTIFICATION TOASTS
+   ============================================ */
+
+.notifications-container {
+  position: fixed;
+  top: calc(var(--topbar-height) + 12px);
+  right: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  z-index: 10000;
+  pointer-events: none;
+}
+
+.notification-toast {
+  padding: 12px 16px;
+  background: var(--glass-bg);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid var(--glass-border);
+  border-left: 3px solid var(--accent-primary);
+  border-radius: 8px;
+  color: var(--text-primary);
+  font-size: 13px;
+  display: flex;
+  align-items: center;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+  animation: slideInRight 0.3s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+  pointer-events: auto;
+  min-width: 250px;
+  max-width: 400px;
+}
+
+@keyframes slideInRight {
+  0% {
+    opacity: 0;
+    transform: translateX(100%);
+  }
+  100% {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+/* ============================================
+   BROWSER URL INPUT
+   ============================================ */
+
+.browser-url-input {
+  flex: 1;
+  background: transparent;
+  border: none;
+  color: var(--text-secondary);
+  font-family: "JetBrains Mono", monospace;
+  font-size: 12px;
+  outline: none;
+  padding: 0;
+}
+
+.browser-url-input::placeholder {
+  color: var(--text-muted);
+}
+
+/* Portfolio button reset for non-anchor buttons */
+.portfolio-btn {
+  border: none;
+  font-family: inherit;
 }

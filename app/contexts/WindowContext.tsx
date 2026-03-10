@@ -13,6 +13,8 @@ export interface Window {
   isMinimized: boolean;
   isMaximized: boolean;
   isClosing: boolean;
+  // Data passed to the app (e.g., file content for Neovim)
+  appData?: Record<string, unknown>;
 }
 
 interface WindowContextType {
@@ -22,7 +24,7 @@ interface WindowContextType {
   showAppLauncher: boolean;
   
   // Window operations
-  openWindow: (appType: AppType, title?: string) => void;
+  openWindow: (appType: AppType, title?: string, appData?: Record<string, unknown>) => void;
   closeWindow: (id: string) => void;
   focusWindow: (id: string) => void;
   minimizeWindow: (id: string) => void;
@@ -80,7 +82,7 @@ export function WindowProvider({ children }: { children: ReactNode }) {
   const [focusedWindowId, setFocusedWindowId] = useState<string | null>('window-init-browser');
   const [showAppLauncher, setShowAppLauncher] = useState(false);
 
-  const openWindow = useCallback((appType: AppType, title?: string) => {
+  const openWindow = useCallback((appType: AppType, title?: string, appData?: Record<string, unknown>) => {
     windowCounter++;
     zIndexCounter++;
     
@@ -93,6 +95,7 @@ export function WindowProvider({ children }: { children: ReactNode }) {
       isMinimized: false,
       isMaximized: false,
       isClosing: false,
+      appData,
     };
     
     setWindows(prev => [...prev, newWindow]);
@@ -101,16 +104,13 @@ export function WindowProvider({ children }: { children: ReactNode }) {
   }, [activeWorkspace]);
 
   const closeWindow = useCallback((id: string) => {
-    // Start closing animation
     setWindows(prev => 
       prev.map(w => w.id === id ? { ...w, isClosing: true } : w)
     );
     
-    // Remove after animation
     setTimeout(() => {
       setWindows(prev => {
         const remaining = prev.filter(w => w.id !== id);
-        // Update focus based on fresh state
         setFocusedWindowId(fid => {
           if (fid === id) {
             const candidates = remaining.filter(w => !w.isMinimized && !w.isClosing);
@@ -138,7 +138,6 @@ export function WindowProvider({ children }: { children: ReactNode }) {
     setWindows(prev =>
       prev.map(w => w.id === id ? { ...w, isMinimized: !w.isMinimized } : w)
     );
-    // Clear focus if minimizing the focused window
     setFocusedWindowId(prev => prev === id ? null : prev);
   }, []);
 
@@ -149,12 +148,10 @@ export function WindowProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const switchWorkspace = useCallback((workspace: number) => {
-    // Save current focus before leaving
     lastFocusedPerWorkspace.current[activeWorkspace] = focusedWindowId;
 
     setActiveWorkspace(workspace);
 
-    // Restore focus for the target workspace
     setWindows(currentWindows => {
       const targetWindows = currentWindows.filter(
         w => w.workspace === workspace && !w.isMinimized && !w.isClosing
@@ -168,7 +165,7 @@ export function WindowProvider({ children }: { children: ReactNode }) {
       } else {
         setFocusedWindowId(null);
       }
-      return currentWindows; // no mutation
+      return currentWindows;
     });
   }, [activeWorkspace, focusedWindowId]);
 

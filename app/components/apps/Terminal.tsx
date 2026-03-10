@@ -1,7 +1,8 @@
 'use client';
 
 import React, { useState, useRef, useEffect, KeyboardEvent } from 'react';
-import { executeCommand } from '../../lib/commands';
+import { executeCommand, commandNames } from '../../lib/commands';
+import { listDirectory } from '../../lib/filesystem';
 
 interface HistoryEntry {
   command: string;
@@ -15,7 +16,10 @@ const Terminal = React.memo(function Terminal() {
   const [currentPath, setCurrentPath] = useState('~');
   const [commandHistory, setCommandHistory] = useState<string[]>([]);
   const [historyIndex, setHistoryIndex] = useState(-1);
-  
+  const [tabSuggestions, setTabSuggestions] = useState<string[]>([]);
+  const [tabIndex, setTabIndex] = useState(-1);
+  const [originalInput, setOriginalInput] = useState('');
+
   const inputRef = useRef<HTMLInputElement>(null);
   const terminalRef = useRef<HTMLDivElement>(null);
 
@@ -40,8 +44,12 @@ const Terminal = React.memo(function Terminal() {
   const handleSubmit = () => {
     if (!input.trim()) return;
 
-    const result = executeCommand(input, currentPath);
-    
+    // Clear tab state
+    setTabSuggestions([]);
+    setTabIndex(-1);
+
+    const result = executeCommand(input, currentPath, commandHistory);
+
     // Handle clear command
     if (result.output === '__CLEAR__') {
       setHistory([]);
@@ -67,14 +75,31 @@ const Terminal = React.memo(function Terminal() {
     setInput('');
   };
 
+  const getTabCompletions = (text: string): string[] => {
+    const parts = text.split(/\s+/);
+
+    if (parts.length <= 1) {
+      // Complete command names
+      const prefix = parts[0].toLowerCase();
+      return commandNames.filter(cmd => cmd.startsWith(prefix) && cmd !== prefix);
+    }
+
+    // Complete file/directory names for the last argument
+    const lastArg = parts[parts.length - 1];
+    const contents = listDirectory(currentPath);
+    return contents
+      .map(item => item.name + (item.type === 'directory' ? '/' : ''))
+      .filter(name => name.toLowerCase().startsWith(lastArg.toLowerCase()) && name !== lastArg);
+  };
+
   const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter') {
       handleSubmit();
     } else if (e.key === 'ArrowUp') {
       e.preventDefault();
       if (commandHistory.length > 0) {
-        const newIndex = historyIndex === -1 
-          ? commandHistory.length - 1 
+        const newIndex = historyIndex === -1
+          ? commandHistory.length - 1
           : Math.max(0, historyIndex - 1);
         setHistoryIndex(newIndex);
         setInput(commandHistory[newIndex]);
@@ -93,10 +118,64 @@ const Terminal = React.memo(function Terminal() {
       }
     } else if (e.key === 'Tab') {
       e.preventDefault();
-      // Basic tab completion could be added here
+
+      if (tabSuggestions.length === 0) {
+        // First tab press - get completions
+        const completions = getTabCompletions(input);
+        if (completions.length === 1) {
+          // Single match — complete immediately
+          const parts = input.split(/\s+/);
+          if (parts.length <= 1) {
+            setInput(completions[0] + ' ');
+          } else {
+            parts[parts.length - 1] = completions[0];
+            setInput(parts.join(' '));
+          }
+        } else if (completions.length > 1) {
+          setTabSuggestions(completions);
+          setTabIndex(0);
+          setOriginalInput(input);
+
+          // Apply first suggestion
+          const parts = input.split(/\s+/);
+          if (parts.length <= 1) {
+            setInput(completions[0]);
+          } else {
+            parts[parts.length - 1] = completions[0];
+            setInput(parts.join(' '));
+          }
+        }
+      } else {
+        // Cycle through suggestions
+        const nextIndex = (tabIndex + 1) % tabSuggestions.length;
+        setTabIndex(nextIndex);
+        const parts = originalInput.split(/\s+/);
+        if (parts.length <= 1) {
+          setInput(tabSuggestions[nextIndex]);
+        } else {
+          parts[parts.length - 1] = tabSuggestions[nextIndex];
+          setInput(parts.join(' '));
+        }
+      }
+      return;
     } else if (e.key === 'l' && e.ctrlKey) {
       e.preventDefault();
       setHistory([]);
+    } else if (e.key === 'c' && e.ctrlKey) {
+      e.preventDefault();
+      // Show the cancelled command in history
+      setHistory(prev => [...prev, {
+        command: input + '^C',
+        output: '',
+        path: currentPath,
+      }]);
+      setInput('');
+    }
+
+    // Clear tab state on any other key
+    if (e.key !== 'Tab') {
+      setTabSuggestions([]);
+      setTabIndex(-1);
     }
   };
 
@@ -127,7 +206,7 @@ const Terminal = React.memo(function Terminal() {
           </div>
         ))}
       </div>
-      
+
       <div className="terminal-prompt" style={{ marginTop: '8px' }}>
         <span className="terminal-user">user@portfolio</span>
         <span className="terminal-separator">:</span>
@@ -145,6 +224,27 @@ const Terminal = React.memo(function Terminal() {
           autoFocus
         />
       </div>
+
+      {/* Tab completion suggestions */}
+      {tabSuggestions.length > 1 && (
+        <div style={{
+          display: 'flex',
+          flexWrap: 'wrap',
+          gap: '12px',
+          padding: '8px 0',
+          color: 'var(--text-muted)',
+          fontSize: '13px',
+        }}>
+          {tabSuggestions.map((s, i) => (
+            <span key={s} style={{
+              color: i === tabIndex ? 'var(--accent-primary)' : 'var(--text-muted)',
+              fontWeight: i === tabIndex ? 600 : 400,
+            }}>
+              {s}
+            </span>
+          ))}
+        </div>
+      )}
     </div>
   );
 });
