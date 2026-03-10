@@ -12,14 +12,13 @@ export default function WindowManager() {
   // Cache last known positions so closing windows don't jump to fallback
   const lastPositions = useRef<Record<string, { x: number; y: number; width: number; height: number }>>({});
 
-  // Get windows for current workspace (including closing ones for exit animation)
-  const workspaceWindows = windows.filter(
-    w => w.workspace === activeWorkspace && !w.isMinimized
-  );
+  // Get ALL non-minimized windows (across all workspaces) so they stay mounted
+  // and preserve their internal state (terminal history, browser state, etc.)
+  const allVisibleWindows = windows.filter(w => !w.isMinimized);
 
-  // Update cached positions for non-closing windows
-  workspaceWindows.forEach(w => {
-    if (!w.isClosing) {
+  // Update cached positions for non-closing windows on the active workspace
+  allVisibleWindows.forEach(w => {
+    if (!w.isClosing && w.workspace === activeWorkspace) {
       const pos = getWindowPosition(w.id);
       lastPositions.current[w.id] = pos;
     }
@@ -31,30 +30,38 @@ export default function WindowManager() {
 
   return (
     <>
-      {workspaceWindows.map((window) => {
+      {allVisibleWindows.map((window) => {
+        const isOnActiveWorkspace = window.workspace === activeWorkspace;
+
         // Use cached position for closing windows, fresh position for others
         const pos = window.isClosing
           ? lastPositions.current[window.id] || getWindowPosition(window.id)
-          : getWindowPosition(window.id);
+          : isOnActiveWorkspace
+            ? getWindowPosition(window.id)
+            : lastPositions.current[window.id] || { x: 10, y: 10, width: 80, height: 80 };
         
         return (
-          <Window
+          <div
             key={window.id}
-            id={window.id}
-            appType={window.appType}
-            title={window.title}
-            focused={window.id === focusedWindowId}
-            isClosing={window.isClosing}
-            bootDelay={0}
-            style={{
-              left: `${pos.x}%`,
-              top: `${pos.y}%`,
-              width: `${pos.width}%`,
-              height: `${pos.height}%`,
-              zIndex: window.zIndex,
-              transition: window.isClosing ? 'none' : 'left 0.25s cubic-bezier(0.4, 0, 0.2, 1), top 0.25s cubic-bezier(0.4, 0, 0.2, 1), width 0.25s cubic-bezier(0.4, 0, 0.2, 1), height 0.25s cubic-bezier(0.4, 0, 0.2, 1)',
-            }}
-          />
+            style={{ display: isOnActiveWorkspace ? 'contents' : 'none' }}
+          >
+            <Window
+              id={window.id}
+              appType={window.appType}
+              title={window.title}
+              focused={isOnActiveWorkspace && window.id === focusedWindowId}
+              isClosing={window.isClosing}
+              bootDelay={0}
+              style={{
+                left: `${pos.x}%`,
+                top: `${pos.y}%`,
+                width: `${pos.width}%`,
+                height: `${pos.height}%`,
+                zIndex: window.zIndex,
+                transition: window.isClosing ? 'none' : 'left 0.25s cubic-bezier(0.4, 0, 0.2, 1), top 0.25s cubic-bezier(0.4, 0, 0.2, 1), width 0.25s cubic-bezier(0.4, 0, 0.2, 1), height 0.25s cubic-bezier(0.4, 0, 0.2, 1)',
+              }}
+            />
+          </div>
         );
       })}
     </>

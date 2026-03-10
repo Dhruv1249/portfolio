@@ -1,6 +1,6 @@
 'use client';
 
-import React, { createContext, useContext, useState, useCallback, ReactNode } from 'react';
+import React, { createContext, useContext, useState, useCallback, useRef, ReactNode } from 'react';
 
 export type AppType = 'terminal' | 'browser' | 'filemanager' | 'neovim' | 'settings';
 
@@ -76,6 +76,7 @@ export function WindowProvider({ children }: { children: ReactNode }) {
   ]);
   
   const [activeWorkspace, setActiveWorkspace] = useState(1);
+  const lastFocusedPerWorkspace = useRef<Record<number, string | null>>({});
   const [focusedWindowId, setFocusedWindowId] = useState<string | null>('window-init-browser');
   const [showAppLauncher, setShowAppLauncher] = useState(false);
 
@@ -147,6 +148,30 @@ export function WindowProvider({ children }: { children: ReactNode }) {
     );
   }, []);
 
+  const switchWorkspace = useCallback((workspace: number) => {
+    // Save current focus before leaving
+    lastFocusedPerWorkspace.current[activeWorkspace] = focusedWindowId;
+
+    setActiveWorkspace(workspace);
+
+    // Restore focus for the target workspace
+    setWindows(currentWindows => {
+      const targetWindows = currentWindows.filter(
+        w => w.workspace === workspace && !w.isMinimized && !w.isClosing
+      );
+      const remembered = lastFocusedPerWorkspace.current[workspace];
+      if (remembered && targetWindows.some(w => w.id === remembered)) {
+        setFocusedWindowId(remembered);
+      } else if (targetWindows.length > 0) {
+        const top = targetWindows.reduce((a, b) => a.zIndex > b.zIndex ? a : b);
+        setFocusedWindowId(top.id);
+      } else {
+        setFocusedWindowId(null);
+      }
+      return currentWindows; // no mutation
+    });
+  }, [activeWorkspace, focusedWindowId]);
+
   const moveWindowToWorkspace = useCallback((windowId: string, workspace: number) => {
     setWindows(prev =>
       prev.map(w => w.id === windowId ? { ...w, workspace } : w)
@@ -173,7 +198,7 @@ export function WindowProvider({ children }: { children: ReactNode }) {
         focusWindow,
         minimizeWindow,
         maximizeWindow,
-        setActiveWorkspace,
+        setActiveWorkspace: switchWorkspace,
         moveWindowToWorkspace,
         toggleAppLauncher,
         closeAppLauncher,
