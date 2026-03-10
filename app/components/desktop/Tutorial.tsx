@@ -11,15 +11,17 @@ import {
 interface TryItConfig {
   instruction: string;
   hint: string;
-  // If checkFn is provided, auto-detect completion. Otherwise user clicks "Done".
-  checkFn?: (windows: any[], baseline: number) => boolean;
+  // If provided, the step requires completing this array of commands (for terminal step)
+  commandsToRun?: string[];
+  // If checkFn is provided, auto-detect completion
+  checkFn?: (windows: any[], baseline: number, executedCommands?: string[], appLauncherOpened?: boolean, wsSwitched?: boolean) => boolean;
 }
 
 interface TutorialStep {
   title: string;
   icon: React.ReactNode;
-  content: React.ReactNode;
-  tryIt: TryItConfig;
+  content: React.ReactNode | ((executedCommands: string[]) => React.ReactNode);
+  tryIt?: TryItConfig; // Optional now — informational steps won't have it
 }
 
 interface TutorialProps {
@@ -27,21 +29,69 @@ interface TutorialProps {
   onClose: () => void;
 }
 
+// Map of commands to their explanations for the dynamic tutorial step
+const COMMAND_EXPLANATIONS: Record<string, string> = {
+  'help': 'This shows you a list of every command the terminal understands.',
+  'neofetch': 'A classic Linux command! It prints out system info and a cool logo. Hackers use this to show off their setups.',
+  'cat README.md': 'The "cat" command reads a file and spits the text out here. You just read the README file!',
+};
+
 export default function Tutorial({ show, onClose }: TutorialProps) {
+  // ... (state and effects stay the same)
   const [currentStep, setCurrentStep] = useState(0);
   const [isAnimating, setIsAnimating] = useState(false);
   const [tryItCompleted, setTryItCompleted] = useState<Set<number>>(new Set());
   const [minimized, setMinimized] = useState(false);
+  
   const baselineRef = useRef<number>(0);
-  const { windows } = useWindowManager();
+  const [executedCommands, setExecutedCommands] = useState<string[]>([]);
+  const [appLauncherOpened, setAppLauncherOpened] = useState(false);
+  const [workspaceSwitched, setWorkspaceSwitched] = useState(false);
+
+  const { windows, activeWorkspace, closeWindow } = useWindowManager();
 
   useEffect(() => {
     if (show) {
       setCurrentStep(0);
       setTryItCompleted(new Set());
       setMinimized(false);
+      setExecutedCommands([]);
+      setAppLauncherOpened(false);
+      setWorkspaceSwitched(false);
     }
   }, [show]);
+
+  useEffect(() => {
+    if (!show) return;
+
+    const handleCommandRun = (e: Event) => {
+      const customEvent = e as CustomEvent;
+      const cmd = customEvent.detail.command.trim();
+      setExecutedCommands(prev => {
+        if (!prev.includes(cmd)) return [...prev, cmd];
+        return prev;
+      });
+    };
+
+    const handleAppLauncherOpen = () => {
+      setAppLauncherOpened(true);
+    };
+
+    window.addEventListener('terminal-command-run', handleCommandRun);
+    window.addEventListener('app-launcher-open', handleAppLauncherOpen);
+
+    return () => {
+      window.removeEventListener('terminal-command-run', handleCommandRun);
+      window.removeEventListener('app-launcher-open', handleAppLauncherOpen);
+    };
+  }, [show]);
+
+  // Track workspace switches for that specific step
+  useEffect(() => {
+    if (minimized && STEPS[currentStep]?.title === 'Virtual Workspaces' && activeWorkspace !== 1) {
+      setWorkspaceSwitched(true);
+    }
+  }, [activeWorkspace, minimized, currentStep]);
 
   // ─── Steps ─────────────────────────────────────────
   const STEPS: TutorialStep[] = [
@@ -51,78 +101,17 @@ export default function Tutorial({ show, onClose }: TutorialProps) {
       content: (
         <div className="tutorial-step-content">
           <p className="tutorial-highlight">
-            You&apos;re not looking at a regular portfolio — this is an <strong>interactive Linux desktop</strong> running in your browser.
+            You&apos;re not looking at a regular portfolio — this is an <strong>interactive desktop</strong> running in your browser.
           </p>
           <p>
-            Everything works just like a real desktop — open apps, switch windows, use keyboard shortcuts, browse code, and explore projects.
+            Everything works just like a real computer. You can open apps, move things around, and type commands. I built this to show off my skills in a fun, hands-on way.
           </p>
           <div className="tutorial-callout">
             <Lightbulb size={16} />
-            <span>Every step has a <strong>Try Now</strong> button — practice each feature hands-on!</span>
+            <span>Click <strong>Next</strong> to start the interactive guide, or press Esc to skip and explore.</span>
           </div>
         </div>
       ),
-      tryIt: {
-        instruction: 'Explore the desktop',
-        hint: 'Look around! Click anything. Press Esc to skip tutorial anytime.',
-      },
-    },
-
-    {
-      title: 'What is Linux?',
-      icon: <Info size={20} />,
-      content: (
-        <div className="tutorial-step-content">
-          <p>
-            <strong>Linux</strong> is a free, open-source operating system. Unlike Windows or macOS, Linux gives users complete control.
-          </p>
-          <div className="tutorial-info-grid">
-            <div className="tutorial-info-card">
-              <div className="tutorial-info-icon"><Sparkles size={20} /></div>
-              <div><strong>Open Source</strong><p>Anyone can view, modify, and distribute the code</p></div>
-            </div>
-            <div className="tutorial-info-card">
-              <div className="tutorial-info-icon"><Rocket size={20} /></div>
-              <div><strong>Powerful</strong><p>Powers 96% of the world&apos;s top supercomputers</p></div>
-            </div>
-            <div className="tutorial-info-card">
-              <div className="tutorial-info-icon"><Settings size={20} /></div>
-              <div><strong>Customizable</strong><p>Every aspect of the desktop can be personalized</p></div>
-            </div>
-          </div>
-        </div>
-      ),
-      tryIt: {
-        instruction: 'Take a look around',
-        hint: 'Notice the top bar, workspace dots, and the empty desktop — just like a real Linux install.',
-      },
-    },
-
-    {
-      title: 'Arch Linux & Hyprland',
-      icon: <Layout size={20} />,
-      content: (
-        <div className="tutorial-step-content">
-          <p>
-            This portfolio is themed after <strong>Arch Linux</strong> with <strong>Hyprland</strong>, a tiling window manager.
-            Windows automatically arrange to fill your screen — no dragging!
-          </p>
-          <div className="tutorial-comparison">
-            <div className="tutorial-compare-item">
-              <div className="tutorial-compare-header"><MousePointer size={16} /> Traditional Desktop</div>
-              <ul><li>Windows overlap freely</li><li>Manual dragging & resizing</li><li>Wasted screen space</li></ul>
-            </div>
-            <div className="tutorial-compare-item highlight">
-              <div className="tutorial-compare-header"><Layout size={16} /> Tiling WM (This Portfolio)</div>
-              <ul><li>Windows auto-arrange</li><li>Keyboard-driven workflow</li><li>Every pixel utilized</li></ul>
-            </div>
-          </div>
-        </div>
-      ),
-      tryIt: {
-        instruction: 'Check the workspace dots',
-        hint: 'Look at the top-left corner — those dots represent 4 virtual workspaces. Click one!',
-      },
     },
 
     {
@@ -131,91 +120,107 @@ export default function Tutorial({ show, onClose }: TutorialProps) {
       content: (
         <div className="tutorial-step-content">
           <p>
-            The <strong>Terminal</strong> is the most powerful tool on Linux. Let&apos;s open one!
+            Let&apos;s start with the heart of Linux: the <strong>Terminal</strong>. It might look scary, but it&apos;s just a way to talk to the computer using text instead of a mouse.
           </p>
-          <div className="tutorial-shortcuts">
-            <div className="tutorial-shortcut-row">
-              <div className="tutorial-keys"><kbd>Alt</kbd> + <kbd>Enter</kbd></div>
-              <span className="tutorial-shortcut-desc">Open a new terminal</span>
-            </div>
-          </div>
+          <p>
+            To open it, we use a keyboard shortcut. Don&apos;t worry, my shortcuts use the <kbd>Alt</kbd> key so they won&apos;t mess with whatever browser you are using!
+          </p>
           <div className="tutorial-callout">
             <Lightbulb size={16} />
-            <span>Press <strong>Try Now</strong> below, then press <kbd>Alt</kbd> + <kbd>Enter</kbd> on your keyboard.</span>
+            <span>Click <strong>Try Now</strong>, then press <kbd>Alt</kbd> + <kbd>Enter</kbd> to open a terminal.</span>
           </div>
         </div>
       ),
       tryIt: {
-        instruction: 'Open a Terminal',
+        instruction: 'Open the Terminal',
         hint: 'Press  Alt + Enter',
         checkFn: (wins, baseline) => wins.some(w => w.appType === 'terminal') && wins.length > baseline,
       },
     },
 
     {
-      title: 'Run a Command',
+      title: 'Talk to the Computer',
       icon: <Terminal size={20} />,
-      content: (
-        <div className="tutorial-step-content">
-          <p>Now type a command in your terminal! Try any of these:</p>
-          <div className="tutorial-shortcuts">
-            <div className="tutorial-shortcut-row">
-              <div className="tutorial-keys"><kbd>help</kbd></div>
-              <span className="tutorial-shortcut-desc">See all available commands</span>
+      content: (execCmds: string[]) => {
+        const reqCmds = ['help', 'neofetch', 'cat README.md'];
+        return (
+          <div className="tutorial-step-content">
+            <p>Awesome! Now that the terminal is open, let&apos;s give the computer some instructions.</p>
+            <p>Type these exact words into the terminal and hit Enter after each one:</p>
+            <div className="tutorial-shortcuts">
+              {reqCmds.map(cmd => {
+                const isDone = execCmds.includes(cmd);
+                return (
+                  <div key={cmd} className="tutorial-shortcut-row" style={{ opacity: isDone ? 0.6 : 1, padding: '12px 0' }}>
+                    <div className="tutorial-keys">
+                      {isDone ? <CheckCircle2 size={16} color="var(--accent-green)" /> : <span style={{ width: 16 }} />}
+                      <kbd>{cmd}</kbd>
+                    </div>
+                    <span className="tutorial-shortcut-desc" style={{ paddingLeft: '8px', lineHeight: '1.4' }}>
+                      {isDone ? <span style={{ color: 'var(--accent-green)' }}>{COMMAND_EXPLANATIONS[cmd]}</span> : 'Run this to see what it does'}
+                    </span>
+                  </div>
+                );
+              })}
             </div>
-            <div className="tutorial-shortcut-row">
-              <div className="tutorial-keys"><kbd>neofetch</kbd></div>
-              <span className="tutorial-shortcut-desc">Display system info</span>
-            </div>
-            <div className="tutorial-shortcut-row">
-              <div className="tutorial-keys"><kbd>cat skills.json</kbd></div>
-              <span className="tutorial-shortcut-desc">View a file&apos;s contents</span>
+            <div className="tutorial-callout" style={{ marginTop: '12px' }}>
+              <Lightbulb size={16} />
+              <span><strong>Pro Tip:</strong> Type <code>cat RE</code> and press the <kbd>Tab</kbd> key. The terminal will auto-complete the rest for you!</span>
             </div>
           </div>
-        </div>
-      ),
+        );
+      },
       tryIt: {
-        instruction: 'Type a command in the terminal',
-        hint: 'Try typing  help  or  neofetch  and press Enter',
+        instruction: 'Run commands in the Terminal',
+        hint: 'Type  help  and press Enter to begin',
+        commandsToRun: ['help', 'neofetch', 'cat README.md'],
+        checkFn: (wins, baseline, execCmds) => {
+          const required = ['help', 'neofetch', 'cat README.md'];
+          return required.every(cmd => execCmds?.includes(cmd));
+        },
       },
     },
 
     {
-      title: 'App Launcher',
+      title: 'The App Launcher',
       icon: <Sparkles size={20} />,
       content: (
         <div className="tutorial-step-content">
           <p>
-            The <strong>App Launcher</strong> lets you quickly open any app. Type to search!
+            Now let&apos;s open a visual app! The <strong>App Launcher</strong> is just like the Start Menu on Windows or Spotlight on a Mac.
           </p>
-          <div className="tutorial-apps-list">
-            <div className="tutorial-app-item">
-              <span className="tutorial-app-icon"><Terminal size={18} /></span>
-              <div><strong>Terminal</strong><p>Simulated zsh shell</p></div>
-            </div>
-            <div className="tutorial-app-item">
-              <span className="tutorial-app-icon"><Globe size={18} /></span>
-              <div><strong>Browser</strong><p>Portfolio with projects</p></div>
-            </div>
-            <div className="tutorial-app-item">
-              <span className="tutorial-app-icon"><FolderOpen size={18} /></span>
-              <div><strong>Files</strong><p>GitHub file browser</p></div>
-            </div>
-            <div className="tutorial-app-item">
-              <span className="tutorial-app-icon"><Code size={18} /></span>
-              <div><strong>Neovim</strong><p>Code editor with Vim motions</p></div>
-            </div>
-            <div className="tutorial-app-item">
-              <span className="tutorial-app-icon"><Settings size={18} /></span>
-              <div><strong>Settings</strong><p>System info & shortcuts</p></div>
-            </div>
+          <p>
+            When you open it, type &quot;Browser&quot; and hit Enter to launch my portfolio browser!
+          </p>
+          <div className="tutorial-callout">
+            <Lightbulb size={16} />
+            <span>Click <strong>Try Now</strong>, press <kbd>Alt</kbd> + <kbd>Space</kbd>, type &quot;Browser&quot; and press Enter.</span>
           </div>
         </div>
       ),
       tryIt: {
-        instruction: 'Open the App Launcher',
-        hint: 'Press  Alt + Space  — then try searching for an app!',
+        instruction: 'Launch the Browser',
+        hint: 'Press  Alt + Space , type "Browser", and hit Enter',
+        checkFn: (wins, baseline, execCmds, appLauncherOpened) => {
+          // They must open the launcher, AND then open the browser
+          return !!appLauncherOpened && wins.some(w => w.appType === 'browser') && wins.filter(w => w.appType === 'browser').length > 0;
+        },
       },
+    },
+
+    {
+      title: 'The Browser',
+      icon: <Globe size={20} />,
+      content: (
+        <div className="tutorial-step-content">
+          <p>
+            Great job! You just opened the <strong>Browser</strong>.
+          </p>
+          <p>
+            This app is really important because it&apos;s where all my actual web development projects live. You can click on any project in there to see live demos and information about the apps I&apos;ve built.
+          </p>
+        </div>
+      ),
     },
 
     {
@@ -223,185 +228,92 @@ export default function Tutorial({ show, onClose }: TutorialProps) {
       icon: <Layout size={20} />,
       content: (
         <div className="tutorial-step-content">
-          <p>Windows <strong>tile automatically</strong>. Here are the controls:</p>
-          <div className="tutorial-shortcuts">
-            <div className="tutorial-shortcut-row">
-              <div className="tutorial-keys"><kbd>Alt</kbd> + <kbd>J</kbd> / <kbd>K</kbd></div>
-              <span className="tutorial-shortcut-desc">Cycle focus between windows</span>
-            </div>
-            <div className="tutorial-shortcut-row">
-              <div className="tutorial-keys"><kbd>Alt</kbd> + <kbd>W</kbd></div>
-              <span className="tutorial-shortcut-desc">Close the focused window</span>
-            </div>
-            <div className="tutorial-shortcut-row">
-              <div className="tutorial-keys"><span style={{ color: '#ff5f57', fontSize: '12px' }}>●</span> button</div>
-              <span className="tutorial-shortcut-desc">Close button (top-left of each window)</span>
-            </div>
+          <p>
+            Notice how the Terminal and Browser automatically split the screen? This is called a <strong>Tiling Window Manager</strong>. You never have to drag or resize windows manually; they arrange themselves perfectly to use every pixel!
+          </p>
+          <p>Let&apos;s try closing the window you are currently looking at. You can always re-open them!</p>
+          <div className="tutorial-callout">
+            <Lightbulb size={16} />
+            <span>Click <strong>Try Now</strong>, then press <kbd>Alt</kbd> + <kbd>W</kbd> to close the active window.</span>
           </div>
         </div>
       ),
       tryIt: {
-        instruction: 'Try the window shortcuts',
-        hint: 'Press  Alt + J/K  to cycle focus, or  Alt + W  to close a window',
+        instruction: 'Close a window',
+        hint: 'Press  Alt + W ',
+        checkFn: (wins, baseline) => wins.length < baseline,
       },
     },
 
     {
-      title: 'Tiling in Action',
-      icon: <Layers size={20} />,
-      content: (
-        <div className="tutorial-step-content">
-          <p>Open <strong>another app</strong> and watch them tile side by side!</p>
-          <div className="tutorial-shortcuts">
-            <div className="tutorial-shortcut-row">
-              <div className="tutorial-keys"><kbd>Alt</kbd> + <kbd>B</kbd></div>
-              <span className="tutorial-shortcut-desc">Open Browser</span>
-            </div>
-            <div className="tutorial-shortcut-row">
-              <div className="tutorial-keys"><kbd>Alt</kbd> + <kbd>F</kbd></div>
-              <span className="tutorial-shortcut-desc">Open File Manager</span>
-            </div>
-            <div className="tutorial-shortcut-row">
-              <div className="tutorial-keys"><kbd>Alt</kbd> + <kbd>N</kbd></div>
-              <span className="tutorial-shortcut-desc">Open Neovim</span>
-            </div>
-          </div>
-        </div>
-      ),
-      tryIt: {
-        instruction: 'Open another app to see tiling',
-        hint: 'Try  Alt + B  for the Browser',
-        checkFn: (wins, baseline) => wins.length > baseline,
-      },
-    },
-
-    {
-      title: 'Workspaces',
-      icon: <Layers size={20} />,
-      content: (
-        <div className="tutorial-step-content">
-          <p>You have <strong>4 virtual workspaces</strong> — separate desktops to organize your windows.</p>
-          <div className="tutorial-workspace-demo">
-            <div className="tutorial-ws-dots">
-              {[1, 2, 3, 4].map(n => (
-                <div key={n} className={`tutorial-ws-dot ${n === 1 ? 'active' : ''}`}>{n}</div>
-              ))}
-            </div>
-            <p className="tutorial-ws-hint">
-              Click the dots in the <strong>top-left</strong> or use <kbd>Alt</kbd> + <kbd>1</kbd>-<kbd>4</kbd> to switch.
-            </p>
-          </div>
-        </div>
-      ),
-      tryIt: {
-        instruction: 'Switch to a different workspace',
-        hint: 'Press  Alt + 2  — then come back with  Alt + 1',
-      },
-    },
-
-    {
-      title: 'File Manager',
+      title: 'Connecting to GitHub',
       icon: <FolderOpen size={20} />,
       content: (
         <div className="tutorial-step-content">
-          <p>Browse my <strong>GitHub project repositories</strong>. Double-click any file to open it in Neovim.</p>
-          <div className="tutorial-shortcuts">
-            <div className="tutorial-shortcut-row">
-              <div className="tutorial-keys">Click sidebar project</div>
-              <span className="tutorial-shortcut-desc">Load its file tree from GitHub</span>
-            </div>
-            <div className="tutorial-shortcut-row">
-              <div className="tutorial-keys">Double-click a file</div>
-              <span className="tutorial-shortcut-desc">Open it in Neovim</span>
-            </div>
+          <p>
+            I want to prove I actually wrote the code for my projects. Let&apos;s open the <strong>File Manager</strong>.
+          </p>
+          <p>
+            This app reaches out directly to my real GitHub account and fetches the live source code of all my projects right into this computer.
+          </p>
+          <div className="tutorial-callout">
+            <Lightbulb size={16} />
+            <span>Click <strong>Try Now</strong> and press <kbd>Alt</kbd> + <kbd>F</kbd> to open the File Manager.</span>
           </div>
         </div>
       ),
       tryIt: {
-        instruction: 'Open Files and browse a project',
-        hint: 'Press  Alt + F  — pick a project, explore the files',
-        checkFn: (wins, baseline) => wins.some(w => w.appType === 'filemanager'),
+        instruction: 'Open the File Manager',
+        hint: 'Press  Alt + F ',
+        checkFn: (wins, baseline) => wins.some(w => w.appType === 'filemanager') && wins.filter(w => w.appType === 'filemanager').length > 0,
       },
     },
 
     {
-      title: 'Neovim Code Editor',
+      title: 'Reading Source Code',
       icon: <Code size={20} />,
       content: (
         <div className="tutorial-step-content">
-          <p><strong>Neovim</strong> — keyboard-driven code editor with real Vim motions:</p>
-          <div className="tutorial-shortcuts">
-            <div className="tutorial-shortcut-row">
-              <div className="tutorial-keys"><kbd>j</kbd> / <kbd>k</kbd></div>
-              <span className="tutorial-shortcut-desc">Move cursor down / up</span>
-            </div>
-            <div className="tutorial-shortcut-row">
-              <div className="tutorial-keys"><kbd>gg</kbd> / <kbd>G</kbd></div>
-              <span className="tutorial-shortcut-desc">Jump to top / bottom</span>
-            </div>
-            <div className="tutorial-shortcut-row">
-              <div className="tutorial-keys"><kbd>/</kbd>query</div>
-              <span className="tutorial-shortcut-desc">Search in file</span>
-            </div>
-            <div className="tutorial-shortcut-row">
-              <div className="tutorial-keys"><kbd>i</kbd> / <kbd>Esc</kbd></div>
-              <span className="tutorial-shortcut-desc">INSERT mode / back to NORMAL</span>
-            </div>
+          <p>
+            Once you see files in the File Manager, you can view them using <strong>Neovim</strong>.
+          </p>
+          <p>
+            Neovim is a famous code editor beloved by developers because you never have to take your hands off the keyboard. I included it so you can read my project code natively!
+          </p>
+          <div className="tutorial-callout">
+            <Lightbulb size={16} />
+            <span>Click <strong>Try Now</strong>, then Double-Click any file in the File Manager to open it in Neovim!</span>
           </div>
         </div>
       ),
       tryIt: {
-        instruction: 'Open Neovim and try Vim motions',
-        hint: 'Press  Alt + N  — then try  j/k  to move, gg to jump to top',
-        checkFn: (wins, baseline) => wins.some(w => w.appType === 'neovim'),
+        instruction: 'Open a file in Neovim',
+        hint: 'Double click a file in the File Manager sidebar',
+        checkFn: (wins, baseline) => wins.some(w => w.appType === 'neovim') && wins.filter(w => w.appType === 'neovim').length > 0,
       },
     },
 
     {
-      title: 'Keyboard Shortcuts',
-      icon: <Keyboard size={20} />,
+      title: 'Virtual Workspaces',
+      icon: <Layers size={20} />,
       content: (
         <div className="tutorial-step-content">
-          <p>All shortcuts use <kbd>Alt</kbd> — no browser conflicts:</p>
-          <div className="tutorial-shortcuts" style={{ columns: 2, columnGap: '16px' }}>
-            <div className="tutorial-shortcut-row">
-              <div className="tutorial-keys"><kbd>Alt</kbd>+<kbd>Enter</kbd></div>
-              <span className="tutorial-shortcut-desc">Terminal</span>
-            </div>
-            <div className="tutorial-shortcut-row">
-              <div className="tutorial-keys"><kbd>Alt</kbd>+<kbd>B</kbd></div>
-              <span className="tutorial-shortcut-desc">Browser</span>
-            </div>
-            <div className="tutorial-shortcut-row">
-              <div className="tutorial-keys"><kbd>Alt</kbd>+<kbd>F</kbd></div>
-              <span className="tutorial-shortcut-desc">Files</span>
-            </div>
-            <div className="tutorial-shortcut-row">
-              <div className="tutorial-keys"><kbd>Alt</kbd>+<kbd>N</kbd></div>
-              <span className="tutorial-shortcut-desc">Neovim</span>
-            </div>
-            <div className="tutorial-shortcut-row">
-              <div className="tutorial-keys"><kbd>Alt</kbd>+<kbd>Space</kbd></div>
-              <span className="tutorial-shortcut-desc">App Launcher</span>
-            </div>
-            <div className="tutorial-shortcut-row">
-              <div className="tutorial-keys"><kbd>Alt</kbd>+<kbd>J/K</kbd></div>
-              <span className="tutorial-shortcut-desc">Cycle focus</span>
-            </div>
-            <div className="tutorial-shortcut-row">
-              <div className="tutorial-keys"><kbd>Alt</kbd>+<kbd>W</kbd></div>
-              <span className="tutorial-shortcut-desc">Close window</span>
-            </div>
-            <div className="tutorial-shortcut-row">
-              <div className="tutorial-keys"><kbd>Alt</kbd>+<kbd>1-4</kbd></div>
-              <span className="tutorial-shortcut-desc">Switch workspace</span>
-            </div>
+          <p>
+            Things are getting crowded! Professional developers use <strong>Workspaces</strong> to stay organized. Think of them as multiple physical monitors, but all on one screen.
+          </p>
+          <p>
+            You have 4 workspaces. If workspace 1 is full, just switch to workspace 2 for a completely fresh, empty desktop!
+          </p>
+          <div className="tutorial-callout">
+            <Lightbulb size={16} />
+            <span>Click <strong>Try Now</strong> and press <kbd>Alt</kbd> + <kbd>2</kbd> to switch to an empty workspace!</span>
           </div>
         </div>
       ),
       tryIt: {
-        instruction: 'Try any shortcut from the list',
-        hint: 'Press any  Alt + _  shortcut to see it work!',
+        instruction: 'Switch to Workspace 2',
+        hint: 'Press  Alt + 2 ',
+        checkFn: (wins, baseline, execCmds, appLauncherOpened, wsSwitched) => !!wsSwitched,
       },
     },
 
@@ -411,32 +323,15 @@ export default function Tutorial({ show, onClose }: TutorialProps) {
       content: (
         <div className="tutorial-step-content">
           <p className="tutorial-highlight">
-            You&apos;ve completed the tutorial! Now go explore and discover my projects.
+            You made it! You now know how to navigate this portfolio like a pro Linux power-user.
           </p>
-          <div className="tutorial-info-grid">
-            <div className="tutorial-info-card">
-              <div className="tutorial-info-icon"><Terminal size={20} /></div>
-              <div><strong>Terminal</strong><p>Try <code>fortune</code>, <code>man neovim</code>, or <code>sudo rm -rf /</code></p></div>
-            </div>
-            <div className="tutorial-info-card">
-              <div className="tutorial-info-icon"><Globe size={20} /></div>
-              <div><strong>Browser</strong><p>Check out my NASA award-winning CALYX project</p></div>
-            </div>
-            <div className="tutorial-info-card">
-              <div className="tutorial-info-icon"><Code size={20} /></div>
-              <div><strong>Neovim</strong><p>Browse real source code from my GitHub repos</p></div>
-            </div>
-          </div>
+          <p>Go ahead and explore my projects, view my code, or just mess around in the terminal.</p>
           <div className="tutorial-callout success">
             <CheckCircle2 size={16} />
-            <span>Click <strong>?</strong> in the top bar anytime to re-open this tutorial.</span>
+            <span>Click the <strong>?</strong> icon in the top right to re-open this tutorial anytime!</span>
           </div>
         </div>
       ),
-      tryIt: {
-        instruction: 'Go explore!',
-        hint: 'The desktop is yours — open anything, try everything!',
-      },
     },
   ];
 
@@ -444,32 +339,35 @@ export default function Tutorial({ show, onClose }: TutorialProps) {
   const step = STEPS[currentStep];
   const isLastStep = currentStep === totalSteps - 1;
   const isTryItDone = tryItCompleted.has(currentStep);
-  const hasAutoCheck = !!step?.tryIt?.checkFn;
+  const showTryIt = !!step.tryIt && !isTryItDone;
 
   const startTryIt = () => {
     baselineRef.current = windows.length;
     setMinimized(true);
   };
 
-  // ─── Auto-detect completion for steps with checkFn ─
+  // ─── Auto-detect completion ────────────────────────
   useEffect(() => {
     if (!show || !minimized || !step?.tryIt?.checkFn) return;
     if (tryItCompleted.has(currentStep)) return;
 
     const checkInterval = setInterval(() => {
-      if (step.tryIt!.checkFn!(windows, baselineRef.current)) {
+      // Pass the tracked events as well
+      if (step.tryIt!.checkFn!(windows, baselineRef.current, executedCommands, appLauncherOpened, workspaceSwitched)) {
         setTryItCompleted(prev => new Set([...prev, currentStep]));
+        // When successfully detected, we no longer auto-advance. We wait for user action.
+        setMinimized(false); 
       }
     }, 300);
 
     return () => clearInterval(checkInterval);
-  }, [show, minimized, currentStep, windows, step, tryItCompleted]);
+  }, [show, minimized, currentStep, windows, step, tryItCompleted, executedCommands, appLauncherOpened, workspaceSwitched]);
 
   // ─── Keyboard Navigation ──────────────────────────
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (!show) return;
-      if (minimized) return;
+      if (minimized) return; // Ignore keys when minimized so they go to desktop
       if (e.key === 'Escape') onClose();
       else if (e.key === 'ArrowRight' || e.key === 'Enter') {
         if (isLastStep) onClose();
@@ -501,53 +399,27 @@ export default function Tutorial({ show, onClose }: TutorialProps) {
     }, 150);
   };
 
-  const handleFloatingDone = () => {
-    setTryItCompleted(prev => new Set([...prev, currentStep]));
-  };
-
-  const handleFloatingNext = () => {
-    setMinimized(false);
-    if (isLastStep) {
-      onClose();
-    } else {
-      handleNext();
-    }
-  };
-
   // ─── Minimized: Floating hint bar at bottom ────────
   if (minimized) {
+    let hintText = step.tryIt?.hint;
+    if (step.tryIt?.commandsToRun) {
+      const remainingCmds = step.tryIt.commandsToRun.filter(cmd => !executedCommands.includes(cmd));
+      if (remainingCmds.length > 0) {
+        hintText = `Type: ${remainingCmds[0]}`;
+      } else {
+        hintText = `All commands executed!`;
+      }
+    }
+
     return (
       <div className="tutorial-floating-hint">
-        {!isTryItDone ? (
-          <>
-            <div className="tutorial-floating-pulse" />
-            <div className="tutorial-floating-text">
-              <strong>{step.tryIt?.instruction}</strong>
-              <span>{step.tryIt?.hint}</span>
-            </div>
-            {/* If no auto-check, show a manual "Done" button */}
-            {!hasAutoCheck && (
-              <button className="tutorial-floating-done-btn" onClick={handleFloatingDone}>
-                <CheckCircle2 size={14} />
-                Done
-              </button>
-            )}
-          </>
-        ) : (
-          <>
-            <CheckCircle2 size={20} className="tutorial-floating-check" />
-            <div className="tutorial-floating-text">
-              <strong>Nice work!</strong>
-              <span>Step completed</span>
-            </div>
-            <button className="tutorial-floating-next-btn" onClick={handleFloatingNext}>
-              {isLastStep ? 'Finish' : 'Next'}
-              <ChevronRight size={14} />
-            </button>
-          </>
-        )}
-        <button className="tutorial-floating-skip" onClick={onClose}>
-          <X size={14} />
+        <div className="tutorial-floating-pulse" />
+        <div className="tutorial-floating-text">
+          <strong>{step.tryIt?.instruction}</strong>
+          <span>{hintText}</span>
+        </div>
+        <button className="tutorial-floating-skip" onClick={() => setMinimized(false)}>
+          Back <X size={14} />
         </button>
       </div>
     );
@@ -574,8 +446,12 @@ export default function Tutorial({ show, onClose }: TutorialProps) {
         </div>
 
         <div className="tutorial-body">
-          <h2 className="tutorial-title">{step.title}</h2>
-          {step.content}
+          <h2 className="tutorial-title">
+            {step.title}
+            {isTryItDone && <CheckCircle2 size={18} color="var(--accent-green)" style={{ marginLeft: '8px' }} />}
+          </h2>
+          {/* Dynamic render if content is a function (used for command execution tracking) */}
+          {typeof step.content === 'function' ? step.content(executedCommands) : step.content}
         </div>
 
         <div className="tutorial-footer">
@@ -593,9 +469,24 @@ export default function Tutorial({ show, onClose }: TutorialProps) {
             ))}
           </div>
 
-          <button className="tutorial-nav-btn try-it" onClick={startTryIt}>
-            <Play size={14} /> Try Now
-          </button>
+          {showTryIt ? (
+            <div style={{ display: 'flex', gap: '8px' }}>
+              <button 
+                className="tutorial-nav-btn" 
+                onClick={handleNext}
+                style={{ background: 'transparent', border: '1px solid var(--border-color)', color: 'var(--text-color)' }}
+              >
+                Skip
+              </button>
+              <button className="tutorial-nav-btn try-it" onClick={startTryIt}>
+                <Play size={14} /> Try Now
+              </button>
+            </div>
+          ) : (
+            <button className="tutorial-nav-btn next" onClick={isLastStep ? onClose : handleNext}>
+              {isLastStep ? 'Finish' : (isTryItDone ? 'Next' : 'Next')} <ChevronRight size={16} />
+            </button>
+          )}
         </div>
       </div>
     </div>

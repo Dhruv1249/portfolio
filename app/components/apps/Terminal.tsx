@@ -50,6 +50,11 @@ const Terminal = React.memo(function Terminal() {
 
     const result = executeCommand(input, currentPath, commandHistory);
 
+    // Dispatch event for Tutorial tracking
+    window.dispatchEvent(
+      new CustomEvent('terminal-command-run', { detail: { command: input.trim() } })
+    );
+
     // Handle clear command
     if (result.output === '__CLEAR__') {
       setHistory([]);

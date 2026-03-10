@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useWindowManager, AppType } from '../../contexts/WindowContext';
 import { Terminal, Globe, FolderOpen, Code, Settings } from 'lucide-react';
 
@@ -12,15 +12,21 @@ const APPS: { id: AppType; name: string; icon: React.ReactNode }[] = [
   { id: 'settings', name: 'Settings', icon: <Settings size={28} /> },
 ];
 
-export default function AppLauncher() {
-  const { showAppLauncher, closeAppLauncher, openWindow } = useWindowManager();
-  const [search, setSearch] = useState('');
-
-  if (!showAppLauncher) return null;
-
-  const filteredApps = APPS.filter(app =>
-    app.name.toLowerCase().includes(search.toLowerCase())
-  );
+  export default function AppLauncher() {
+    const { showAppLauncher, closeAppLauncher, openWindow } = useWindowManager();
+    const [search, setSearch] = useState('');
+  
+    useEffect(() => {
+      if (showAppLauncher) {
+        window.dispatchEvent(new CustomEvent('app-launcher-open'));
+      }
+    }, [showAppLauncher]);
+  
+    if (!showAppLauncher) return null;
+  
+    const filteredApps = APPS.filter(app =>
+      app.name.toLowerCase().includes(search.toLowerCase())
+    );
 
   const handleAppClick = (appType: AppType) => {
     openWindow(appType);
