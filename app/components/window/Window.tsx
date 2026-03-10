@@ -78,7 +78,10 @@ export default function Window({
         const initialFile = appData?.fileName && appData?.fileContent
           ? { name: appData.fileName as string, content: appData.fileContent as string }
           : undefined;
-        return <Neovim initialFile={initialFile} />;
+        const openRepo = appData?.repoIndex !== undefined
+          ? { repoIndex: appData.repoIndex as number, filePath: appData.filePath as string }
+          : undefined;
+        return <Neovim initialFile={initialFile} openRepo={openRepo} />;
       case 'settings':
         return <Settings />;
       default:

@@ -179,7 +179,10 @@ const FALLBACK_FILES = [
 type VimMode = 'NORMAL' | 'INSERT' | 'COMMAND' | 'SEARCH';
 
 // ─── Main Neovim Component ───────────────────────────
-export default function Neovim({ initialFile }: { initialFile?: { name: string; content: string } }) {
+export default function Neovim({ initialFile, openRepo }: {
+  initialFile?: { name: string; content: string };
+  openRepo?: { repoIndex: number; filePath: string };
+}) {
   const [selectedRepo, setSelectedRepo] = useState<number | null>(null);
   const [showProjectSelector, setShowProjectSelector] = useState(false);
   const [fileTree, setFileTree] = useState<RepoFile[]>([]);
@@ -228,7 +231,13 @@ export default function Neovim({ initialFile }: { initialFile?: { name: string; 
 
   // ─── Lifecycle ─────────────────────────────────────
   useEffect(() => {
-    if (!initialFile && mode === 'github' && selectedRepo === null) {
+    if (openRepo) {
+      // Opened from FileManager with a specific repo + file
+      setSelectedRepo(openRepo.repoIndex);
+      setMode('github');
+    } else if (initialFile) {
+      // do nothing, handled below
+    } else if (mode === 'github' && selectedRepo === null) {
       setShowProjectSelector(true);
     }
   }, []);
@@ -257,8 +266,14 @@ export default function Neovim({ initialFile }: { initialFile?: { name: string; 
           setMode('local');
         } else {
           setFileTree(tree);
-          const firstFile = tree.find(f => f.type === 'file');
-          if (firstFile) handleFileSelect(firstFile, repo.owner, repo.repo);
+          // If opened from FileManager, select the specific file
+          if (openRepo && openRepo.repoIndex === selectedRepo && openRepo.filePath) {
+            const targetFile = { path: openRepo.filePath, name: openRepo.filePath.split('/').pop() || '', type: 'file' as const };
+            handleFileSelect(targetFile, repo.owner, repo.repo);
+          } else {
+            const firstFile = tree.find(f => f.type === 'file');
+            if (firstFile) handleFileSelect(firstFile, repo.owner, repo.repo);
+          }
         }
       })
       .catch(() => { setError('Failed to fetch.'); setMode('local'); })

@@ -1,120 +1,120 @@
 'use client';
 
-import React, { useState } from 'react';
-import { fileSystem, FileNode, listDirectory, getNode } from '../../lib/filesystem';
+import React, { useState, useEffect } from 'react';
+import { REPOS, RepoFile, fetchRepoTree, fetchFileContent } from '../../lib/github';
 import { useWindowManager } from '../../contexts/WindowContext';
 
 // File type icons
-const getFileIcon = (node: FileNode): string => {
-  if (node.type === 'directory') {
-    const folderIcons: Record<string, string> = {
-      'projects': '📦',
-      'documents': '📄',
-      'downloads': '📥',
-      '.config': '⚙️',
-      'nvim': '📝',
-      'zsh': '💻',
-    };
-    return folderIcons[node.name] || '📁';
-  }
-
-  const ext = node.name.split('.').pop()?.toLowerCase();
-  const fileIcons: Record<string, string> = {
-    'tsx': '⚛️',
-    'ts': '📘',
-    'js': '📒',
-    'jsx': '⚛️',
-    'md': '📝',
-    'json': '📋',
-    'css': '🎨',
-    'html': '🌐',
-    'go': '🐹',
-    'rs': '🦀',
-    'py': '🐍',
-    'lua': '🌙',
-    'conf': '⚙️',
-    'pdf': '📕',
-    'sh': '📜',
-    'txt': '📄',
+const getIcon = (name: string, type: 'file' | 'directory', expanded?: boolean): string => {
+  if (type === 'directory') return expanded ? '📂' : '📁';
+  const ext = name.split('.').pop()?.toLowerCase() || '';
+  const icons: Record<string, string> = {
+    ts: '📘', tsx: '⚛️', js: '📒', jsx: '⚛️', py: '🐍', lua: '🌙',
+    rs: '🦀', go: '🐹', md: '📝', json: '📋', css: '🎨', html: '🌐',
+    yml: '⚙️', yaml: '⚙️', toml: '⚙️', sh: '📜', dockerfile: '🐳',
+    txt: '📄', pdf: '📕', conf: '⚙️',
   };
-  return fileIcons[ext || ''] || '📄';
+  return icons[ext] || '📄';
 };
 
-const SIDEBAR_ITEMS = [
-  { name: 'Home', path: '~', icon: '🏠' },
-  { name: 'Projects', path: '~/projects', icon: '📦' },
-  { name: 'Documents', path: '~/documents', icon: '📄' },
-  { name: 'Downloads', path: '~/downloads', icon: '📥' },
-  { name: 'Config', path: '~/.config', icon: '⚙️' },
-];
-
 export default function FileManager() {
-  const [currentPath, setCurrentPath] = useState('~');
-  const [selectedFile, setSelectedFile] = useState<string | null>(null);
   const { openWindow } = useWindowManager();
+  const [selectedRepo, setSelectedRepo] = useState<number | null>(null);
+  const [fileTree, setFileTree] = useState<RepoFile[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [currentPath, setCurrentPath] = useState<string[]>([]); // breadcrumb path into the tree
+  const [selectedFile, setSelectedFile] = useState<string | null>(null);
 
-  const contents = listDirectory(currentPath);
-  
-  const pathParts = currentPath === '~' 
-    ? ['~'] 
-    : currentPath.split('/');
-
-  const handleNavigate = (path: string) => {
-    setCurrentPath(path);
+  // Fetch tree when repo changes
+  useEffect(() => {
+    if (selectedRepo === null) return;
+    const repo = REPOS[selectedRepo];
+    setLoading(true);
+    setFileTree([]);
+    setCurrentPath([]);
     setSelectedFile(null);
+
+    fetchRepoTree(repo.owner, repo.repo)
+      .then(tree => setFileTree(tree))
+      .finally(() => setLoading(false));
+  }, [selectedRepo]);
+
+  // Navigate into tree by path segments
+  const getCurrentContents = (): RepoFile[] => {
+    if (selectedRepo === null) return [];
+    let items = fileTree;
+    for (const segment of currentPath) {
+      const dir = items.find(f => f.name === segment && f.type === 'directory');
+      if (dir?.children) {
+        items = dir.children;
+      } else {
+        return [];
+      }
+    }
+    return items;
   };
 
-  const handleItemClick = (item: FileNode) => {
+  const contents = getCurrentContents();
+
+  const handleItemClick = (item: RepoFile) => {
     if (item.type === 'directory') {
-      const newPath = currentPath === '~' 
-        ? `~/${item.name}` 
-        : `${currentPath}/${item.name}`;
-      setCurrentPath(newPath);
+      setCurrentPath(prev => [...prev, item.name]);
       setSelectedFile(null);
     } else {
-      setSelectedFile(item.name);
+      setSelectedFile(item.path);
     }
   };
 
-  const handleItemDoubleClick = (item: FileNode) => {
+  const handleItemDoubleClick = (item: RepoFile) => {
     if (item.type === 'directory') {
       handleItemClick(item);
-    } else {
-      // Open file in neovim with its content
-      const filePath = currentPath === '~' ? `~/${item.name}` : `${currentPath}/${item.name}`;
-      const node = getNode(filePath);
-      const content = node?.content || '(empty file)';
-      
-      openWindow('neovim', `Neovim — ${item.name}`, {
-        fileName: item.name,
-        fileContent: content,
-      });
+      return;
+    }
+    if (selectedRepo === null) return;
+
+    const repo = REPOS[selectedRepo];
+    // Open Neovim with this repo + file
+    openWindow('neovim', `Neovim — ${item.name}`, {
+      repoIndex: selectedRepo,
+      filePath: item.path,
+      fileName: item.name,
+    });
+  };
+
+  const handleBack = () => {
+    if (currentPath.length > 0) {
+      setCurrentPath(prev => prev.slice(0, -1));
+      setSelectedFile(null);
+    } else if (selectedRepo !== null) {
+      setSelectedRepo(null);
+      setFileTree([]);
     }
   };
 
   const handlePathClick = (index: number) => {
-    if (index === 0) {
-      setCurrentPath('~');
+    if (index === -1) {
+      // Clicked on repo name — go to repo root
+      setCurrentPath([]);
     } else {
-      const newPath = pathParts.slice(0, index + 1).join('/');
-      setCurrentPath(newPath);
+      setCurrentPath(prev => prev.slice(0, index + 1));
     }
     setSelectedFile(null);
   };
 
+  // ─── Render ────────────────────────────────────────
   return (
     <div className="file-manager">
       {/* Sidebar */}
       <div className="file-sidebar">
-        <div className="file-sidebar-title">Favorites</div>
-        {SIDEBAR_ITEMS.map((item) => (
+        <div className="file-sidebar-title">Projects</div>
+        {REPOS.map((repo, i) => (
           <div
-            key={item.path}
-            className={`file-sidebar-item ${currentPath === item.path ? 'active' : ''}`}
-            onClick={() => handleNavigate(item.path)}
+            key={repo.repo}
+            className={`file-sidebar-item ${selectedRepo === i ? 'active' : ''}`}
+            onClick={() => setSelectedRepo(i)}
           >
-            <span>{item.icon}</span>
-            <span>{item.name}</span>
+            <span>{repo.emoji}</span>
+            <span>{repo.label}</span>
           </div>
         ))}
       </div>
@@ -123,62 +123,106 @@ export default function FileManager() {
       <div className="file-main">
         {/* Toolbar */}
         <div className="file-toolbar">
-          <button 
+          <button
             className="browser-nav-btn"
-            onClick={() => {
-              if (currentPath !== '~') {
-                const parts = currentPath.split('/');
-                parts.pop();
-                setCurrentPath(parts.join('/') || '~');
-              }
-            }}
-            disabled={currentPath === '~'}
-            style={{ opacity: currentPath === '~' ? 0.5 : 1 }}
+            onClick={handleBack}
+            disabled={selectedRepo === null}
+            style={{ opacity: selectedRepo === null ? 0.5 : 1 }}
           >
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
               <path d="M19 12H5M12 19l-7-7 7-7" />
             </svg>
           </button>
-          
+
           <div className="file-path">
-            {pathParts.map((part, index) => (
-              <React.Fragment key={index}>
-                {index > 0 && <span style={{ color: 'var(--text-muted)' }}>/</span>}
-                <span 
+            {selectedRepo === null ? (
+              <span className="file-path-segment" style={{ color: 'var(--text-muted)' }}>
+                Select a project →
+              </span>
+            ) : (
+              <>
+                <span
                   className="file-path-segment"
-                  onClick={() => handlePathClick(index)}
+                  onClick={() => handlePathClick(-1)}
+                  style={{ color: 'var(--accent-primary)' }}
                 >
-                  {part === '~' ? '~' : part}
+                  {REPOS[selectedRepo].emoji} {REPOS[selectedRepo].label}
                 </span>
-              </React.Fragment>
-            ))}
+                {currentPath.map((segment, index) => (
+                  <React.Fragment key={index}>
+                    <span style={{ color: 'var(--text-muted)', margin: '0 2px' }}>/</span>
+                    <span
+                      className="file-path-segment"
+                      onClick={() => handlePathClick(index)}
+                    >
+                      {segment}
+                    </span>
+                  </React.Fragment>
+                ))}
+              </>
+            )}
           </div>
         </div>
 
         {/* File Grid */}
         <div className="file-grid">
-          {contents.length === 0 ? (
-            <div style={{ 
-              gridColumn: '1 / -1', 
-              textAlign: 'center', 
-              color: 'var(--text-muted)',
-              padding: '48px' 
+          {selectedRepo === null ? (
+            // Landing: show all projects as cards
+            <div style={{ gridColumn: '1 / -1', padding: '24px' }}>
+              <div style={{ color: 'var(--text-muted)', marginBottom: '16px', fontSize: '13px' }}>
+                Select a project from the sidebar or click below:
+              </div>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(160px, 1fr))', gap: '12px' }}>
+                {REPOS.map((repo, i) => (
+                  <div
+                    key={repo.repo}
+                    className="file-item"
+                    onClick={() => setSelectedRepo(i)}
+                    style={{ cursor: 'pointer' }}
+                  >
+                    <div className="file-icon" style={{ fontSize: '32px' }}>{repo.emoji}</div>
+                    <div className="file-name" style={{ fontWeight: 600 }}>{repo.label}</div>
+                    <div style={{ fontSize: '10px', color: 'var(--text-muted)', marginTop: '2px' }}>
+                      {repo.owner}/{repo.repo}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          ) : loading ? (
+            <div style={{
+              gridColumn: '1 / -1', textAlign: 'center',
+              color: 'var(--text-muted)', padding: '48px',
+            }}>
+              <div style={{ fontSize: '32px', marginBottom: '12px' }}>⏳</div>
+              <div>Loading {REPOS[selectedRepo].label}...</div>
+            </div>
+          ) : contents.length === 0 ? (
+            <div style={{
+              gridColumn: '1 / -1', textAlign: 'center',
+              color: 'var(--text-muted)', padding: '48px',
             }}>
               <div style={{ fontSize: '48px', marginBottom: '16px' }}>📂</div>
               <div>This folder is empty</div>
             </div>
           ) : (
-            contents.map((item) => (
-              <div
-                key={item.name}
-                className={`file-item ${selectedFile === item.name ? 'selected' : ''}`}
-                onClick={() => handleItemClick(item)}
-                onDoubleClick={() => handleItemDoubleClick(item)}
-              >
-                <div className="file-icon">{getFileIcon(item)}</div>
-                <div className="file-name">{item.name}</div>
-              </div>
-            ))
+            // Sort: directories first, then files
+            [...contents]
+              .sort((a, b) => {
+                if (a.type !== b.type) return a.type === 'directory' ? -1 : 1;
+                return a.name.localeCompare(b.name);
+              })
+              .map(item => (
+                <div
+                  key={item.path}
+                  className={`file-item ${selectedFile === item.path ? 'selected' : ''}`}
+                  onClick={() => handleItemClick(item)}
+                  onDoubleClick={() => handleItemDoubleClick(item)}
+                >
+                  <div className="file-icon">{getIcon(item.name, item.type)}</div>
+                  <div className="file-name">{item.name}</div>
+                </div>
+              ))
           )}
         </div>
       </div>
