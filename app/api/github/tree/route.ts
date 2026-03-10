@@ -4,9 +4,17 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { unstable_cache } from 'next/cache';
 
+function githubHeaders() {
+  const headers: Record<string, string> = { 'Accept': 'application/vnd.github.v3+json' };
+  if (process.env.GITHUB_TOKEN) {
+    headers['Authorization'] = `Bearer ${process.env.GITHUB_TOKEN}`;
+  }
+  return headers;
+}
+
 interface GitHubTreeItem {
   path: string;
-  type: 'blob' | 'tree';
+  type: 'blob' | 'tree' | 'commit'; // commit = submodule
   sha: string;
   size?: number;
 }
@@ -14,26 +22,34 @@ interface GitHubTreeItem {
 const fetchTreeFromGitHub = unstable_cache(
   async (owner: string, repo: string) => {
     // Try main branch first, then master
+    let branch = 'main';
     let response = await fetch(
       `https://api.github.com/repos/${owner}/${repo}/git/trees/main?recursive=1`,
-      { headers: { 'Accept': 'application/vnd.github.v3+json' } }
+      { headers: githubHeaders() }
     );
     if (!response.ok) {
+      branch = 'master';
       response = await fetch(
         `https://api.github.com/repos/${owner}/${repo}/git/trees/master?recursive=1`,
-        { headers: { 'Accept': 'application/vnd.github.v3+json' } }
+        { headers: githubHeaders() }
       );
     }
     if (!response.ok) {
+      if (response.status === 403) {
+        throw new Error('GitHub API rate limit exceeded — try again in a few minutes');
+      }
       throw new Error(`GitHub API error: ${response.status}`);
     }
 
     const data = await response.json();
     const items: GitHubTreeItem[] = data.tree || [];
 
-    // Filter out noise
+    // Filter out noise AND submodules (type === 'commit')
     const filtered = items
       .filter(item => {
+        // Skip submodules entirely
+        if (item.type === 'commit') return false;
+        
         const parts = item.path.split('/');
         return !parts.some(p => p.startsWith('.') && p !== '.env.example') &&
           !parts.includes('node_modules') &&
@@ -47,12 +63,11 @@ const fetchTreeFromGitHub = unstable_cache(
         type: item.type,
       }));
 
-    return filtered;
+    return { tree: filtered, branch };
   },
-  // Cache key parts — will be combined automatically
   undefined,
   {
-    revalidate: 86400, // 1 day in seconds
+    revalidate: 86400, // 1 day
     tags: ['github-tree'],
   }
 );
@@ -67,8 +82,8 @@ export async function GET(request: NextRequest) {
   }
 
   try {
-    const tree = await fetchTreeFromGitHub(owner, repo);
-    return NextResponse.json({ tree });
+    const { tree, branch } = await fetchTreeFromGitHub(owner, repo);
+    return NextResponse.json({ tree, branch });
   } catch (err) {
     console.error('GitHub tree fetch error:', err);
     return NextResponse.json({ tree: [], error: 'Failed to fetch' }, { status: 500 });

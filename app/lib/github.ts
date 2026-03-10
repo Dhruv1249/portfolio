@@ -12,21 +12,27 @@ export interface RepoInfo {
   owner: string;
   repo: string;
   label: string;
-  emoji: string;
+  icon: string;
 }
 
 export const REPOS: RepoInfo[] = [
-  { owner: 'Dhruv1249', repo: 'Plant-Phenology-State-Detector', label: 'CALYX', emoji: '🌍' },
-  { owner: 'Dhruv1249', repo: 'ai-marketplace-assistant', label: 'UrbanSwap', emoji: '🤖' },
-  { owner: 'Dhruv1249', repo: 'Pr-Tracker', label: 'PR Tracker', emoji: '🔀' },
-  { owner: 'Dhruv1249', repo: 'expense-react-client', label: 'Expense Tracker', emoji: '💰' },
-  { owner: 'Dhruv1249', repo: 'LLM-Document-Processing-System', label: 'LLM Parser', emoji: '📄' },
-  { owner: 'Dhruv1249', repo: 'my-customized-nvim-config', label: 'Neovim Config', emoji: '⚡' },
+  { owner: 'Dhruv1249', repo: 'Plant-Phenology-State-Detector', label: 'CALYX', icon: 'globe' },
+  { owner: 'Dhruv1249', repo: 'ai-marketplace-assistant', label: 'UrbanSwap', icon: 'bot' },
+  { owner: 'Dhruv1249', repo: 'Pr-Tracker', label: 'PR Tracker', icon: 'git-branch' },
+  { owner: 'Dhruv1249', repo: 'expense-react-client', label: 'Expense Tracker', icon: 'wallet' },
+  { owner: 'Dhruv1249', repo: 'LLM-Document-Processing-System', label: 'LLM Parser', icon: 'file-text' },
+  { owner: 'Dhruv1249', repo: 'my-customized-nvim-config', label: 'Neovim Config', icon: 'zap' },
 ];
 
 // Client-side in-memory cache (avoids repeat fetches within the same session)
 const treeCache = new Map<string, RepoFile[]>();
-const contentCache = new Map<string, string>();
+export interface FileContentResult {
+  content: string;
+  imageUrl?: string;
+}
+
+const contentCache = new Map<string, FileContentResult>();
+const branchCache = new Map<string, string>();
 
 interface TreeItem {
   path: string;
@@ -78,7 +84,6 @@ export async function fetchRepoTree(owner: string, repo: string): Promise<RepoFi
   }
 
   try {
-    // Fetch from our cached API route (server uses unstable_cache with 1-day TTL)
     const response = await fetch(`/api/github/tree?owner=${encodeURIComponent(owner)}&repo=${encodeURIComponent(repo)}`);
     if (!response.ok) {
       throw new Error(`API error: ${response.status}`);
@@ -87,6 +92,10 @@ export async function fetchRepoTree(owner: string, repo: string): Promise<RepoFi
     const data = await response.json();
     const tree = buildFileTree(data.tree || []);
     treeCache.set(cacheKey, tree);
+    // Store the branch so content fetches can use raw.githubusercontent.com
+    if (data.branch) {
+      branchCache.set(cacheKey, data.branch);
+    }
     return tree;
   } catch (err) {
     console.error('Failed to fetch repo tree:', err);
@@ -94,28 +103,31 @@ export async function fetchRepoTree(owner: string, repo: string): Promise<RepoFi
   }
 }
 
-export async function fetchFileContent(owner: string, repo: string, path: string): Promise<string> {
+export async function fetchFileContent(owner: string, repo: string, path: string): Promise<FileContentResult> {
   const cacheKey = `${owner}/${repo}/${path}`;
   if (contentCache.has(cacheKey)) {
     return contentCache.get(cacheKey)!;
   }
 
   try {
-    // Fetch from our cached API route
+    const branch = branchCache.get(`${owner}/${repo}`) || 'main';
     const response = await fetch(
-      `/api/github/content?owner=${encodeURIComponent(owner)}&repo=${encodeURIComponent(repo)}&path=${encodeURIComponent(path)}`
+      `/api/github/content?owner=${encodeURIComponent(owner)}&repo=${encodeURIComponent(repo)}&path=${encodeURIComponent(path)}&branch=${encodeURIComponent(branch)}`
     );
     if (!response.ok) {
       throw new Error(`API error: ${response.status}`);
     }
 
     const data = await response.json();
-    const content = data.content || '(empty)';
-    contentCache.set(cacheKey, content);
-    return content;
+    const result: FileContentResult = {
+      content: data.content || '(empty)',
+      imageUrl: data.imageUrl,
+    };
+    contentCache.set(cacheKey, result);
+    return result;
   } catch (err) {
     console.error('Failed to fetch file content:', err);
-    return `(Error loading file: ${err instanceof Error ? err.message : 'Unknown error'})`;
+    return { content: `(Error loading file: ${err instanceof Error ? err.message : 'Unknown error'})` };
   }
 }
 

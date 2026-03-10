@@ -1,18 +1,19 @@
 'use client';
 
 import React, { useState } from 'react';
+import { User, Paintbrush, Keyboard, Monitor, Trophy, Lightbulb } from 'lucide-react';
 
 interface SettingsSection {
   id: string;
   name: string;
-  icon: string;
+  icon: React.ReactNode;
 }
 
 const SECTIONS: SettingsSection[] = [
-  { id: 'about', name: 'About', icon: '👤' },
-  { id: 'appearance', name: 'Appearance', icon: '🎨' },
-  { id: 'keyboard', name: 'Keyboard', icon: '⌨️' },
-  { id: 'system', name: 'System', icon: '💻' },
+  { id: 'about', name: 'About', icon: <User size={16} /> },
+  { id: 'appearance', name: 'Appearance', icon: <Paintbrush size={16} /> },
+  { id: 'keyboard', name: 'Keyboard', icon: <Keyboard size={16} /> },
+  { id: 'system', name: 'System', icon: <Monitor size={16} /> },
 ];
 
 export default function Settings() {
@@ -48,7 +49,7 @@ export default function Settings() {
                 justifyContent: 'center',
                 fontSize: '40px',
               }}>
-                🖥️
+                <Monitor size={32} style={{ color: 'var(--accent-primary)' }} />
               </div>
               <div>
                 <h3 style={{ color: 'var(--text-bright)', marginBottom: '4px' }}>Portfolio OS</h3>
@@ -76,7 +77,7 @@ export default function Settings() {
             <div className="settings-option">
               <div className="settings-option-info">
                 <h3>Achievement</h3>
-                <p>🏆 NASA Space Apps 2025 — Global Honorable Mention</p>
+                <p><Trophy size={14} style={{ display: 'inline', verticalAlign: 'middle', marginRight: '4px' }} /> NASA Space Apps 2025 — Global Honorable Mention</p>
               </div>
             </div>
 
@@ -213,7 +214,7 @@ export default function Settings() {
             </div>
 
             <p style={{ color: 'var(--text-muted)', marginTop: '16px', fontSize: '13px' }}>
-              💡 All shortcuts use Alt — no conflicts with browser shortcuts!
+              <Lightbulb size={14} style={{ display: 'inline', verticalAlign: 'middle', marginRight: '4px' }} /> All shortcuts use Alt — no conflicts with browser shortcuts!
             </p>
           </div>
         );

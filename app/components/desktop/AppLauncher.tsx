@@ -2,19 +2,14 @@
 
 import React, { useState } from 'react';
 import { useWindowManager, AppType } from '../../contexts/WindowContext';
+import { Terminal, Globe, FolderOpen, Code, Settings } from 'lucide-react';
 
-interface AppItem {
-  id: AppType;
-  name: string;
-  icon: string;
-}
-
-const APPS: AppItem[] = [
-  { id: 'terminal', name: 'Terminal', icon: '💻' },
-  { id: 'browser', name: 'Browser', icon: '🌐' },
-  { id: 'filemanager', name: 'Files', icon: '📁' },
-  { id: 'neovim', name: 'Neovim', icon: '📝' },
-  { id: 'settings', name: 'Settings', icon: '⚙️' },
+const APPS: { id: AppType; name: string; icon: React.ReactNode }[] = [
+  { id: 'terminal', name: 'Terminal', icon: <Terminal size={28} /> },
+  { id: 'browser', name: 'Browser', icon: <Globe size={28} /> },
+  { id: 'filemanager', name: 'Files', icon: <FolderOpen size={28} /> },
+  { id: 'neovim', name: 'Neovim', icon: <Code size={28} /> },
+  { id: 'settings', name: 'Settings', icon: <Settings size={28} /> },
 ];
 
 export default function AppLauncher() {

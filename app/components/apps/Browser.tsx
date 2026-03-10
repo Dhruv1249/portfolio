@@ -1,11 +1,12 @@
 // app/components/apps/Browser.tsx
 'use client';
 import React, { useState, useCallback } from 'react';
+import { Globe, Bot, GitBranch, Wallet, FileText, Zap, Trophy, Medal, Monitor, Cloud, Brain, Search, ArrowLeft, ArrowRight, RotateCw, Lock } from 'lucide-react';
 
 interface ProjectDetail {
   slug: string;
   name: string;
-  emoji: string;
+  icon: React.ReactNode;
   tagline: string;
   gradient: string;
   description: string[];
@@ -20,7 +21,7 @@ const PROJECTS: ProjectDetail[] = [
   {
     slug: 'calyx',
     name: 'CALYX',
-    emoji: '🌍',
+    icon: <Globe size={40} />,
     tagline: 'Global Phenology Forecasting Platform',
     gradient: 'linear-gradient(135deg, #0f172a 0%, #1e293b 100%)',
     description: [
@@ -33,12 +34,12 @@ const PROJECTS: ProjectDetail[] = [
     features: ['Data Pipeline (MERRA-2 / ERA5)', 'Temporal Regression Models', 'Google Maps Overlay', 'Dockerized Deployment'],
     github: 'https://github.com/Dhruv1249/Plant-Phenology-State-Detector',
     live: 'https://plant-phenology-state-detector.vercel.app/',
-    highlight: '🏆 NASA Space Apps 2025 — Global Honorable Mention (Top 23 worldwide)',
+    highlight: 'NASA Space Apps 2025 — Global Honorable Mention (Top 23 worldwide)',
   },
   {
     slug: 'urbanswap',
     name: 'UrbanSwap',
-    emoji: '🤖',
+    icon: <Bot size={40} />,
     tagline: 'AI Marketplace Listing Generator',
     gradient: 'linear-gradient(135deg, #2e1065 0%, #4c1d95 100%)',
     description: [
@@ -54,7 +55,7 @@ const PROJECTS: ProjectDetail[] = [
   {
     slug: 'pr-tracker',
     name: 'PR Tracker',
-    emoji: '🔀',
+    icon: <GitBranch size={40} />,
     tagline: 'Developer Collaboration Monitoring Tool',
     gradient: 'linear-gradient(135deg, #064e3b 0%, #065f46 100%)',
     description: [
@@ -70,7 +71,7 @@ const PROJECTS: ProjectDetail[] = [
   {
     slug: 'expense-tracker',
     name: 'Expense Tracker',
-    emoji: '💰',
+    icon: <Wallet size={40} />,
     tagline: 'Full-Stack Financial Management',
     gradient: 'linear-gradient(135deg, #78350f 0%, #92400e 100%)',
     description: [
@@ -86,7 +87,7 @@ const PROJECTS: ProjectDetail[] = [
   {
     slug: 'llm-parser',
     name: 'LLM Document Parser',
-    emoji: '📄',
+    icon: <FileText size={40} />,
     tagline: 'Enterprise Unstructured Data Pipeline',
     gradient: 'linear-gradient(135deg, #171717 0%, #262626 100%)',
     description: [
@@ -102,7 +103,7 @@ const PROJECTS: ProjectDetail[] = [
   {
     slug: 'neovim-config',
     name: 'Neovim Config',
-    emoji: '⚡',
+    icon: <Zap size={40} />,
     tagline: 'Personal Development Environment',
     gradient: 'linear-gradient(135deg, #1a1b26 0%, #24283b 100%)',
     description: [
@@ -159,7 +160,7 @@ function HomePage({ navigate }: { navigate: (url: string) => void }) {
         borderRadius: '16px', border: '1px solid rgba(122, 162, 247, 0.2)', marginBottom: '48px',
         display: 'flex', alignItems: 'center', gap: '20px'
       }}>
-        <div style={{ fontSize: '42px' }}>🏆</div>
+        <Trophy size={42} style={{ color: 'var(--accent-warning)' }} />
         <div>
           <div style={{ color: 'var(--accent-warning)', fontWeight: 700, fontSize: '18px', marginBottom: '4px' }}>
             NASA Space Apps Challenge 2025
@@ -185,7 +186,7 @@ function HomePage({ navigate }: { navigate: (url: string) => void }) {
               onClick={() => navigate(`dhruv.dev/projects/${project.slug}`)}
             >
               <div className="project-image" style={{ background: project.gradient }}>
-                <span style={{ fontSize: '48px' }}>{project.emoji}</span>
+                <span style={{ fontSize: '48px' }}>{project.icon}</span>
               </div>
               <div className="project-info">
                 <div className="project-name">{project.name}</div>
@@ -207,13 +208,13 @@ function HomePage({ navigate }: { navigate: (url: string) => void }) {
         <h2 className="portfolio-section-title">Engineering Focus</h2>
         <div style={{ display: 'grid', gap: '16px', marginTop: '16px' }}>
           {[
-            { title: 'Full-Stack Development', icon: '🖥️', desc: 'Modern web applications with scalable architecture, responsive interfaces, and maintainable backend systems using React, Next.js, Node.js, and REST APIs.' },
-            { title: 'DevOps & Cloud', icon: '☁️', desc: 'Docker containerization, Google Cloud deployment, Firebase services, and Git-based CI/CD workflows for production-ready applications.' },
-            { title: 'Data Science & ML', icon: '🧠', desc: 'Data pipelines, regression models, time-series prediction, and deploying ML models within production software systems.' },
+            { title: 'Full-Stack Development', icon: <Monitor size={24} style={{ color: 'var(--accent-primary)' }} />, desc: 'Modern web applications with scalable architecture, responsive interfaces, and maintainable backend systems using React, Next.js, Node.js, and REST APIs.' },
+            { title: 'DevOps & Cloud', icon: <Cloud size={24} style={{ color: 'var(--accent-tertiary)' }} />, desc: 'Docker containerization, Google Cloud deployment, Firebase services, and Git-based CI/CD workflows for production-ready applications.' },
+            { title: 'Data Science & ML', icon: <Brain size={24} style={{ color: 'var(--accent-warning)' }} />, desc: 'Data pipelines, regression models, time-series prediction, and deploying ML models within production software systems.' },
           ].map(area => (
             <div key={area.title} style={{ padding: '20px', background: 'var(--bg-tertiary)', borderRadius: '12px', border: '1px solid var(--border-color)' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '8px' }}>
-                <span style={{ fontSize: '24px' }}>{area.icon}</span>
+                <span style={{ display: 'flex' }}>{area.icon}</span>
                 <h3 style={{ color: 'var(--text-bright)', fontWeight: 700, margin: 0 }}>{area.title}</h3>
               </div>
               <p style={{ color: 'var(--text-secondary)', margin: 0, fontSize: '14px', lineHeight: 1.6 }}>{area.desc}</p>
@@ -252,14 +253,14 @@ function HomePage({ navigate }: { navigate: (url: string) => void }) {
         <h2 className="portfolio-section-title">Achievements</h2>
         <div style={{ display: 'grid', gap: '12px', marginTop: '16px' }}>
           <div style={{ padding: '20px', background: 'var(--bg-tertiary)', borderRadius: '12px', border: '1px solid rgba(255, 158, 100, 0.3)', display: 'flex', alignItems: 'center', gap: '16px' }}>
-            <span style={{ fontSize: '32px' }}>🏆</span>
+            <Trophy size={28} style={{ color: 'var(--accent-warning)' }} />
             <div>
               <div style={{ color: 'var(--accent-warning)', fontWeight: 700 }}>NASA Space Apps Challenge — Global Honorable Mention</div>
               <p style={{ color: 'var(--text-secondary)', margin: '4px 0 0', fontSize: '13px' }}>Top 23 worldwide from 11,500+ submissions for CALYX climate forecasting platform.</p>
             </div>
           </div>
           <div style={{ padding: '20px', background: 'var(--bg-tertiary)', borderRadius: '12px', border: '1px solid rgba(122, 162, 247, 0.3)', display: 'flex', alignItems: 'center', gap: '16px' }}>
-            <span style={{ fontSize: '32px' }}>🥇</span>
+            <Medal size={28} style={{ color: 'var(--accent-primary)' }} />
             <div>
               <div style={{ color: 'var(--accent-primary)', fontWeight: 700 }}>Innov-a-thon — National Top 100</div>
               <p style={{ color: 'var(--text-secondary)', margin: '4px 0 0', fontSize: '13px' }}>NIT Rourkela national competition — strong problem-solving and rapid prototyping.</p>
@@ -307,7 +308,7 @@ function ProjectsPage({ navigate }: { navigate: (url: string) => void }) {
             onClick={() => navigate(`dhruv.dev/projects/${project.slug}`)}
           >
             <div className="project-image" style={{ background: project.gradient }}>
-              <span style={{ fontSize: '48px' }}>{project.emoji}</span>
+              <span style={{ fontSize: '48px' }}>{project.icon}</span>
             </div>
             <div className="project-info">
               <div className="project-name">{project.name}</div>
@@ -342,7 +343,7 @@ function ProjectDetailPage({ project, navigate }: { project: ProjectDetail; navi
         padding: '48px 32px', background: project.gradient, borderRadius: '16px',
         marginBottom: '32px', textAlign: 'center',
       }}>
-        <div style={{ fontSize: '64px', marginBottom: '16px' }}>{project.emoji}</div>
+        <div style={{ fontSize: '64px', marginBottom: '16px', display: 'flex', justifyContent: 'center' }}>{project.icon}</div>
         <h1 style={{ color: '#fff', fontSize: '32px', fontWeight: 800, margin: 0 }}>{project.name}</h1>
         <p style={{ color: 'rgba(255,255,255,0.7)', fontSize: '16px', margin: '8px 0 0' }}>{project.tagline}</p>
         {project.highlight && (
@@ -406,7 +407,7 @@ function ProjectDetailPage({ project, navigate }: { project: ProjectDetail; navi
 function NotFoundPage({ navigate }: { navigate: (url: string) => void }) {
   return (
     <div className="portfolio" style={{ textAlign: 'center', paddingTop: '80px' }}>
-      <div style={{ fontSize: '80px', marginBottom: '16px' }}>🔍</div>
+      <Search size={64} style={{ marginBottom: '16px', color: 'var(--text-muted)' }} />
       <h1 style={{ color: 'var(--text-bright)', fontSize: '48px', margin: 0 }}>404</h1>
       <p style={{ color: 'var(--text-muted)', marginTop: '8px' }}>Page not found</p>
       <button onClick={() => navigate('dhruv.dev')} className="portfolio-btn primary" style={{ marginTop: '24px' }}>
@@ -488,17 +489,17 @@ export default function Browser() {
             onClick={goBack}
             disabled={historyIndex <= 0}
             style={{ opacity: historyIndex <= 0 ? 0.4 : 1 }}
-          >←</button>
+          ><ArrowLeft size={14} /></button>
           <button
             className="browser-nav-btn"
             onClick={goForward}
             disabled={historyIndex >= history.length - 1}
             style={{ opacity: historyIndex >= history.length - 1 ? 0.4 : 1 }}
-          >→</button>
-          <button className="browser-nav-btn" onClick={() => navigate(url)}>↻</button>
+          ><ArrowRight size={14} /></button>
+          <button className="browser-nav-btn" onClick={() => navigate(url)}><RotateCw size={14} /></button>
         </div>
         <div className="browser-url-bar">
-          <span className="browser-url-lock">🔒</span>
+          <span className="browser-url-lock"><Lock size={12} /></span>
           <input
             type="text"
             className="browser-url-input"

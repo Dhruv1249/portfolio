@@ -2,6 +2,8 @@
 
 import React, { useState, useEffect, useCallback, useMemo, useRef } from 'react';
 import { REPOS, RepoFile, fetchRepoTree, fetchFileContent, detectLanguage } from '../../lib/github';
+import { RepoIcon, FileIcon } from '../../lib/icons';
+import { Loader2, Github, ChevronDown, CornerDownLeft } from 'lucide-react';
 import Prism from 'prismjs';
 
 import 'prismjs/components/prism-typescript';
@@ -99,7 +101,7 @@ function ProjectSelector({ onSelect, onClose }: {
               onClick={() => onSelect(i)}
               onMouseEnter={() => setSelectedIndex(i)}
             >
-              <span style={{ fontSize: '24px', marginRight: '12px' }}>{repo.emoji}</span>
+              <span style={{ marginRight: '12px', display: 'flex' }}><RepoIcon icon={repo.icon} size={22} /></span>
               <div style={{ flex: 1 }}>
                 <div style={{ color: 'var(--text-bright)', fontWeight: 600, fontSize: '14px' }}>
                   {repo.label}
@@ -109,7 +111,7 @@ function ProjectSelector({ onSelect, onClose }: {
                 </div>
               </div>
               {selectedIndex === i && (
-                <span style={{ color: 'var(--accent-primary)', fontSize: '12px' }}>↵</span>
+                <CornerDownLeft size={14} style={{ color: 'var(--accent-primary)' }} />
               )}
             </div>
           ))}
@@ -130,16 +132,6 @@ function FileTreeItem({ file, depth, selected, onSelect }: {
   onSelect: (file: RepoFile) => void;
 }) {
   const [expanded, setExpanded] = useState(false);
-  const getIcon = () => {
-    if (file.type === 'directory') return expanded ? '📂' : '📁';
-    const ext = file.name.split('.').pop()?.toLowerCase() || '';
-    const icons: Record<string, string> = {
-      ts: '📘', tsx: '⚛️', js: '📒', jsx: '⚛️', py: '🐍', lua: '🌙',
-      rs: '🦀', go: '🐹', md: '📝', json: '📋', css: '🎨', html: '🌐',
-      yml: '⚙️', yaml: '⚙️', toml: '⚙️', sh: '📜', dockerfile: '🐳',
-    };
-    return icons[ext] || '📄';
-  };
 
   return (
     <>
@@ -151,7 +143,7 @@ function FileTreeItem({ file, depth, selected, onSelect }: {
           else onSelect(file);
         }}
       >
-        <span style={{ marginRight: '6px', fontSize: '13px' }}>{getIcon()}</span>
+        <span style={{ marginRight: '6px', display: 'flex', alignItems: 'center' }}><FileIcon name={file.name} type={file.type} expanded={expanded} size={14} /></span>
         <span style={{
           color: file.type === 'directory' ? 'var(--accent-primary)' : 'var(--text-primary)',
           fontWeight: file.type === 'directory' ? 600 : 400, fontSize: '13px',
@@ -190,6 +182,7 @@ export default function Neovim({ initialFile, openRepo }: {
   const [error, setError] = useState<string | null>(null);
   const [selectedPath, setSelectedPath] = useState<string | null>(null);
   const [sourceContent, setSourceContent] = useState<string>(''); // Original from API
+  const [sourceImageUrl, setSourceImageUrl] = useState<string | null>(null);
   const [editBuffer, setEditBuffer] = useState<string[]>([]); // Temporary editable copy
   const [contentLoading, setContentLoading] = useState(false);
   const [cursorLine, setCursorLine] = useState(1);
@@ -258,6 +251,7 @@ export default function Neovim({ initialFile, openRepo }: {
     setFileTree([]);
     setSelectedPath(null);
     setSourceContent('');
+    setSourceImageUrl(null);
 
     fetchRepoTree(repo.owner, repo.repo)
       .then(tree => {
@@ -311,7 +305,10 @@ export default function Neovim({ initialFile, openRepo }: {
     setVimMode('NORMAL');
 
     fetchFileContent(o, r, file.path)
-      .then(content => setSourceContent(content))
+      .then(res => {
+        setSourceContent(res.content);
+        setSourceImageUrl(res.imageUrl || null);
+      })
       .finally(() => setContentLoading(false));
   }, [selectedRepo]);
 
@@ -636,9 +633,9 @@ export default function Neovim({ initialFile, openRepo }: {
               onClick={() => setShowProjectSelector(true)}
               style={{ cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '6px' }}
             >
-              <span>{REPOS[selectedRepo].emoji}</span>
+              <RepoIcon icon={REPOS[selectedRepo].icon} size={14} />
               <span>{REPOS[selectedRepo].label}</span>
-              <span style={{ color: 'var(--text-muted)', fontSize: '10px' }}>▼</span>
+              <ChevronDown size={10} style={{ color: 'var(--text-muted)' }} />
             </div>
             <div className="neovim-tab active" style={{ marginLeft: 'auto' }}>
               <span>{displayName}</span>
@@ -666,7 +663,7 @@ export default function Neovim({ initialFile, openRepo }: {
                 cursor: 'pointer', fontFamily: 'var(--font-mono)',
               }}
             >
-              🐙 Browse GitHub
+              <Github size={12} style={{ marginRight: '4px' }} /> Browse GitHub
             </button>
           </>
         )}
@@ -691,10 +688,14 @@ export default function Neovim({ initialFile, openRepo }: {
           <div className="neovim-content" ref={editorRef}>
             {contentLoading ? (
               <div style={{ padding: '32px', color: 'var(--text-muted)', textAlign: 'center' }}>
-                <div style={{ fontSize: '24px', marginBottom: '8px' }}>⏳</div>Loading file...
+                <Loader2 size={24} className="spin" style={{ marginBottom: '8px' }} />Loading file...
               </div>
             ) : error && !isGithub ? (
               <div style={{ padding: '16px', color: 'var(--accent-warning)', fontSize: '13px' }}>⚠ {error}</div>
+            ) : sourceImageUrl ? (
+              <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '32px', backgroundColor: '#00000040' }}>
+                <img src={sourceImageUrl} alt={displayName} style={{ maxWidth: '100%', maxHeight: '100%', objectFit: 'contain', borderRadius: '8px' }} />
+              </div>
             ) : (
               <>
                 <div className="neovim-gutter">
