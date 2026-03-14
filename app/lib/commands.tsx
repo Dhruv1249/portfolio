@@ -6,9 +6,15 @@ import { listDirectory, getNode, FileNode } from './filesystem';
 export interface CommandResult {
   output: React.ReactNode;
   newPath?: string;
+  openApp?: {
+    appType: string;
+    title: string;
+    appData?: Record<string, unknown>;
+  };
+  rawText?: string;
 }
 
-type CommandHandler = (args: string[], currentPath: string, commandHistory?: string[]) => CommandResult;
+type CommandHandler = (args: string[], currentPath: string, commandHistory?: string[], stdin?: string) => Promise<CommandResult> | CommandResult;
 
 const ARCH_ASCII = `                   -\`
                   .o+\`
@@ -191,6 +197,11 @@ const MAN_PAGES: Record<string, { synopsis: string; description: string }> = {
   echo: { synopsis: 'echo <text>', description: 'Display a line of text.' },
   man: { synopsis: 'man <command>', description: 'Display the manual page for a command.' },
   sudo: { synopsis: 'sudo <command>', description: 'Execute a command as superuser. (Just kidding.)' },
+  rm: { synopsis: 'rm [options] <file>', description: 'Remove files or directories.' },
+  resume: { synopsis: 'resume', description: 'Open the interactive PDF viewer to see Dhruv\'s resume.' },
+  head: { synopsis: 'head [-n lines] <file>', description: 'Output the first part of files.' },
+  tail: { synopsis: 'tail [-n lines] <file>', description: 'Output the last part of files.' },
+  ll: { synopsis: 'll [path]', description: 'List directory contents in long format.' },
 };
 
 export const commands: Record<string, CommandHandler> = {
@@ -203,6 +214,8 @@ export const commands: Record<string, CommandHandler> = {
         <div><span style={{ color: 'var(--accent-cyan)' }}>ls</span> — List directory</div>
         <div><span style={{ color: 'var(--accent-cyan)' }}>cd</span> — Change directory</div>
         <div><span style={{ color: 'var(--accent-cyan)' }}>cat</span> — Read file</div>
+        <div><span style={{ color: 'var(--accent-cyan)' }}>head</span> — Output first lines</div>
+        <div><span style={{ color: 'var(--accent-cyan)' }}>tail</span> — Output last lines</div>
         <div><span style={{ color: 'var(--accent-cyan)' }}>tree</span> — Directory tree view</div>
         <div><span style={{ color: 'var(--accent-cyan)' }}>grep</span> — Search file contents</div>
         <div><span style={{ color: 'var(--accent-cyan)' }}>pwd</span> — Print working directory</div>
@@ -210,6 +223,7 @@ export const commands: Record<string, CommandHandler> = {
         <div><span style={{ color: 'var(--accent-cyan)' }}>clear</span> — Clear terminal</div>
         <div><span style={{ color: 'var(--accent-cyan)' }}>history</span> — Command history</div>
         <div><span style={{ color: 'var(--accent-cyan)' }}>man</span> — Manual pages</div>
+        <div><span style={{ color: 'var(--accent-cyan)' }}>rm</span> — Remove files</div>
 
         <div style={{ marginTop: '12px', color: 'var(--accent-secondary)', fontWeight: 600 }}>
           System Info:
@@ -230,6 +244,7 @@ export const commands: Record<string, CommandHandler> = {
         <div><span style={{ color: 'var(--accent-tertiary)' }}>skills</span> — Technical stack</div>
         <div><span style={{ color: 'var(--accent-tertiary)' }}>contact</span> — Connect with me</div>
         <div><span style={{ color: 'var(--accent-tertiary)' }}>about</span> — About me</div>
+        <div><span style={{ color: 'var(--accent-tertiary)' }}>resume</span> — Open PDF Resume</div>
 
         <div style={{ marginTop: '12px', color: 'var(--accent-warning)', fontWeight: 600 }}>
           Fun:
@@ -277,11 +292,11 @@ export const commands: Record<string, CommandHandler> = {
     ),
   }),
 
-  ls: (args, currentPath) => {
+  ls: async (args, currentPath) => {
     const targetPath = args[0] ? `${currentPath}/${args[0]}`.replace('~/', '') : currentPath;
-    const contents = listDirectory(targetPath);
+    const contents = await listDirectory(targetPath);
     if (contents.length === 0) {
-      const node = getNode(targetPath);
+      const node = await getNode(targetPath);
       if (!node) return { output: <span style={{ color: 'var(--accent-error)' }}>ls: cannot access &apos;{args[0]}&apos;: No such file or directory</span> };
       return { output: '' };
     }
@@ -298,10 +313,31 @@ export const commands: Record<string, CommandHandler> = {
           ))}
         </div>
       ),
+      rawText: contents.map(item => item.name + (item.type === 'directory' ? '/' : '')).join('\n')
     };
   },
 
-  cd: (args, currentPath) => {
+  ll: async (args, currentPath) => {
+    const targetPath = args[0] && !args[0].startsWith('-') ? `${currentPath}/${args[0]}`.replace('~/', '') : currentPath;
+    const contents = await listDirectory(targetPath);
+    if (contents.length === 0) {
+      const node = await getNode(targetPath);
+      if (!node) return { output: <span style={{ color: 'var(--accent-error)' }}>ls: cannot access '{args[0]}': No such file or directory</span>, rawText: '' };
+      return { output: '', rawText: '' };
+    }
+    const lines = contents.map(item => {
+      const perms = item.type === 'directory' ? 'drwxr-xr-x' : '-rw-r--r--';
+      const size = item.type === 'directory' ? '4096' : (item.content?.length || 0).toString();
+      const date = 'Jan 01 12:00';
+      return `${perms} 1 dhruv dhruv ${size.padStart(5)} ${date} ${item.name}${item.type === 'directory' ? '/' : ''}`;
+    });
+    return {
+      output: <pre style={{ margin: 0, fontFamily: 'var(--font-mono)' }}>{lines.join('\n')}</pre>,
+      rawText: lines.join('\n')
+    };
+  },
+
+  cd: async (args, currentPath) => {
     const target = args[0] || '~';
     if (target === '..') {
       const parts = currentPath === '~' ? ['~'] : currentPath.split('/');
@@ -311,22 +347,40 @@ export const commands: Record<string, CommandHandler> = {
       return { output: '', newPath: '~' };
     }
     const newPath = target === '~' ? '~' : (currentPath === '~' ? `~/${target}` : `${currentPath}/${target}`);
-    const node = getNode(newPath);
+    const node = await getNode(newPath);
     if (!node || node.type !== 'directory') return { output: <span style={{ color: 'var(--accent-error)' }}>cd: no such directory: {target}</span> };
     return { output: '', newPath };
   },
 
-  cat: (args, currentPath) => {
-    if (!args[0]) return { output: <span style={{ color: 'var(--accent-error)' }}>cat: missing operand</span> };
-    const filePath = currentPath === '~' ? `~/${args[0]}` : `${currentPath}/${args[0]}`;
-    const node = getNode(filePath);
-    if (!node || node.type !== 'file') return { output: <span style={{ color: 'var(--accent-error)' }}>cat: {args[0]}: No such file</span> };
-    return { output: <pre style={{ margin: 0, whiteSpace: 'pre-wrap', fontFamily: 'var(--font-mono)' }}>{node.content}</pre> };
+  cat: async (args, currentPath, _ch, stdin) => {
+    if (stdin !== undefined) {
+      return { output: <pre style={{ margin: 0, whiteSpace: 'pre-wrap', fontFamily: 'var(--font-mono)' }}>{stdin}</pre>, rawText: stdin };
+    }
+    if (!args[0]) return { output: <span style={{ color: 'var(--accent-error)' }}>cat: missing operand</span>, rawText: '' };
+    
+    let combinedText = '';
+    const outputs: React.ReactNode[] = [];
+    
+    for (const arg of args) {
+      const filePath = currentPath === '~' ? `~/${arg}` : `${currentPath}/${arg}`;
+      const node = await getNode(filePath);
+      if (!node || node.type !== 'file') {
+        outputs.push(<span key={arg} style={{ color: 'var(--accent-error)', display: 'block' }}>cat: {arg}: No such file</span>);
+      } else {
+        combinedText += (combinedText ? '\n' : '') + (node.content || '');
+        outputs.push(<pre key={arg} style={{ margin: 0, whiteSpace: 'pre-wrap', fontFamily: 'var(--font-mono)' }}>{node.content}</pre>);
+      }
+    }
+    
+    return { 
+      output: <div>{outputs}</div>,
+      rawText: combinedText 
+    };
   },
 
-  tree: (args, currentPath) => {
+  tree: async (args, currentPath) => {
     const targetPath = args[0] ? (currentPath === '~' ? `~/${args[0]}` : `${currentPath}/${args[0]}`) : currentPath;
-    const node = getNode(targetPath);
+    const node = await getNode(targetPath);
     if (!node || node.type !== 'directory') {
       return { output: <span style={{ color: 'var(--accent-error)' }}>tree: &apos;{args[0] || targetPath}&apos;: Not a directory</span> };
     }
@@ -358,11 +412,21 @@ export const commands: Record<string, CommandHandler> = {
     };
   },
 
-  grep: (args, currentPath) => {
+  grep: async (args, currentPath, _ch, stdin) => {
     if (!args[0]) return { output: <span style={{ color: 'var(--accent-error)' }}>grep: missing pattern</span> };
     const pattern = args[0];
+    
+    if (stdin !== undefined) {
+      const lines = stdin.split('\n').filter(line => new RegExp(pattern, 'i').test(line));
+      if (lines.length === 0) return { output: <span style={{ color: 'var(--text-muted)' }}>(no matches found)</span> };
+      const rawText = lines.join('\n');
+      return {
+        output: <pre style={{ margin: 0, whiteSpace: 'pre-wrap', fontFamily: 'var(--font-mono)' }}>{rawText}</pre>,
+        rawText
+      };
+    }
     const searchPath = args[1] ? (currentPath === '~' ? `~/${args[1]}` : `${currentPath}/${args[1]}`) : currentPath;
-    const node = getNode(searchPath);
+    const node = await getNode(searchPath);
     if (!node) return { output: <span style={{ color: 'var(--accent-error)' }}>grep: {args[1] || searchPath}: No such file or directory</span> };
 
     const parentPath = searchPath.split('/').slice(0, -1).join('/') || '~';
@@ -389,6 +453,7 @@ export const commands: Record<string, CommandHandler> = {
           )}
         </div>
       ),
+      rawText: results.map(r => `${r.file}:${r.line}:${r.text}`).join('\n')
     };
   },
 
@@ -697,29 +762,121 @@ export const commands: Record<string, CommandHandler> = {
     };
   },
 
+  rm: (args) => {
+    const fullCmd = args.join(' ');
+    if ((fullCmd.includes('-rf') || fullCmd.includes('-fr')) && fullCmd.includes('/')) {
+      if (typeof window !== 'undefined') {
+        setTimeout(() => window.dispatchEvent(new Event('kernel-panic')), 500);
+      }
+      return {
+        output: (
+          <div style={{ color: 'var(--accent-error)', fontFamily: 'var(--font-mono)' }}>
+            rm: it is dangerous to operate recursively on '/'<br/>
+            rm: use --no-preserve-root to override this failsafe<br/>
+            Wait... overriding failsafe...<br/>
+            Deleting /boot...<br/>
+            Deleting /sys...<br/>
+            Kernel panic - not syncing: Fatal exception
+          </div>
+        ),
+      };
+    }
+    return {
+      output: <span style={{ color: 'var(--accent-error)' }}>rm: missing operand or permission denied</span>,
+    };
+  },
+
+  resume: () => {
+    return {
+      output: <span style={{ color: 'var(--accent-primary)' }}>Launching PDF Viewer...</span>,
+      openApp: {
+        appType: 'pdfviewer',
+        title: 'resume.pdf'
+      }
+    };
+  },
+
   clear: () => ({ output: '__CLEAR__' }),
-  pwd: (_args, currentPath) => ({ output: currentPath.replace('~', '/home/dhruv') }),
-  echo: (args) => ({ output: args.join(' ') }),
+  pwd: (_args, currentPath) => ({ output: currentPath.replace('~', '/home/dhruv'), rawText: currentPath.replace('~', '/home/dhruv') }),
+  echo: (args, _cp, _ch, stdin) => {
+    const text = stdin !== undefined ? stdin : args.join(' ');
+    return { output: text, rawText: text };
+  },
+
+  head: async (args, currentPath, _ch, stdin) => {
+    let text = stdin;
+    let linesCount = 10;
+    
+    if (args[0] === '-n' && args[1]) {
+      linesCount = parseInt(args[1], 10);
+      args = args.slice(2);
+    }
+    
+    if (text === undefined) {
+      if (!args[0]) return { output: <span style={{ color: 'var(--accent-error)' }}>head: missing operand</span>, rawText: '' };
+      const filePath = currentPath === '~' ? `~/${args[0]}` : `${currentPath}/${args[0]}`;
+      const node = await getNode(filePath);
+      if (!node || node.type !== 'file') return { output: <span style={{ color: 'var(--accent-error)' }}>head: {args[0]}: No such file</span>, rawText: '' };
+      text = node.content || '';
+    }
+    
+    const outText = text.split('\n').slice(0, linesCount).join('\n');
+    return { output: <pre style={{ margin: 0, whiteSpace: 'pre-wrap', fontFamily: 'var(--font-mono)' }}>{outText}</pre>, rawText: outText };
+  },
+
+  tail: async (args, currentPath, _ch, stdin) => {
+    let text = stdin;
+    let linesCount = 10;
+    
+    // basic parsing for -n
+    if (args[0] === '-n' && args[1]) {
+      linesCount = parseInt(args[1], 10);
+      args = args.slice(2);
+    }
+    
+    if (text === undefined) {
+      if (!args[0]) return { output: <span style={{ color: 'var(--accent-error)' }}>tail: missing operand</span>, rawText: '' };
+      const filePath = currentPath === '~' ? `~/${args[0]}` : `${currentPath}/${args[0]}`;
+      const node = await getNode(filePath);
+      if (!node || node.type !== 'file') return { output: <span style={{ color: 'var(--accent-error)' }}>tail: {args[0]}: No such file</span>, rawText: '' };
+      text = node.content || '';
+    }
+    
+    const lines = text.split('\n');
+    const outText = lines.slice(Math.max(lines.length - linesCount, 0)).join('\n');
+    return { output: <pre style={{ margin: 0, whiteSpace: 'pre-wrap', fontFamily: 'var(--font-mono)' }}>{outText}</pre>, rawText: outText };
+  },
 };
 
 // Export command names for tab completion
 export const commandNames = Object.keys(commands);
 
-export function executeCommand(input: string, currentPath: string, commandHistory?: string[]): CommandResult {
-  const trimmed = input.trim();
-  if (!trimmed) return { output: '' };
-  const parts = trimmed.split(/\s+/);
-  const cmd = parts[0].toLowerCase();
-  const args = parts.slice(1);
-  const handler = commands[cmd];
-  if (!handler) {
-    return {
-      output: (
-        <span style={{ color: 'var(--accent-error)' }}>
-          Command not found: {cmd}. Type <span style={{ color: 'var(--accent-cyan)' }}>help</span> for available commands.
-        </span>
-      ),
-    };
+export async function executeCommand(input: string, currentPath: string, commandHistory?: string[]): Promise<CommandResult> {
+  const pipes = input.split('|').map(s => s.trim()).filter(Boolean);
+  if (pipes.length === 0) return { output: '' };
+
+  let currentResult: CommandResult | null = null;
+  let currentStdin: string | undefined = undefined;
+
+  for (let i = 0; i < pipes.length; i++) {
+    const parts = pipes[i].split(/\s+/);
+    const cmd = parts[0].toLowerCase();
+    const args = parts.slice(1);
+    
+    const handler = commands[cmd];
+    if (!handler) {
+      return {
+        output: <span style={{ color: 'var(--accent-error)' }}>Command not found: {cmd}. Type <span style={{ color: 'var(--accent-cyan)' }}>help</span> for available commands.</span>
+      };
+    }
+    
+    currentResult = await handler(args, currentPath, commandHistory, currentStdin);
+    currentStdin = currentResult.rawText;
+    
+    if (currentResult.newPath) {
+       currentPath = currentResult.newPath;
+    }
   }
-  return handler(args, currentPath, commandHistory);
+
+  return currentResult || { output: '' };
 }

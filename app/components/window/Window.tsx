@@ -9,6 +9,7 @@ import Browser from '../apps/Browser';
 import FileManager from '../apps/FileManager';
 import Neovim from '../apps/Neovim';
 import Settings from '../apps/Settings';
+import PDFViewer from '../apps/PDFViewer';
 
 interface WindowProps {
   id: string;
@@ -84,6 +85,8 @@ export default function Window({
         return <Neovim initialFile={initialFile} openRepo={openRepo} />;
       case 'settings':
         return <Settings />;
+      case 'pdfviewer':
+        return <PDFViewer />;
       default:
         return null;
     }
@@ -97,6 +100,7 @@ export default function Window({
         animationDelay: !hasAnimated ? `${bootDelay}s` : undefined,
       }}
       onMouseDown={handleMouseDown}
+      onMouseEnter={handleMouseDown}
     >
       <div className="window-header">
         <div className="window-controls">

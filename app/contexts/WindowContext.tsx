@@ -2,7 +2,7 @@
 
 import React, { createContext, useContext, useState, useCallback, useRef, ReactNode } from 'react';
 
-export type AppType = 'terminal' | 'browser' | 'filemanager' | 'neovim' | 'settings';
+export type AppType = 'terminal' | 'browser' | 'filemanager' | 'neovim' | 'settings' | 'pdfviewer';
 
 export interface Window {
   id: string;
@@ -50,6 +50,7 @@ const DEFAULT_TITLES: Record<AppType, string> = {
   filemanager: 'Files',
   neovim: 'Neovim',
   settings: 'Settings',
+  pdfviewer: 'PDF Viewer',
 };
 
 export function WindowProvider({ children }: { children: ReactNode }) {

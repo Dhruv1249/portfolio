@@ -20,10 +20,9 @@ const SECTIONS: SettingsSection[] = [
 
 export default function Settings() {
   const [activeSection, setActiveSection] = useState('about');
-  const [animations, setAnimations] = useState(true);
   const [transparency, setTransparency] = useState(true);
   const [photoVisible, setPhotoVisible] = useState(true);
-  const { activeProfile, setProfile } = useTheme();
+  const { activeProfile, setProfile, animations, setAnimations } = useTheme();
 
   useEffect(() => {
     fetch('/api/photo-toggle')
