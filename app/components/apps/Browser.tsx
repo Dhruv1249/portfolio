@@ -1,522 +1,642 @@
 // app/components/apps/Browser.tsx
 'use client';
-import React, { useState, useCallback } from 'react';
-import { Globe, Bot, GitBranch, Wallet, FileText, Zap, Trophy, Medal, Monitor, Cloud, Brain, Search, ArrowLeft, ArrowRight, RotateCw, Lock } from 'lucide-react';
+import React, { useState, useCallback, useEffect, useRef } from 'react';
+import { motion, AnimatePresence, useInView } from 'framer-motion';
+import {
+  Globe, Search, ArrowLeft, ArrowRight, RotateCw,
+  Lock, ExternalLink, X, Plus,
+  ChevronDown, FileText, Briefcase, GraduationCap, MapPin,
+  Trophy, Award, Code2, Cloud, Brain,
+  Mail, Github, Linkedin, ArrowUpRight
+} from 'lucide-react';
+import Image from 'next/image';
 
-interface ProjectDetail {
-  slug: string;
-  name: string;
-  icon: React.ReactNode;
-  tagline: string;
-  gradient: string;
-  description: string[];
-  tech: string[];
-  features: string[];
-  github: string;
-  live: string;
-  highlight?: string;
+/* ═══════════════ Exact Data from non-tech portfolio-data.ts ═══════════════ */
+
+const personalInfo = {
+  name: 'Dhruv',
+  roles: ['Full-Stack Developer', 'DevOps Enthusiast', 'ML Engineer'],
+  tagline: 'I build intelligent, scalable systems — from data pipelines to cloud-deployed AI applications.',
+  email: 'dhruv1249.lm@gmail.com',
+  github: 'https://github.com/Dhruv1249',
+  linkedin: 'https://linkedin.com/in/dhruv124',
+  resume: 'https://drive.google.com/file/d/15CVRIhP6VVB5kUqO5F8Q3rXjhrVvOvqI/view?usp=sharing',
+};
+
+const aboutText = 'CS undergraduate at Lovely Professional University. I design end-to-end systems that combine data, infrastructure, and intelligent applications — from raw data through ML pipelines to production-ready platforms.';
+
+const engineeringFocus = [
+  { title: 'Full-Stack Development', short: 'React • Next.js • Node.js • TypeScript • MongoDB' },
+  { title: 'DevOps & Cloud', short: 'Docker • GCP • Firebase • CI/CD • Git' },
+  { title: 'Machine Learning', short: 'Regression • Time-Series • Data Pipelines • Python' },
+];
+
+const focusIcons = [<Code2 key="c" size={22} />, <Cloud key="cl" size={22} />, <Brain key="b" size={22} />];
+
+interface FeaturedProject {
+  title: string; subtitle: string; description: string; tech: string[];
+  badge?: string; github: string; live?: string; image?: string;
 }
 
-const PROJECTS: ProjectDetail[] = [
+const featuredProjects: FeaturedProject[] = [
   {
-    slug: 'calyx',
-    name: 'CALYX',
-    icon: <Globe size={40} />,
-    tagline: 'Global Phenology Forecasting Platform',
-    gradient: 'linear-gradient(135deg, #0f172a 0%, #1e293b 100%)',
-    description: [
-      'Calyx is a climate analytics platform designed to forecast global phenological patterns using machine learning and environmental datasets.',
-      'The platform integrates multiple large-scale data sources including NASA MERRA-2 climate data, ERA5 weather datasets, iNaturalist biological observations, and Köppen climate classifications.',
-      'Three temporal regression models were trained to predict phenological events, achieving approximately seventy-five percent prediction accuracy.',
-      'The application was containerized using Docker and deployed on Google Cloud Run, enabling scalable deployment and efficient resource management.',
-    ],
-    tech: ['Python', 'XGBoost', 'Pandas', 'Google Maps API', 'Docker', 'GCP Cloud Run'],
-    features: ['Data Pipeline (MERRA-2 / ERA5)', 'Temporal Regression Models', 'Google Maps Overlay', 'Dockerized Deployment'],
+    title: 'CALYX', subtitle: 'Global Phenology Forecasting',
+    description: 'Climate analytics platform forecasting phenological patterns using ML and NASA MERRA-2, ERA5, iNaturalist datasets. ~75% prediction accuracy. Docker + GCP deployment.',
+    tech: ['Python', 'Docker', 'GCP', 'ML', 'NASA APIs'],
+    badge: 'NASA Global Honorable Mention',
     github: 'https://github.com/Dhruv1249/Plant-Phenology-State-Detector',
     live: 'https://plant-phenology-state-detector.vercel.app/',
-    highlight: 'NASA Space Apps 2025 — Global Honorable Mention (Top 23 worldwide)',
+    image: '/calyx.png',
   },
   {
-    slug: 'urbanswap',
-    name: 'UrbanSwap',
-    icon: <Bot size={40} />,
-    tagline: 'AI Marketplace Listing Generator',
-    gradient: 'linear-gradient(135deg, #2e1065 0%, #4c1d95 100%)',
-    description: [
-      'UrbanSwap is an AI-powered marketplace assistant that automates the process of generating marketplace listings from product images.',
-      'The platform integrates generative AI to analyze product images and produce structured listings including titles, descriptions, and categorized product information.',
-      'Users can convert a single product image into a ready-to-publish marketplace entry, dramatically reducing listing creation time.',
-    ],
-    tech: ['Next.js', 'Firebase Auth', 'Firestore', 'Gemini Vision API', 'Google Cloud Run'],
-    features: ['Image → Listing Generation', 'Structured Data Extraction', 'Firebase Auth Integration', 'AI Pipeline Orchestration'],
+    title: 'UrbanSwap', subtitle: 'AI Marketplace Listing Generator',
+    description: 'AI-powered platform converting product images into structured marketplace listings with titles, descriptions, and categories automatically.',
+    tech: ['Next.js', 'Firebase', 'Gen AI', 'TypeScript'],
     github: 'https://github.com/Dhruv1249/ai-marketplace-assistant',
     live: 'https://ai-marketplace-assistant-162648101104.asia-south1.run.app/',
+    image: '/urbanswap.png',
   },
   {
-    slug: 'pr-tracker',
-    name: 'PR Tracker',
-    icon: <GitBranch size={40} />,
-    tagline: 'Developer Collaboration Monitoring Tool',
-    gradient: 'linear-gradient(135deg, #064e3b 0%, #065f46 100%)',
-    description: [
-      'PR Tracker is a developer productivity platform designed to monitor pull request activity across repositories.',
-      'The system aggregates pull request data and provides a centralized dashboard for tracking review status, merge progress, and repository activity.',
-      'It integrates GitHub APIs with a web interface that presents collaboration insights and repository metrics.',
-    ],
-    tech: ['React', 'Node.js', 'GitHub API', 'REST APIs'],
-    features: ['Multi-repo PR Dashboard', 'Review Status Tracking', 'Merge Progress Visualization', 'GitHub API Integration'],
+    title: 'PR Tracker', subtitle: 'Developer Collaboration Monitor',
+    description: 'Centralized dashboard tracking pull request activity, review status, and merge progress across repositories using GitHub APIs.',
+    tech: ['React', 'Node.js', 'GitHub API', 'REST'],
     github: 'https://github.com/Dhruv1249/Pr-Tracker',
     live: 'https://pr-tracker-client.vercel.app/',
-  },
-  {
-    slug: 'expense-tracker',
-    name: 'Expense Tracker',
-    icon: <Wallet size={40} />,
-    tagline: 'Full-Stack Financial Management',
-    gradient: 'linear-gradient(135deg, #78350f 0%, #92400e 100%)',
-    description: [
-      'A MERN-based web application for personal expense tracking with categorization and interactive dashboards.',
-      'Users can create, update, and manage expense records while viewing structured summaries of their financial data.',
-      'The project demonstrates full-stack architecture with RESTful API design, authentication, and responsive interfaces.',
-    ],
-    tech: ['React', 'Node.js', 'MongoDB', 'Express', 'REST API'],
-    features: ['Expense CRUD Operations', 'Category Management', 'Interactive Dashboard', 'RESTful Backend'],
-    github: 'https://github.com/Dhruv1249/expense-react-client',
-    live: 'https://expense-react-client.vercel.app/',
-  },
-  {
-    slug: 'llm-parser',
-    name: 'LLM Document Parser',
-    icon: <FileText size={40} />,
-    tagline: 'Enterprise Unstructured Data Pipeline',
-    gradient: 'linear-gradient(135deg, #171717 0%, #262626 100%)',
-    description: [
-      'A semantic parsing pipeline that converts PDFs and images into strictly validated JSON schemas using Large Language Models.',
-      'Features intelligent chunking that splits documents into semantic sections rather than arbitrary page breaks.',
-      'Every extracted data point includes source coordinates highlighting exactly where in the original PDF the data came from.',
-    ],
-    tech: ['Python', 'LangChain', 'Pydantic', 'GPT-4', 'LayoutLMv3'],
-    features: ['Semantic Chunking', 'Citation Mapping', 'Schema Validation', 'Multi-format Support'],
-    github: 'https://github.com/Dhruv1249/LLM-Document-Processing-System',
-    live: 'https://github.com/Dhruv1249/LLM-Document-Processing-System',
-  },
-  {
-    slug: 'neovim-config',
-    name: 'Neovim Config',
-    icon: <Zap size={40} />,
-    tagline: 'Personal Development Environment',
-    gradient: 'linear-gradient(135deg, #1a1b26 0%, #24283b 100%)',
-    description: [
-      'A fully customized Neovim configuration designed to optimize developer productivity within a terminal-based editor.',
-      'Integrates language server support, syntax highlighting via Treesitter, plugin management via lazy.nvim, and custom keybindings.',
-      'Startup time optimized to under 20ms through byte-compilation and deferred loading.',
-    ],
-    tech: ['Lua', 'Lazy.nvim', 'Treesitter', 'LSP', 'Telescope'],
-    features: ['<20ms Startup', 'AST Syntax Highlighting', 'Fuzzy Finding', 'Custom LSP Handlers'],
-    github: 'https://github.com/Dhruv1249/my-customized-nvim-config',
-    live: 'https://github.com/Dhruv1249/my-customized-nvim-config',
+    image: '/pr-tracker.png',
   },
 ];
 
-const CERTS = [
-  { name: 'Cloud Computing', org: 'NPTEL', date: 'Apr. 2025' },
-  { name: 'Introduction to Large Language Models', org: 'NPTEL', date: 'Apr. 2025' },
-  { name: 'Coding for Everyone: C and C++', org: 'Coursera', date: 'Feb. 2024' },
+const additionalProjects = [
+  { title: 'Expense Tracker', short: 'MERN-stack financial management with interactive dashboards', tech: ['React', 'Node.js', 'MongoDB', 'REST'], github: 'https://github.com/Dhruv1249/expense-react-client', live: 'https://expense-react-client.vercel.app/' },
+  { title: 'Neovim Config', short: 'Custom dev environment with LSP, plugins & keybindings', tech: ['Lua', 'Neovim', 'LSP'], github: 'https://github.com/Dhruv1249/my-customized-nvim-config' },
 ];
 
-// ─── Page Components ─────────────────────────────────
-function HomePage({ navigate }: { navigate: (url: string) => void }) {
+const experience = {
+  role: 'Freelance Full-Stack Developer',
+  description: 'Building responsive client websites with Next.js, Tailwind, and Firebase. Automated enquiry systems and lead management pipelines.',
+  tech: ['Next.js', 'Tailwind CSS', 'Firebase', 'NodeMailer'],
+};
+
+const education = [
+  { institution: 'Lovely Professional University', location: 'Punjab, India', degree: 'B.Tech in Computer Science & Engineering', score: 'CGPA: 8.72', period: "Aug '23 – Present" },
+  { institution: 'G.A.V Sr. Sec. School', location: 'Kangra, Himachal Pradesh', degree: 'Intermediate', score: 'Percentage: 83%', period: "Apr '22 – Mar '23" },
+  { institution: 'M.V.M Public High School', location: 'Kangra, Himachal Pradesh', degree: 'Matriculation', score: 'Percentage: 96%', period: "Apr '20 – Mar '21" },
+];
+
+const achievements = [
+  { title: 'NASA Space Apps Challenge', award: 'Global Honorable Mention', detail: 'One of the top 23 teams worldwide out of 11,000+ submissions' },
+  { title: 'Innov-a-thon (NIT Rourkela)', award: 'National Top 100', detail: 'Competitive hackathon — rapid prototyping & system design' },
+];
+
+/* ═══════════════ Non-tech CSS Variables (inline) ═══════════════ */
+
+const V = {
+  bgPrimary: 'var(--bg-primary)',
+  bgSecondary: 'var(--bg-secondary)',
+  bgCard: 'var(--bg-tertiary, rgba(17,17,17,0.6))',
+  borderSubtle: 'var(--border-color, rgba(255,255,255,0.06))',
+  borderGlass: 'var(--border-color, rgba(255,255,255,0.08))',
+  textPrimary: 'var(--text-primary, #f5f5f5)',
+  textSecondary: 'var(--text-secondary, #a1a1aa)',
+  textMuted: 'var(--text-muted, #52525b)',
+  accent: 'var(--accent-primary)',
+  accentSecondary: 'var(--accent-secondary)',
+  accentDim: 'var(--accent-dim, rgba(45,212,191,0.12))',
+  accentGlow: 'var(--accent-glow, rgba(45,212,191,0.25))',
+};
+
+/* ═══════════════ Shared Style Objects (matching non-tech classes) ═══════════════ */
+
+const sectionPadding: React.CSSProperties = { padding: '80px 24px', maxWidth: '1152px', margin: '0 auto' };
+const sectionDivider: React.CSSProperties = { height: '1px', background: `linear-gradient(90deg, transparent, ${V.borderSubtle}, transparent)`, margin: '0 auto', maxWidth: '80%' };
+
+const glassCard: React.CSSProperties = {
+  background: V.bgCard, backdropFilter: 'blur(12px)', border: `1px solid ${V.borderGlass}`,
+  borderRadius: '16px', transition: 'all 0.4s cubic-bezier(0.25,0.4,0.25,1)',
+};
+
+const badgeGlow: React.CSSProperties = {
+  display: 'inline-block', padding: '5px 16px', borderRadius: '999px', fontSize: '11px',
+  fontFamily: 'monospace', textTransform: 'uppercase', letterSpacing: '0.1em',
+  background: V.accentDim, color: V.accent, border: `1px solid ${V.accentGlow}`,
+};
+
+const gradientText: React.CSSProperties = {
+  background: 'linear-gradient(180deg, #ffffff 0%, #ffffff 40%, var(--text-muted, #52525b) 100%)',
+  WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent',
+};
+
+const techPill: React.CSSProperties = {
+  padding: '4px 12px', borderRadius: '999px', fontSize: '11px', fontWeight: 500,
+  background: V.accentDim, color: V.accent, border: `1px solid ${V.borderGlass}`,
+};
+
+const sectionLabel: React.CSSProperties = { fontSize: '12px', fontFamily: 'monospace', textTransform: 'uppercase', letterSpacing: '0.3em', color: V.accent, marginBottom: '12px' };
+const sectionTitle: React.CSSProperties = { fontSize: 'clamp(32px, 5vw, 56px)', fontWeight: 700, letterSpacing: '-0.02em', marginBottom: '48px', lineHeight: 1.1 };
+
+/* ═══════════════ AnimateOnScroll (same as non-tech) ═══════════════ */
+
+function AnimateOnScroll({ children, delay = 0, direction = 'up', style }: {
+  children: React.ReactNode; delay?: number; direction?: 'up' | 'right'; style?: React.CSSProperties;
+}) {
+  const ref = useRef<HTMLDivElement>(null);
+  const isInView = useInView(ref, { once: true, margin: '-50px' });
+  const initial = direction === 'right' ? { opacity: 0, x: 40 } : { opacity: 0, y: 30 };
+  const animate = isInView ? { opacity: 1, x: 0, y: 0 } : initial;
+
   return (
-    <div className="portfolio">
-      {/* Status */}
-      <div className="portfolio-badge">
-        <span style={{ color: '#4ade80' }}>●</span> AVAILABLE FOR ROLES
-      </div>
+    <motion.div ref={ref} initial={initial} animate={animate}
+      transition={{ duration: 0.7, delay, ease: 'easeOut' }} style={style}>
+      {children}
+    </motion.div>
+  );
+}
 
-      {/* Hero */}
-      <h1 className="portfolio-title">
-        Engineering <span className="highlight">Intelligent</span><br />
-        Web Systems.
-      </h1>
+/* ═══════════════ HomePage (exact non-tech replica) ═══════════════ */
 
-      <p className="portfolio-subtitle">
-        Full-Stack Developer • DevOps Enthusiast • Machine Learning Engineer
-      </p>
+function HomePage({ openTab }: { openTab: (url: string, title: string) => void }) {
+  const [photoVisible, setPhotoVisible] = useState(true);
 
-      <p style={{ color: 'var(--text-secondary)', lineHeight: 1.7, marginBottom: '32px', maxWidth: '680px' }}>
-        I build intelligent, scalable systems by combining modern web technologies,
-        machine learning models, and cloud infrastructure. My work spans full-stack platforms,
-        data pipelines, and AI-driven applications deployed using containerized environments.
-      </p>
+  useEffect(() => {
+    fetch('/api/photo-toggle').then(r => r.json()).then(d => setPhotoVisible(d.visible)).catch(() => {});
+  }, []);
 
-      <div className="portfolio-buttons">
-        <button onClick={() => navigate('dhruv.dev/projects')} className="portfolio-btn primary">View Case Studies</button>
-        <a href="mailto:dhruv1249.lm@gmail.com" className="portfolio-btn secondary">Hire Me</a>
-      </div>
+  return (
+    <div>
+      {/* ── HERO ── */}
+      <section style={{ position: 'relative', minHeight: '80vh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', overflow: 'hidden', padding: '48px 24px' }}>
+        {/* Ambient glows */}
+        <div style={{ position: 'absolute', inset: 0, pointerEvents: 'none' }}>
+          <div style={{ position: 'absolute', top: '20%', left: '15%', width: '400px', height: '400px', borderRadius: '50%', filter: 'blur(160px)', opacity: 0.07, background: V.accent }} />
+          <div style={{ position: 'absolute', bottom: '20%', right: '15%', width: '300px', height: '300px', borderRadius: '50%', filter: 'blur(140px)', opacity: 0.05, background: V.accent }} />
+        </div>
 
-      {/* NASA Badge */}
-      <div style={{
-        padding: '24px', background: 'linear-gradient(135deg, rgba(122, 162, 247, 0.1), rgba(187, 154, 247, 0.05))',
-        borderRadius: '16px', border: '1px solid rgba(122, 162, 247, 0.2)', marginBottom: '48px',
-        display: 'flex', alignItems: 'center', gap: '20px'
-      }}>
-        <Trophy size={42} style={{ color: 'var(--accent-warning)' }} />
-        <div>
-          <div style={{ color: 'var(--accent-warning)', fontWeight: 700, fontSize: '18px', marginBottom: '4px' }}>
-            NASA Space Apps Challenge 2025
+        {/* Floating shapes */}
+        <motion.div style={{ position: 'absolute', right: '12%', top: '25%', width: '100px', height: '100px', border: `1px solid ${V.accent}`, borderRadius: '16px', opacity: 0.06 }}
+          animate={{ rotate: [45, 55, 45], y: [0, -15, 0] }} transition={{ duration: 10, repeat: Infinity, ease: 'easeInOut' }} />
+        <motion.div style={{ position: 'absolute', left: '10%', bottom: '30%', width: '60px', height: '60px', border: `1px solid ${V.accent}`, borderRadius: '50%', opacity: 0.05 }}
+          animate={{ scale: [1, 1.15, 1], y: [0, 10, 0] }} transition={{ duration: 8, repeat: Infinity, ease: 'easeInOut' }} />
+
+        {/* Content: text left, photo right */}
+        <div style={{ position: 'relative', zIndex: 10, maxWidth: '1100px', width: '100%', display: 'flex', alignItems: 'center', gap: '48px' }}>
+          {/* Text */}
+          <div style={{ flex: 1 }}>
+            <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 0.8, ease: [0.25, 0.4, 0.25, 1] as [number, number, number, number] }}>
+              <span style={badgeGlow}>Available for work</span>
+            </motion.div>
+
+            <motion.h1 initial={{ opacity: 0, y: 40 }} animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 1, delay: 0.2, ease: [0.25, 0.4, 0.25, 1] as [number, number, number, number] }}
+              style={{ fontSize: 'clamp(48px, 6vw, 80px)', fontWeight: 700, letterSpacing: '-0.04em', lineHeight: 0.9, marginTop: '32px' }}>
+              <span style={gradientText}>{personalInfo.name}</span>
+              <span style={{ color: V.accent }}>.</span>
+            </motion.h1>
+
+            <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.5 }}
+              style={{ color: V.textMuted, fontSize: '12px', fontFamily: 'monospace', textTransform: 'uppercase', letterSpacing: '0.2em', marginTop: '24px' }}>
+              {personalInfo.roles.join(' • ')}
+            </motion.p>
+
+            <motion.p initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.7 }}
+              style={{ color: V.textSecondary, lineHeight: 1.7, maxWidth: '500px', marginTop: '24px' }}>
+              {personalInfo.tagline}
+            </motion.p>
+
+            <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.9 }}
+              style={{ display: 'flex', gap: '12px', flexWrap: 'wrap', marginTop: '40px' }}>
+              <a href={personalInfo.resume} target="_blank" rel="noopener noreferrer" style={{
+                padding: '14px 28px', borderRadius: '12px', display: 'inline-flex', alignItems: 'center', gap: '8px',
+                background: V.accentDim, color: V.accent, fontWeight: 600, fontSize: '14px',
+                border: `1px solid ${V.accentGlow}`, textDecoration: 'none',
+              }}><FileText size={16} /> View CV</a>
+              <a href={`mailto:${personalInfo.email}`} style={{
+                padding: '14px 28px', borderRadius: '12px', fontSize: '14px', fontWeight: 600,
+                border: `1px solid ${V.borderSubtle}`, color: V.textSecondary,
+                background: 'rgba(255,255,255,0.03)', textDecoration: 'none',
+              }}>Get In Touch</a>
+            </motion.div>
           </div>
-          <div style={{ color: 'var(--text-primary)', fontWeight: 600, marginBottom: '4px' }}>
-            Global Honorable Mention (Top 23 Worldwide)
+
+          {/* Photo — right side, bigger, rounded */}
+          {photoVisible && (
+            <motion.div initial={{ opacity: 0, scale: 0.85, x: 40 }} animate={{ opacity: 1, scale: 1, x: 0 }}
+              transition={{ duration: 1, delay: 0.3, ease: [0.25, 0.4, 0.25, 1] as [number, number, number, number] }}
+              style={{ flexShrink: 0 }}>
+              <div style={{
+                width: '200px', height: '200px', borderRadius: '24px', overflow: 'hidden',
+                border: `3px solid ${V.accent}`,
+                boxShadow: `0 0 60px ${V.accentGlow}, 0 0 120px ${V.accentDim}`,
+              }}>
+                <Image src="/dhruv.png" alt="Dhruv" width={200} height={200}
+                  style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+              </div>
+            </motion.div>
+          )}
+        </div>
+
+        {/* Scroll indicator */}
+        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 1.5 }}
+          style={{ position: 'absolute', bottom: '24px', left: '50%', transform: 'translateX(-50%)' }}>
+          <motion.div animate={{ y: [0, 8, 0] }} transition={{ duration: 2, repeat: Infinity, ease: 'easeInOut' }}>
+            <ChevronDown size={20} style={{ color: V.textMuted }} />
+          </motion.div>
+        </motion.div>
+      </section>
+
+      <div style={sectionDivider} />
+
+      {/* ── ABOUT ── */}
+      <section style={sectionPadding}>
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '80px', alignItems: 'center' }}>
+          <div>
+            <AnimateOnScroll>
+              <p style={sectionLabel}>About Me</p>
+            </AnimateOnScroll>
+            <AnimateOnScroll delay={0.1}>
+              <h2 style={{ ...sectionTitle, fontSize: 'clamp(28px, 3vw, 40px)' }}>
+                <span style={gradientText}>Engineering end-to-end intelligent software systems</span>
+                <span style={{ color: V.accent }}>.</span>
+              </h2>
+            </AnimateOnScroll>
+            <AnimateOnScroll delay={0.2}>
+              <p style={{ color: V.textSecondary, lineHeight: 1.7 }}>{aboutText}</p>
+            </AnimateOnScroll>
           </div>
-          <p style={{ color: 'var(--text-secondary)', margin: 0, fontSize: '14px', lineHeight: 1.5 }}>
-            Selected from 11,500+ submissions for <strong>CALYX</strong> — a climate forecasting platform integrating large-scale environmental datasets.
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+            {engineeringFocus.map((focus, i) => (
+              <AnimateOnScroll key={focus.title} delay={0.15 + i * 0.1} direction="right">
+                <motion.div whileHover={{ x: 4 }} transition={{ type: 'spring', stiffness: 400, damping: 25 }}
+                  style={{ ...glassCard, padding: '24px', display: 'flex', alignItems: 'flex-start', gap: '20px', cursor: 'default' }}>
+                  <div style={{ padding: '12px', borderRadius: '12px', background: V.accentDim, color: V.accent, flexShrink: 0 }}>
+                    {focusIcons[i]}
+                  </div>
+                  <div>
+                    <h3 style={{ color: V.textPrimary, fontWeight: 700, marginBottom: '6px' }}>{focus.title}</h3>
+                    <p style={{ color: V.textMuted, fontSize: '12px', fontFamily: 'monospace', lineHeight: 1.5, margin: 0 }}>{focus.short}</p>
+                  </div>
+                </motion.div>
+              </AnimateOnScroll>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <div style={sectionDivider} />
+
+      {/* ── PROJECTS ── */}
+      <section style={sectionPadding}>
+        <AnimateOnScroll>
+          <p style={sectionLabel}>Projects</p>
+          <h2 style={sectionTitle}><span style={gradientText}>Featured Engineering Work</span></h2>
+          <p style={{ color: V.textMuted, marginTop: '-36px', marginBottom: '64px' }}>
+            A selection of projects I&apos;ve built — from climate forecasting to AI-powered marketplaces.
           </p>
-        </div>
-      </div>
+        </AnimateOnScroll>
 
-      {/* Projects Grid */}
-      <section className="portfolio-section" id="projects">
-        <h2 className="portfolio-section-title">Featured Projects</h2>
-        <div className="projects-grid">
-          {PROJECTS.map((project) => (
-            <div
-              key={project.slug}
-              className="project-card"
-              style={{ textDecoration: 'none', cursor: 'pointer' }}
-              onClick={() => navigate(`dhruv.dev/projects/${project.slug}`)}
-            >
-              <div className="project-image" style={{ background: project.gradient }}>
-                <span style={{ fontSize: '48px' }}>{project.icon}</span>
-              </div>
-              <div className="project-info">
-                <div className="project-name">{project.name}</div>
-                <div className="project-desc">
-                  {project.tagline}
-                  <br />
-                  <span style={{ color: 'var(--accent-tertiary)', fontSize: '12px' }}>
-                    {project.tech.slice(0, 3).join(' • ')}
-                  </span>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '96px' }}>
+          {featuredProjects.map((project, i) => {
+            const isEven = i % 2 === 0;
+            return (
+              <AnimateOnScroll key={project.title} delay={0.1}>
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '48px', alignItems: 'center' }}>
+                  {/* Image */}
+                  <motion.div
+                    whileHover={{ scale: 1.02 }}
+                    transition={{ type: 'spring', stiffness: 300, damping: 25 }}
+                    style={{ order: isEven ? 1 : 2, borderRadius: '16px', overflow: 'hidden', border: `1px solid ${V.borderGlass}`, position: 'relative', aspectRatio: '16/10' }}>
+                    {project.image ? (
+                      <Image src={project.image} alt={project.title} fill style={{ objectFit: 'cover', objectPosition: 'top' }} />
+                    ) : (
+                      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%', background: V.bgCard }}>
+                        <span style={{ fontSize: '32px', color: V.accent, opacity: 0.4, fontWeight: 700 }}>{project.title}</span>
+                      </div>
+                    )}
+                  </motion.div>
+                  {/* Text */}
+                  <div style={{ order: isEven ? 2 : 1 }}>
+                    {project.badge && <span style={{ ...badgeGlow, marginBottom: '16px' }}>{project.badge}</span>}
+                    <h3 style={{ color: V.textPrimary, fontSize: '24px', fontWeight: 700, marginBottom: '8px', marginTop: project.badge ? '16px' : 0 }}>
+                      {project.title} — {project.subtitle}
+                    </h3>
+                    <p style={{ color: V.textSecondary, fontSize: '14px', lineHeight: 1.6, marginBottom: '24px' }}>{project.description}</p>
+                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px', marginBottom: '24px' }}>
+                      {project.tech.map(t => <span key={t} style={techPill}>{t}</span>)}
+                    </div>
+                    <div style={{ display: 'flex', gap: '16px' }}>
+                      {project.live && (
+                        <button onClick={() => openTab(project.live!, `${project.title} — Live`)} style={{
+                          display: 'inline-flex', alignItems: 'center', gap: '8px', padding: '10px 20px',
+                          borderRadius: '12px', background: V.accent, color: V.bgPrimary,
+                          fontWeight: 600, fontSize: '14px', border: 'none', cursor: 'pointer',
+                        }}><ExternalLink size={15} /> Live Demo</button>
+                      )}
+                      <a href={project.github} target="_blank" rel="noopener noreferrer" style={{
+                        display: 'inline-flex', alignItems: 'center', gap: '8px', padding: '10px 20px',
+                        borderRadius: '12px', border: `1px solid ${V.borderSubtle}`, color: V.textSecondary,
+                        background: 'rgba(255,255,255,0.03)', textDecoration: 'none', fontSize: '14px', fontWeight: 600,
+                      }}><Github size={15} /> Source Code</a>
+                    </div>
+                  </div>
                 </div>
+              </AnimateOnScroll>
+            );
+          })}
+        </div>
+
+        {/* Additional Projects */}
+        <div style={{ marginTop: '96px' }}>
+          <AnimateOnScroll>
+            <p style={{ ...sectionLabel, color: V.textMuted }}>Also Built</p>
+            <h3 style={{ fontSize: '24px', fontWeight: 700, marginBottom: '40px' }}>
+              <span style={gradientText}>Other Engineering Experiments</span>
+            </h3>
+          </AnimateOnScroll>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px' }}>
+            {additionalProjects.map((proj, i) => (
+              <AnimateOnScroll key={proj.title} delay={i * 0.1}>
+                <motion.div whileHover={{ scale: 1.01 }} transition={{ type: 'spring', stiffness: 400, damping: 25 }}
+                  style={{ ...glassCard, padding: '28px', height: '100%', display: 'flex', flexDirection: 'column', justifyContent: 'space-between', cursor: 'default' }}>
+                  <div>
+                    <h4 style={{ color: V.textPrimary, fontSize: '18px', fontWeight: 700, marginBottom: '8px' }}>{proj.title}</h4>
+                    <p style={{ color: V.textMuted, fontSize: '14px', marginBottom: '16px' }}>{proj.short}</p>
+                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px', marginBottom: '20px' }}>
+                      {proj.tech.map(t => <span key={t} style={techPill}>{t}</span>)}
+                    </div>
+                  </div>
+                  <div style={{ display: 'flex', gap: '12px' }}>
+                    {proj.live && (
+                      <button onClick={() => openTab(proj.live!, `${proj.title} — Live`)} style={{
+                        display: 'inline-flex', alignItems: 'center', gap: '6px', fontSize: '12px',
+                        color: V.textMuted, background: 'none', border: 'none', cursor: 'pointer', fontFamily: 'inherit',
+                      }}><ExternalLink size={13} /> Live</button>
+                    )}
+                    <a href={proj.github} target="_blank" rel="noopener noreferrer" style={{
+                      display: 'inline-flex', alignItems: 'center', gap: '6px', fontSize: '12px',
+                      color: V.textMuted, textDecoration: 'none',
+                    }}><Github size={13} /> GitHub</a>
+                  </div>
+                </motion.div>
+              </AnimateOnScroll>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <div style={sectionDivider} />
+
+      {/* ── EXPERIENCE ── */}
+      <section style={sectionPadding}>
+        <AnimateOnScroll>
+          <p style={sectionLabel}>Experience</p>
+          <h2 style={sectionTitle}><span style={gradientText}>Professional</span></h2>
+        </AnimateOnScroll>
+        <AnimateOnScroll delay={0.1}>
+          <motion.div whileHover={{ x: 4, scale: 1.01 }} transition={{ type: 'spring', stiffness: 400, damping: 25 }}
+            style={{ ...glassCard, padding: '32px 40px', display: 'flex', alignItems: 'flex-start', gap: '20px', cursor: 'default' }}>
+            <div style={{ padding: '12px', borderRadius: '12px', background: V.accentDim, color: V.accent, flexShrink: 0 }}><Briefcase size={22} /></div>
+            <div>
+              <h3 style={{ color: V.textPrimary, fontSize: '20px', fontWeight: 700, marginBottom: '4px' }}>{experience.role}</h3>
+              <p style={{ color: V.textMuted, fontSize: '14px', lineHeight: 1.6, marginBottom: '20px' }}>{experience.description}</p>
+              <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
+                {experience.tech.map(t => <span key={t} style={techPill}>{t}</span>)}
               </div>
             </div>
+          </motion.div>
+        </AnimateOnScroll>
+      </section>
+
+      <div style={sectionDivider} />
+
+      {/* ── EDUCATION ── */}
+      <section style={sectionPadding}>
+        <AnimateOnScroll>
+          <p style={sectionLabel}>Education</p>
+          <h2 style={sectionTitle}><span style={gradientText}>Background</span></h2>
+        </AnimateOnScroll>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
+          {education.map((edu, i) => (
+            <AnimateOnScroll key={edu.institution} delay={0.1 + i * 0.1}>
+              <motion.div whileHover={{ x: 4, scale: 1.01 }} transition={{ type: 'spring', stiffness: 400, damping: 25 }}
+                style={{ ...glassCard, padding: '28px', display: 'flex', alignItems: 'flex-start', gap: '16px', cursor: 'default' }}>
+                <div style={{ padding: '12px', borderRadius: '12px', background: V.accentDim, color: V.accent, flexShrink: 0 }}><GraduationCap size={20} /></div>
+                <div style={{ flex: 1 }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '8px' }}>
+                    <h3 style={{ color: V.textPrimary, fontWeight: 700, margin: 0 }}>{edu.institution}</h3>
+                    <span style={{ color: V.textMuted, fontSize: '12px', fontFamily: 'monospace' }}>{edu.period}</span>
+                  </div>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '4px', margin: '4px 0' }}>
+                    <MapPin size={12} style={{ color: V.textMuted }} />
+                    <span style={{ color: V.textMuted, fontSize: '12px' }}>{edu.location}</span>
+                  </div>
+                  <p style={{ color: V.textSecondary, margin: 0, fontSize: '14px' }}>
+                    {edu.degree} · <span style={{ color: V.accent }}>{edu.score}</span>
+                  </p>
+                </div>
+              </motion.div>
+            </AnimateOnScroll>
           ))}
         </div>
       </section>
 
-      {/* Engineering Focus */}
-      <section className="portfolio-section">
-        <h2 className="portfolio-section-title">Engineering Focus</h2>
-        <div style={{ display: 'grid', gap: '16px', marginTop: '16px' }}>
-          {[
-            { title: 'Full-Stack Development', icon: <Monitor size={24} style={{ color: 'var(--accent-primary)' }} />, desc: 'Modern web applications with scalable architecture, responsive interfaces, and maintainable backend systems using React, Next.js, Node.js, and REST APIs.' },
-            { title: 'DevOps & Cloud', icon: <Cloud size={24} style={{ color: 'var(--accent-tertiary)' }} />, desc: 'Docker containerization, Google Cloud deployment, Firebase services, and Git-based CI/CD workflows for production-ready applications.' },
-            { title: 'Data Science & ML', icon: <Brain size={24} style={{ color: 'var(--accent-warning)' }} />, desc: 'Data pipelines, regression models, time-series prediction, and deploying ML models within production software systems.' },
-          ].map(area => (
-            <div key={area.title} style={{ padding: '20px', background: 'var(--bg-tertiary)', borderRadius: '12px', border: '1px solid var(--border-color)' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '8px' }}>
-                <span style={{ display: 'flex' }}>{area.icon}</span>
-                <h3 style={{ color: 'var(--text-bright)', fontWeight: 700, margin: 0 }}>{area.title}</h3>
-              </div>
-              <p style={{ color: 'var(--text-secondary)', margin: 0, fontSize: '14px', lineHeight: 1.6 }}>{area.desc}</p>
-            </div>
+      <div style={sectionDivider} />
+
+      {/* ── ACHIEVEMENTS ── */}
+      <section style={sectionPadding}>
+        <AnimateOnScroll>
+          <p style={sectionLabel}>Recognition</p>
+          <h2 style={sectionTitle}><span style={gradientText}>Achievements</span></h2>
+        </AnimateOnScroll>
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '24px' }}>
+          {achievements.map((ach, i) => (
+            <AnimateOnScroll key={ach.title} delay={0.1 + i * 0.1}>
+              <motion.div whileHover={{ scale: 1.02, y: -4 }} transition={{ type: 'spring', stiffness: 400, damping: 25 }}
+                style={{ ...glassCard, padding: '28px', display: 'flex', alignItems: 'flex-start', gap: '16px', cursor: 'default', height: '100%' }}>
+                <div style={{ padding: '12px', borderRadius: '12px', background: V.accentDim, color: V.accent, flexShrink: 0 }}>
+                  {i === 0 ? <Trophy size={22} /> : <Award size={22} />}
+                </div>
+                <div>
+                  <p style={{ color: V.accent, fontWeight: 700, fontSize: '14px', marginBottom: '4px' }}>{ach.award}</p>
+                  <h4 style={{ color: V.textPrimary, fontWeight: 700, fontSize: '18px', marginBottom: '8px' }}>{ach.title}</h4>
+                  <p style={{ color: V.textMuted, fontSize: '14px', margin: 0 }}>{ach.detail}</p>
+                </div>
+              </motion.div>
+            </AnimateOnScroll>
           ))}
         </div>
       </section>
 
-      {/* Experience */}
-      <section className="portfolio-section">
-        <h2 className="portfolio-section-title">Professional Experience</h2>
-        <div style={{ marginTop: '16px', padding: '24px', background: 'var(--bg-tertiary)', borderRadius: '12px', border: '1px solid var(--border-color)' }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '16px', flexWrap: 'wrap', gap: '8px' }}>
-            <div>
-              <div style={{ color: 'var(--text-bright)', fontWeight: 700, fontSize: '18px' }}>Freelance Full-Stack Developer</div>
-              <div style={{ color: 'var(--accent-cyan)', marginTop: '4px' }}>Remote</div>
-            </div>
-            <span style={{ color: 'var(--text-muted)', fontSize: '13px', background: 'var(--bg-elevated)', padding: '4px 8px', borderRadius: '4px' }}>Nov 2025 – Present</span>
+      <div style={sectionDivider} />
+
+      {/* ── CONTACT ── */}
+      <section style={{ ...sectionPadding, position: 'relative', overflow: 'hidden' }}>
+        <div style={{ position: 'absolute', inset: 0, pointerEvents: 'none' }}>
+          <div style={{ position: 'absolute', bottom: '10%', left: '50%', transform: 'translateX(-50%)', width: '500px', height: '400px', borderRadius: '50%', filter: 'blur(160px)', opacity: 0.06, background: V.accent }} />
+        </div>
+        <div style={{ position: 'relative', zIndex: 10 }}>
+          <AnimateOnScroll>
+            <p style={sectionLabel}>Contact</p>
+            <h2 style={sectionTitle}>
+              <span style={gradientText}>Let&apos;s build the future</span>
+              <span style={{ color: V.accent }}>.</span>
+            </h2>
+            <p style={{ color: V.textMuted, marginTop: '-36px', marginBottom: '64px', maxWidth: '500px' }}>
+              Interested in collaborating, discussing technology, or building impactful systems?
+            </p>
+          </AnimateOnScroll>
+
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '20px', maxWidth: '560px' }}>
+            {[
+              { icon: <Mail size={20} />, label: 'Email', href: `mailto:${personalInfo.email}`, display: personalInfo.email },
+              { icon: <Github size={20} />, label: 'GitHub', href: personalInfo.github, display: 'Dhruv1249' },
+              { icon: <Linkedin size={20} />, label: 'LinkedIn', href: personalInfo.linkedin, display: 'dhruv124' },
+            ].map(link => (
+              <AnimateOnScroll key={link.label} delay={0.1}>
+                <motion.a href={link.href} target={link.label !== 'Email' ? '_blank' : undefined}
+                  rel={link.label !== 'Email' ? 'noopener noreferrer' : undefined}
+                  whileHover={{ x: 6, scale: 1.01 }} transition={{ type: 'spring', stiffness: 400, damping: 25 }}
+                  style={{ ...glassCard, padding: '24px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', textDecoration: 'none', cursor: 'pointer' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+                    <div style={{ padding: '12px', borderRadius: '12px', background: V.accentDim, color: V.accent }}>{link.icon}</div>
+                    <div>
+                      <p style={{ color: V.textMuted, fontSize: '12px', fontFamily: 'monospace', textTransform: 'uppercase', letterSpacing: '0.1em', margin: '0 0 2px' }}>{link.label}</p>
+                      <p style={{ color: V.textPrimary, fontSize: '14px', fontWeight: 500, margin: 0 }}>{link.display}</p>
+                    </div>
+                  </div>
+                  <ArrowUpRight size={18} style={{ color: V.accent, opacity: 0.5 }} />
+                </motion.a>
+              </AnimateOnScroll>
+            ))}
           </div>
-          <ul style={{ color: 'var(--text-secondary)', margin: 0, paddingLeft: '20px', lineHeight: 1.8, fontSize: '14px' }}>
-            <li style={{ marginBottom: '8px' }}>
-              <strong>Performance Engineering:</strong> Built responsive client websites using Next.js + Tailwind CSS, achieving <strong style={{ color: 'var(--accent-tertiary)' }}>99/100 Core Web Vitals</strong> scores.
-            </li>
-            <li style={{ marginBottom: '8px' }}>
-              <strong>Automation:</strong> Integrated NodeMailer + Firebase for automated enquiry systems and centralized lead management pipelines.
-            </li>
-            <li>
-              <strong>SEO Strategy:</strong> Deployed semantic HTML5 and JSON-LD schemas, resulting in <strong>40% organic traffic increase</strong> within 3 months.
-            </li>
-          </ul>
         </div>
       </section>
 
-      {/* Achievements */}
-      <section className="portfolio-section">
-        <h2 className="portfolio-section-title">Achievements</h2>
-        <div style={{ display: 'grid', gap: '12px', marginTop: '16px' }}>
-          <div style={{ padding: '20px', background: 'var(--bg-tertiary)', borderRadius: '12px', border: '1px solid rgba(255, 158, 100, 0.3)', display: 'flex', alignItems: 'center', gap: '16px' }}>
-            <Trophy size={28} style={{ color: 'var(--accent-warning)' }} />
-            <div>
-              <div style={{ color: 'var(--accent-warning)', fontWeight: 700 }}>NASA Space Apps Challenge — Global Honorable Mention</div>
-              <p style={{ color: 'var(--text-secondary)', margin: '4px 0 0', fontSize: '13px' }}>Top 23 worldwide from 11,500+ submissions for CALYX climate forecasting platform.</p>
-            </div>
-          </div>
-          <div style={{ padding: '20px', background: 'var(--bg-tertiary)', borderRadius: '12px', border: '1px solid rgba(122, 162, 247, 0.3)', display: 'flex', alignItems: 'center', gap: '16px' }}>
-            <Medal size={28} style={{ color: 'var(--accent-primary)' }} />
-            <div>
-              <div style={{ color: 'var(--accent-primary)', fontWeight: 700 }}>Innov-a-thon — National Top 100</div>
-              <p style={{ color: 'var(--text-secondary)', margin: '4px 0 0', fontSize: '13px' }}>NIT Rourkela national competition — strong problem-solving and rapid prototyping.</p>
-            </div>
-          </div>
-        </div>
-      </section>
+      <div style={sectionDivider} />
 
-      {/* Certificates */}
-      <section className="portfolio-section">
-        <h2 className="portfolio-section-title">Certifications</h2>
-        <div style={{ display: 'grid', gap: '8px', marginTop: '16px' }}>
-          {CERTS.map(cert => (
-            <div key={cert.name} style={{ padding: '14px 20px', background: 'var(--bg-tertiary)', borderRadius: '8px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-              <div>
-                <span style={{ color: 'var(--text-primary)', fontWeight: 600 }}>{cert.name}</span>
-                <span style={{ color: 'var(--text-muted)', marginLeft: '8px', fontSize: '13px' }}>— {cert.org}</span>
-              </div>
-              <span style={{ color: 'var(--text-muted)', fontSize: '12px' }}>{cert.date}</span>
-            </div>
-          ))}
-        </div>
-      </section>
-
-      {/* Footer */}
-      <footer style={{ marginTop: '64px', paddingTop: '32px', borderTop: '1px solid var(--border-color)', textAlign: 'center', color: 'var(--text-muted)', fontSize: '13px' }}>
-        <p>Designed & Engineered by Dhruv</p>
-        <p style={{ marginTop: '8px', opacity: 0.6 }}>Built with Next.js 14, React 19, and TypeScript</p>
-      </footer>
-    </div>
-  );
-}
-
-function ProjectsPage({ navigate }: { navigate: (url: string) => void }) {
-  return (
-    <div className="portfolio">
-      <h1 className="portfolio-title" style={{ fontSize: '32px' }}>All Projects</h1>
-      <p className="portfolio-subtitle">Case studies and engineering deep-dives</p>
-      <div className="projects-grid" style={{ marginTop: '24px' }}>
-        {PROJECTS.map((project) => (
-          <div
-            key={project.slug}
-            className="project-card"
-            style={{ cursor: 'pointer' }}
-            onClick={() => navigate(`dhruv.dev/projects/${project.slug}`)}
-          >
-            <div className="project-image" style={{ background: project.gradient }}>
-              <span style={{ fontSize: '48px' }}>{project.icon}</span>
-            </div>
-            <div className="project-info">
-              <div className="project-name">{project.name}</div>
-              <div className="project-desc">
-                {project.tagline}
-                <br />
-                <span style={{ color: 'var(--accent-tertiary)', fontSize: '12px' }}>
-                  {project.tech.slice(0, 3).join(' • ')}
-                </span>
-              </div>
-            </div>
-          </div>
-        ))}
+      {/* ── FOOTER ── */}
+      <div style={{ padding: '32px 24px', textAlign: 'center' }}>
+        <p style={{ color: V.textMuted, fontSize: '12px' }}>© 2026 Dhruv. Crafted with Next.js & Tailwind CSS.</p>
       </div>
     </div>
   );
 }
 
-function ProjectDetailPage({ project, navigate }: { project: ProjectDetail; navigate: (url: string) => void }) {
-  return (
-    <div className="portfolio">
-      {/* Back link */}
-      <button onClick={() => navigate('dhruv.dev')} style={{
-        background: 'none', border: 'none', color: 'var(--accent-primary)', cursor: 'pointer',
-        fontSize: '14px', padding: 0, marginBottom: '24px', fontFamily: 'inherit'
-      }}>
-        ← Back to Home
-      </button>
+/* ═══════════════ Tab Types ═══════════════ */
 
-      {/* Hero */}
-      <div style={{
-        padding: '48px 32px', background: project.gradient, borderRadius: '16px',
-        marginBottom: '32px', textAlign: 'center',
-      }}>
-        <div style={{ fontSize: '64px', marginBottom: '16px', display: 'flex', justifyContent: 'center' }}>{project.icon}</div>
-        <h1 style={{ color: '#fff', fontSize: '32px', fontWeight: 800, margin: 0 }}>{project.name}</h1>
-        <p style={{ color: 'rgba(255,255,255,0.7)', fontSize: '16px', margin: '8px 0 0' }}>{project.tagline}</p>
-        {project.highlight && (
-          <div style={{
-            marginTop: '16px', padding: '8px 16px', background: 'rgba(255,158,100,0.2)',
-            borderRadius: '8px', display: 'inline-block', color: '#ff9e64', fontSize: '14px', fontWeight: 600
-          }}>
-            {project.highlight}
-          </div>
-        )}
-      </div>
-
-      {/* Action buttons */}
-      <div style={{ display: 'flex', gap: '12px', marginBottom: '32px' }}>
-        <a href={project.live} target="_blank" className="portfolio-btn primary">Live Demo ↗</a>
-        <a href={project.github} target="_blank" className="portfolio-btn secondary">GitHub ↗</a>
-      </div>
-
-      {/* Description */}
-      <section style={{ marginBottom: '32px' }}>
-        <h2 style={{ color: 'var(--text-bright)', fontSize: '20px', marginBottom: '16px' }}>Overview</h2>
-        {project.description.map((para, i) => (
-          <p key={i} style={{ color: 'var(--text-secondary)', lineHeight: 1.7, marginBottom: '12px', fontSize: '14px' }}>{para}</p>
-        ))}
-      </section>
-
-      {/* Tech Stack */}
-      <section style={{ marginBottom: '32px' }}>
-        <h2 style={{ color: 'var(--text-bright)', fontSize: '20px', marginBottom: '16px' }}>Tech Stack</h2>
-        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
-          {project.tech.map(t => (
-            <span key={t} style={{
-              padding: '6px 14px', background: 'var(--bg-tertiary)', borderRadius: '20px',
-              fontSize: '13px', color: 'var(--accent-cyan)', border: '1px solid var(--border-color)',
-            }}>
-              {t}
-            </span>
-          ))}
-        </div>
-      </section>
-
-      {/* Key Features */}
-      <section style={{ marginBottom: '32px' }}>
-        <h2 style={{ color: 'var(--text-bright)', fontSize: '20px', marginBottom: '16px' }}>Key Features</h2>
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
-          {project.features.map(f => (
-            <div key={f} style={{
-              padding: '16px', background: 'var(--bg-tertiary)', borderRadius: '10px',
-              border: '1px solid var(--border-color)', color: 'var(--text-primary)', fontSize: '14px',
-              display: 'flex', alignItems: 'center', gap: '8px',
-            }}>
-              <span style={{ color: 'var(--accent-tertiary)' }}>◆</span> {f}
-            </div>
-          ))}
-        </div>
-      </section>
-    </div>
-  );
+interface BrowserTab {
+  id: string;
+  url: string;
+  title: string;
+  type: 'portfolio' | 'iframe';
 }
 
-function NotFoundPage({ navigate }: { navigate: (url: string) => void }) {
-  return (
-    <div className="portfolio" style={{ textAlign: 'center', paddingTop: '80px' }}>
-      <Search size={64} style={{ marginBottom: '16px', color: 'var(--text-muted)' }} />
-      <h1 style={{ color: 'var(--text-bright)', fontSize: '48px', margin: 0 }}>404</h1>
-      <p style={{ color: 'var(--text-muted)', marginTop: '8px' }}>Page not found</p>
-      <button onClick={() => navigate('dhruv.dev')} className="portfolio-btn primary" style={{ marginTop: '24px' }}>
-        Go Home
-      </button>
-    </div>
-  );
-}
+/* ═══════════════ Main Browser ═══════════════ */
 
-// ─── Main Browser Component ──────────────────────────
 export default function Browser() {
-  const [url, setUrl] = useState('dhruv.dev');
-  const [history, setHistory] = useState<string[]>(['dhruv.dev']);
-  const [historyIndex, setHistoryIndex] = useState(0);
+  const [tabs, setTabs] = useState<BrowserTab[]>([
+    { id: 'main', url: 'dhruv.dev', title: 'Dhruv — Portfolio', type: 'portfolio' },
+  ]);
+  const [activeTabId, setActiveTabId] = useState('main');
   const [urlInput, setUrlInput] = useState('dhruv.dev');
 
-  const navigate = useCallback((newUrl: string) => {
-    const cleanUrl = newUrl.replace(/^https?:\/\//, '');
-    setUrl(cleanUrl);
-    setUrlInput(cleanUrl);
-    setHistory(prev => {
-      const newHistory = prev.slice(0, historyIndex + 1);
-      newHistory.push(cleanUrl);
-      return newHistory;
-    });
-    setHistoryIndex(prev => prev + 1);
-  }, [historyIndex]);
+  const activeTab = tabs.find(t => t.id === activeTabId) || tabs[0];
 
-  const goBack = () => {
-    if (historyIndex > 0) {
-      const newIndex = historyIndex - 1;
-      setHistoryIndex(newIndex);
-      setUrl(history[newIndex]);
-      setUrlInput(history[newIndex]);
-    }
-  };
+  const openTab = useCallback((url: string, title: string) => {
+    const id = `tab-${Date.now()}`;
+    const newTab: BrowserTab = { id, url, title, type: 'iframe' };
+    setTabs(prev => [...prev, newTab]);
+    setActiveTabId(id);
+    setUrlInput(url);
+  }, []);
 
-  const goForward = () => {
-    if (historyIndex < history.length - 1) {
-      const newIndex = historyIndex + 1;
-      setHistoryIndex(newIndex);
-      setUrl(history[newIndex]);
-      setUrlInput(history[newIndex]);
+  const closeTab = useCallback((id: string) => {
+    if (tabs.length <= 1) return;
+    setTabs(prev => prev.filter(t => t.id !== id));
+    if (activeTabId === id) {
+      const remaining = tabs.filter(t => t.id !== id);
+      setActiveTabId(remaining[remaining.length - 1].id);
     }
-  };
+  }, [tabs, activeTabId]);
 
-  const handleUrlSubmit = (e: React.KeyboardEvent) => {
-    if (e.key === 'Enter') {
-      navigate(urlInput);
-    }
-  };
+  useEffect(() => {
+    const tab = tabs.find(t => t.id === activeTabId);
+    if (tab) setUrlInput(tab.url);
+  }, [activeTabId, tabs]);
 
-  const renderPage = () => {
-    const cleanUrl = url.replace(/^https?:\/\//, '').replace(/\/$/, '');
-
-    if (cleanUrl === 'dhruv.dev') {
-      return <HomePage navigate={navigate} />;
+  const renderContent = () => {
+    if (activeTab.type === 'iframe') {
+      return (
+        <iframe src={activeTab.url}
+          style={{ width: '100%', height: '100%', border: 'none' }}
+          title={activeTab.title}
+          sandbox="allow-scripts allow-same-origin allow-popups" />
+      );
     }
-    if (cleanUrl === 'dhruv.dev/projects') {
-      return <ProjectsPage navigate={navigate} />;
-    }
-    // Match project detail pages
-    const projectMatch = cleanUrl.match(/^dhruv\.dev\/projects\/(.+)$/);
-    if (projectMatch) {
-      const project = PROJECTS.find(p => p.slug === projectMatch[1]);
-      if (project) {
-        return <ProjectDetailPage project={project} navigate={navigate} />;
-      }
-    }
-    return <NotFoundPage navigate={navigate} />;
+    return <HomePage openTab={openTab} />;
   };
 
   return (
     <div className="browser">
+      {/* Tab Bar */}
+      <div style={{
+        display: 'flex', alignItems: 'center', background: 'var(--bg-secondary)',
+        borderBottom: '1px solid var(--border-color)', padding: '0 8px', height: '32px',
+        gap: '2px', overflow: 'hidden',
+      }}>
+        {tabs.map(tab => (
+          <div key={tab.id} onClick={() => setActiveTabId(tab.id)}
+            style={{
+              display: 'flex', alignItems: 'center', gap: '6px',
+              padding: '4px 12px', borderRadius: '6px 6px 0 0', cursor: 'pointer',
+              background: tab.id === activeTabId ? 'var(--bg-tertiary)' : 'transparent',
+              color: tab.id === activeTabId ? 'var(--text-primary)' : 'var(--text-muted)',
+              fontSize: '11px', maxWidth: '180px', whiteSpace: 'nowrap',
+              overflow: 'hidden', textOverflow: 'ellipsis', flexShrink: 0,
+              borderTop: tab.id === activeTabId ? '2px solid var(--accent-primary)' : '2px solid transparent',
+              transition: 'all 0.15s ease',
+            }}>
+            {tab.type === 'iframe' ? <Globe size={11} /> : <Lock size={11} />}
+            <span style={{ overflow: 'hidden', textOverflow: 'ellipsis' }}>{tab.title}</span>
+            {tabs.length > 1 && (
+              <button onClick={(e) => { e.stopPropagation(); closeTab(tab.id); }}
+                style={{ background: 'none', border: 'none', color: 'var(--text-muted)', cursor: 'pointer', padding: '0 2px', display: 'flex', lineHeight: 1 }}>
+                <X size={10} />
+              </button>
+            )}
+          </div>
+        ))}
+        <button onClick={() => openTab('about:blank', 'New Tab')}
+          style={{ background: 'none', border: 'none', color: 'var(--text-muted)', cursor: 'pointer', padding: '4px', display: 'flex', alignItems: 'center' }}>
+          <Plus size={12} />
+        </button>
+      </div>
+
+      {/* URL Bar */}
       <div className="browser-toolbar">
         <div className="browser-nav">
-          <button
-            className="browser-nav-btn"
-            onClick={goBack}
-            disabled={historyIndex <= 0}
-            style={{ opacity: historyIndex <= 0 ? 0.4 : 1 }}
-          ><ArrowLeft size={14} /></button>
-          <button
-            className="browser-nav-btn"
-            onClick={goForward}
-            disabled={historyIndex >= history.length - 1}
-            style={{ opacity: historyIndex >= history.length - 1 ? 0.4 : 1 }}
-          ><ArrowRight size={14} /></button>
-          <button className="browser-nav-btn" onClick={() => navigate(url)}><RotateCw size={14} /></button>
+          <button className="browser-nav-btn"><ArrowLeft size={14} /></button>
+          <button className="browser-nav-btn"><ArrowRight size={14} /></button>
+          <button className="browser-nav-btn"><RotateCw size={14} /></button>
         </div>
         <div className="browser-url-bar">
-          <span className="browser-url-lock"><Lock size={12} /></span>
-          <input
-            type="text"
-            className="browser-url-input"
-            value={urlInput}
-            onChange={(e) => setUrlInput(e.target.value)}
-            onKeyDown={handleUrlSubmit}
-            spellCheck={false}
-            style={{
-              background: 'transparent', border: 'none', color: 'var(--text-secondary)',
-              fontFamily: 'var(--font-mono)', fontSize: '12px', flex: 1, outline: 'none',
-            }}
-          />
+          <span className="browser-url-lock">
+            {activeTab.type === 'iframe' ? <Globe size={12} /> : <Lock size={12} />}
+          </span>
+          <input type="text" className="browser-url-input" value={urlInput} readOnly
+            style={{ background: 'transparent', border: 'none', color: 'var(--text-secondary)', fontFamily: 'var(--font-mono)', fontSize: '12px', flex: 1, outline: 'none' }} />
         </div>
       </div>
 
+      {/* Content */}
       <div className="browser-content">
-        {renderPage()}
+        <AnimatePresence mode="wait">
+          <motion.div key={activeTabId}
+            initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+            transition={{ duration: 0.15 }}
+            style={{ height: '100%' }}>
+            {renderContent()}
+          </motion.div>
+        </AnimatePresence>
       </div>
     </div>
   );

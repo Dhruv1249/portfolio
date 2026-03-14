@@ -170,6 +170,12 @@ Lovely Professional University (2023 - Present)
 B.Tech in Computer Science & Engineering | CGPA: 8.72
 * **Coursework**: Data Structures, Algorithms, OS, DBMS, Cloud Computing (NPTEL), LLMs (NPTEL).
 
+G.A.V Sr. Sec. School, Kangra, Himachal Pradesh
+Intermediate | Percentage: 83% | Apr 2022 – Mar 2023
+
+M.V.M Public High School, Kangra, Himachal Pradesh
+Matriculation | Percentage: 96% | Apr 2020 – Mar 2021
+
 TECHNICAL SKILLS
 ------------------------------------------------------------
 * **Frontend**: React, Next.js, TypeScript, Tailwind CSS, Framer Motion
