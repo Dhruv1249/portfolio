@@ -177,10 +177,10 @@ function HomePage({ openTab }: { openTab: (url: string, title: string) => void }
         <motion.div style={{ position: 'absolute', left: '10%', bottom: '30%', width: '60px', height: '60px', border: `1px solid ${V.accent}`, borderRadius: '50%', opacity: 0.05 }}
           animate={{ scale: [1, 1.15, 1], y: [0, 10, 0] }} transition={{ duration: 8, repeat: Infinity, ease: 'easeInOut' }} />
 
-        {/* Content: text left, photo right */}
-        <div style={{ position: 'relative', zIndex: 10, maxWidth: '1100px', width: '100%', display: 'flex', alignItems: 'center', gap: '48px' }}>
+        {/* Content: text left (or centered), photo right */}
+        <div style={{ position: 'relative', zIndex: 10, maxWidth: photoVisible ? '1100px' : '800px', width: '100%', display: 'flex', flexDirection: photoVisible ? 'row' : 'column', alignItems: 'center', justifyContent: photoVisible ? 'flex-start' : 'center', gap: '48px', textAlign: photoVisible ? 'left' : 'center' }}>
           {/* Text */}
-          <div style={{ flex: 1 }}>
+          <div style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: photoVisible ? 'flex-start' : 'center' }}>
             <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }}
               transition={{ duration: 0.8, ease: [0.25, 0.4, 0.25, 1] as [number, number, number, number] }}>
               <span style={badgeGlow}>Available for work</span>
@@ -199,12 +199,12 @@ function HomePage({ openTab }: { openTab: (url: string, title: string) => void }
             </motion.p>
 
             <motion.p initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.7 }}
-              style={{ color: V.textSecondary, lineHeight: 1.7, maxWidth: '500px', marginTop: '24px' }}>
+              style={{ color: V.textSecondary, lineHeight: 1.7, maxWidth: '500px', marginTop: '24px', textAlign: photoVisible ? 'left' : 'center' }}>
               {personalInfo.tagline}
             </motion.p>
 
             <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.9 }}
-              style={{ display: 'flex', gap: '12px', flexWrap: 'wrap', marginTop: '40px' }}>
+              style={{ display: 'flex', gap: '12px', flexWrap: 'wrap', marginTop: '40px', justifyContent: photoVisible ? 'flex-start' : 'center' }}>
               <a href={personalInfo.resume} target="_blank" rel="noopener noreferrer" style={{
                 padding: '14px 28px', borderRadius: '12px', display: 'inline-flex', alignItems: 'center', gap: '8px',
                 background: V.accentDim, color: V.accent, fontWeight: 600, fontSize: '14px',
@@ -224,7 +224,7 @@ function HomePage({ openTab }: { openTab: (url: string, title: string) => void }
               transition={{ duration: 1, delay: 0.3, ease: [0.25, 0.4, 0.25, 1] as [number, number, number, number] }}
               style={{ flexShrink: 0 }}>
               <div style={{
-                width: '200px', height: '200px', borderRadius: '24px', overflow: 'hidden',
+                width: '240px', height: '240px', borderRadius: '50%', overflow: 'hidden',
                 border: `3px solid ${V.accent}`,
                 boxShadow: `0 0 60px ${V.accentGlow}, 0 0 120px ${V.accentDim}`,
               }}>
