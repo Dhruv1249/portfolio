@@ -5,10 +5,11 @@ import { useTheme } from '../../contexts/ThemeContext';
 import FloatingLines from '../backgrounds/FloatingLines';
 import Galaxy from '../backgrounds/Galaxy';
 import Threads from '../backgrounds/Threads';
+import LightRays from '../backgrounds/LightRays';
 
 
 interface ParticleBackgroundProps {
-  mode?: 'nodes' | 'dust' | 'rain' | 'circuit' | 'starfield' | 'firefly' | 'none' | 'floatinglines' | 'galaxy' | 'threads';
+  mode?: 'nodes' | 'dust' | 'rain' | 'circuit' | 'starfield' | 'firefly' | 'none' | 'floatinglines' | 'galaxy' | 'threads' | 'lightrays';
 }
 
 export default function ParticleBackground({ mode = 'none' }: ParticleBackgroundProps) {
@@ -445,6 +446,19 @@ export default function ParticleBackground({ mode = 'none' }: ParticleBackground
     );
   }
 
+  if (mode === 'lightrays') {
+    const getAccentHex = (): string => {
+      if (typeof document === 'undefined') return '#ffffff';
+      return getComputedStyle(document.documentElement).getPropertyValue('--accent-primary').trim() || '#ffffff';
+    };
+    return (
+      <div style={{ position: 'fixed', inset: 0, zIndex: 0, pointerEvents: 'none' }}>
+        <div style={{ pointerEvents: 'auto', width: '100vw', height: '100vh' }}>
+          <LightRays raysColor={getAccentHex()} raysSpeed={1} lightSpread={0.5} rayLength={3} followMouse={true} mouseInfluence={0.1} />
+        </div>
+      </div>
+    );
+  }
 
   if (mode === 'none') return null;
 

@@ -20,9 +20,8 @@ const SECTIONS: SettingsSection[] = [
 
 export default function Settings() {
   const [activeSection, setActiveSection] = useState('about');
-  const [transparency, setTransparency] = useState(true);
   const [photoVisible, setPhotoVisible] = useState(true);
-  const { activeProfile, setProfile, animations, setAnimations, particleMode, setParticleMode } = useTheme();
+  const { activeProfile, setProfile, animations, setAnimations, particleMode, setParticleMode, transparency, setTransparency, windowOpacity, setWindowOpacity } = useTheme();
 
   useEffect(() => {
     fetch('/api/photo-toggle')
@@ -159,7 +158,7 @@ export default function Settings() {
             <div className="settings-option">
               <div className="settings-option-info">
                 <h3>Transparency Effects</h3>
-                <p>Enable blur and transparency</p>
+                <p>Glass blur and transparency on windows</p>
               </div>
               <div 
                 className={`toggle ${transparency ? 'active' : ''}`}
@@ -168,6 +167,44 @@ export default function Settings() {
                 <div className="toggle-knob" />
               </div>
             </div>
+
+            {transparency && (
+              <div className="settings-option" style={{ flexDirection: 'column', alignItems: 'stretch', gap: '12px' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <div className="settings-option-info">
+                    <h3>Window Opacity</h3>
+                    <p>Adjust window background transparency</p>
+                  </div>
+                  <span style={{ 
+                    color: 'var(--accent-primary)', 
+                    fontWeight: 600, 
+                    fontSize: '14px',
+                    fontFamily: 'monospace',
+                    minWidth: '42px',
+                    textAlign: 'right'
+                  }}>{Math.round(windowOpacity * 100)}%</span>
+                </div>
+                <div style={{ position: 'relative', padding: '4px 0' }}>
+                  <input
+                    type="range"
+                    min="30"
+                    max="100"
+                    value={Math.round(windowOpacity * 100)}
+                    onChange={(e) => setWindowOpacity(parseInt(e.target.value) / 100)}
+                    style={{
+                      width: '100%',
+                      height: '6px',
+                      WebkitAppearance: 'none',
+                      appearance: 'none',
+                      background: `linear-gradient(to right, var(--accent-primary) 0%, var(--accent-primary) ${((windowOpacity - 0.3) / 0.7) * 100}%, var(--bg-tertiary) ${((windowOpacity - 0.3) / 0.7) * 100}%, var(--bg-tertiary) 100%)`,
+                      borderRadius: '3px',
+                      outline: 'none',
+                      cursor: 'pointer',
+                    }}
+                  />
+                </div>
+              </div>
+            )}
 
             {/* Particle Effects */}
             <div style={{ marginTop: '24px' }}>
@@ -181,6 +218,7 @@ export default function Settings() {
                   { id: 'starfield', name: 'Stars' },
                   { id: 'galaxy', name: 'Galaxy' },
                   { id: 'threads', name: 'Threads' },
+                  { id: 'lightrays', name: 'Rays' },
                   { id: 'firefly', name: 'Firefly' },
                 ].map((effect) => {
                   const isActive = particleMode === effect.id;

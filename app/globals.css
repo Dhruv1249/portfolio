@@ -42,6 +42,7 @@
   /* Glassmorphism */
   --glass-bg: rgba(17, 17, 17, 0.8);
   --glass-border: rgba(255, 255, 255, 0.08);
+  --bg-primary-rgb: 5 5 5;
 
   /* Spacing */
   --topbar-height: 36px;
@@ -258,6 +259,56 @@ body {
   transition:
     box-shadow var(--transition-fast),
     border-color var(--transition-fast);
+}
+
+.window.window-glass {
+  background: rgb(var(--bg-primary-rgb, 10 10 10) / var(--window-opacity, 0.85));
+  backdrop-filter: blur(24px) saturate(180%);
+  -webkit-backdrop-filter: blur(24px) saturate(180%);
+  border-color: rgba(255, 255, 255, 0.12);
+  box-shadow:
+    0 8px 32px rgba(0, 0, 0, 0.4),
+    inset 0 1px 0 rgba(255, 255, 255, 0.06);
+  will-change: transform;
+  transform: translateZ(0);
+  isolation: isolate;
+}
+
+.window.window-glass.focused {
+  border-color: var(--border-focused);
+  box-shadow:
+    0 12px 48px rgba(0, 0, 0, 0.5),
+    0 0 0 1px var(--border-focused),
+    0 0 30px rgba(var(--accent-primary-rgb, 45, 212, 191), 0.08),
+    inset 0 1px 0 rgba(255, 255, 255, 0.08);
+}
+
+.window-glass .window-header {
+  background: rgba(255, 255, 255, 0.03);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+/* Override CSS variables inside glass windows so ALL backgrounds become transparent */
+.window-glass {
+  --bg-primary: transparent !important;
+  --bg-secondary: transparent !important;
+  --bg-tertiary: rgba(255, 255, 255, 0.03) !important;
+  --bg-elevated: rgba(255, 255, 255, 0.05) !important;
+  --bg-window: transparent !important;
+  --window-header: transparent !important;
+  --glass-bg: transparent !important;
+  --border-color: rgba(255, 255, 255, 0.06) !important;
+}
+
+/* Force backgrounds that don't use CSS variables */
+.window-glass .window-content,
+.window-glass .browser-content {
+  background: transparent !important;
+}
+
+/* Fix active nav item text in glass mode (since --bg-primary is now transparent) */
+.window-glass .settings-nav-item.active {
+  color: #000 !important;
 }
 
 .window.focused {
@@ -1258,6 +1309,43 @@ body {
 
 .toggle.active .toggle-knob {
   transform: translateX(20px);
+}
+
+/* Range Slider */
+input[type="range"] {
+  -webkit-appearance: none;
+  appearance: none;
+  height: 6px;
+  border-radius: 3px;
+  outline: none;
+}
+
+input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: var(--accent-primary);
+  cursor: pointer;
+  border: 2px solid var(--bg-primary);
+  box-shadow: 0 0 8px rgba(45, 212, 191, 0.3), 0 2px 4px rgba(0, 0, 0, 0.3);
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+input[type="range"]::-webkit-slider-thumb:hover {
+  transform: scale(1.15);
+  box-shadow: 0 0 12px rgba(45, 212, 191, 0.5), 0 2px 6px rgba(0, 0, 0, 0.4);
+}
+
+input[type="range"]::-moz-range-thumb {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: var(--accent-primary);
+  cursor: pointer;
+  border: 2px solid var(--bg-primary);
+  box-shadow: 0 0 8px rgba(45, 212, 191, 0.3), 0 2px 4px rgba(0, 0, 0, 0.3);
 }
 
 /* ============================================

@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { useWindowManager, AppType } from '../../contexts/WindowContext';
+import { useTheme } from '../../contexts/ThemeContext';
 
 // Import apps
 import Terminal from '../apps/Terminal';
@@ -33,6 +34,7 @@ export default function Window({
   appData,
 }: WindowProps) {
   const { closeWindow, focusWindow, minimizeWindow, maximizeWindow } = useWindowManager();
+  const { transparency, windowOpacity } = useTheme();
 
   const [hasAnimated, setHasAnimated] = useState(false);
 
@@ -66,7 +68,7 @@ export default function Window({
       ? 'window-enter boot-animation'
       : '';
 
-  // Memoize app content, but include appData for Neovim file passing
+  // Memoize app content
   const appContent = useMemo(() => {
     switch (appType) {
       case 'terminal':
@@ -94,9 +96,10 @@ export default function Window({
 
   return (
     <div
-      className={`window ${focused ? 'focused' : ''} ${animationClass}`}
+      className={`window ${focused ? 'focused' : ''} ${animationClass} ${transparency ? 'window-glass' : ''}`}
       style={{
         ...style,
+        ...(transparency ? { '--window-opacity': windowOpacity } as React.CSSProperties : {}),
         animationDelay: !hasAnimated ? `${bootDelay}s` : undefined,
       }}
       onMouseDown={handleMouseDown}

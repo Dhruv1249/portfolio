@@ -215,6 +215,10 @@ interface ThemeContextType {
   setAnimations: (val: boolean) => void;
   particleMode: string;
   setParticleMode: (mode: string) => void;
+  transparency: boolean;
+  setTransparency: (val: boolean) => void;
+  windowOpacity: number;
+  setWindowOpacity: (val: number) => void;
 }
 
 const ThemeContext = createContext<ThemeContextType>({
@@ -224,12 +228,18 @@ const ThemeContext = createContext<ThemeContextType>({
   setAnimations: () => {},
   particleMode: 'nodes',
   setParticleMode: () => {},
+  transparency: false,
+  setTransparency: () => {},
+  windowOpacity: 0.85,
+  setWindowOpacity: () => {},
 });
 
 export function ThemeProvider({ children }: { children: React.ReactNode }) {
   const [activeProfile, setActiveProfile] = useState<ColorProfile>(COLOR_PROFILES[0]);
   const [animations, setAnimationsState] = useState(true);
   const [particleMode, setParticleModeState] = useState<string>('nodes');
+  const [transparency, setTransparencyState] = useState(false);
+  const [windowOpacity, setWindowOpacityState] = useState(0.85);
 
   // Load from localStorage on mount
   useEffect(() => {
@@ -253,6 +263,16 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
     if (savedParticle) {
       setParticleModeState(savedParticle);
     }
+
+    const savedTransparency = localStorage.getItem('portfolio-transparency');
+    if (savedTransparency !== null) {
+      setTransparencyState(savedTransparency === 'true');
+    }
+
+    const savedOpacity = localStorage.getItem('portfolio-window-opacity');
+    if (savedOpacity !== null) {
+      setWindowOpacityState(parseFloat(savedOpacity));
+    }
   }, []);
 
   const setAnimations = useCallback((val: boolean) => {
@@ -266,11 +286,28 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
     localStorage.setItem('portfolio-particles', mode);
   }, []);
 
+  const setTransparency = useCallback((val: boolean) => {
+    setTransparencyState(val);
+    localStorage.setItem('portfolio-transparency', val.toString());
+  }, []);
+
+  const setWindowOpacity = useCallback((val: number) => {
+    const clamped = Math.max(0.3, Math.min(1, val));
+    setWindowOpacityState(clamped);
+    localStorage.setItem('portfolio-window-opacity', clamped.toString());
+  }, []);
+
   const applyTheme = useCallback((profile: ColorProfile) => {
     const root = document.documentElement;
     Object.entries(profile.vars).forEach(([key, value]) => {
       root.style.setProperty(key, value);
     });
+    // Extract RGB for glass background
+    const bgHex = profile.vars['--bg-primary'] || '#050505';
+    const m = bgHex.match(/^#([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})/i);
+    if (m) {
+      root.style.setProperty('--bg-primary-rgb', `${parseInt(m[1],16)} ${parseInt(m[2],16)} ${parseInt(m[3],16)}`);
+    }
   }, []);
 
   const setProfile = useCallback((id: string) => {
@@ -283,7 +320,7 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
   }, [applyTheme]);
 
   return (
-    <ThemeContext.Provider value={{ activeProfile, setProfile, animations, setAnimations, particleMode, setParticleMode }}>
+    <ThemeContext.Provider value={{ activeProfile, setProfile, animations, setAnimations, particleMode, setParticleMode, transparency, setTransparency, windowOpacity, setWindowOpacity }}>
       {children}
     </ThemeContext.Provider>
   );
