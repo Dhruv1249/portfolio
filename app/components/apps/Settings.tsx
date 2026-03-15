@@ -22,7 +22,7 @@ export default function Settings() {
   const [activeSection, setActiveSection] = useState('about');
   const [transparency, setTransparency] = useState(true);
   const [photoVisible, setPhotoVisible] = useState(true);
-  const { activeProfile, setProfile, animations, setAnimations } = useTheme();
+  const { activeProfile, setProfile, animations, setAnimations, particleMode, setParticleMode } = useTheme();
 
   useEffect(() => {
     fetch('/api/photo-toggle')
@@ -166,6 +166,45 @@ export default function Settings() {
                 onClick={() => setTransparency(!transparency)}
               >
                 <div className="toggle-knob" />
+              </div>
+            </div>
+
+            {/* Particle Effects */}
+            <div style={{ marginTop: '24px' }}>
+              <h3 style={{ color: 'var(--text-primary)', marginBottom: '16px', fontSize: '16px', fontWeight: 600 }}>Particle Effects</h3>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '12px' }}>
+                {[
+                  { id: 'none', name: 'None' },
+                  { id: 'nodes', name: 'Nodes' },
+                  { id: 'rain', name: 'Rain' },
+                  { id: 'floatinglines', name: 'Lines' },
+                  { id: 'starfield', name: 'Stars' },
+                  { id: 'galaxy', name: 'Galaxy' },
+                  { id: 'threads', name: 'Threads' },
+                  { id: 'firefly', name: 'Firefly' },
+                ].map((effect) => {
+                  const isActive = particleMode === effect.id;
+                  return (
+                    <div
+                      key={effect.id}
+                      onClick={() => setParticleMode(effect.id)}
+                      style={{
+                        padding: '12px',
+                        background: isActive ? 'var(--bg-elevated)' : 'var(--bg-secondary)',
+                        border: `1px solid ${isActive ? 'var(--accent-primary)' : 'var(--border-color)'}`,
+                        borderRadius: '12px',
+                        cursor: 'pointer',
+                        transition: 'all 0.2s ease',
+                        textAlign: 'center',
+                        color: isActive ? 'var(--accent-primary)' : 'var(--text-secondary)',
+                        fontSize: '13px',
+                        fontWeight: 500,
+                      }}
+                    >
+                      {effect.name}
+                    </div>
+                  );
+                })}
               </div>
             </div>
 

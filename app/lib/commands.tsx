@@ -202,6 +202,18 @@ const MAN_PAGES: Record<string, { synopsis: string; description: string }> = {
   head: { synopsis: 'head [-n lines] <file>', description: 'Output the first part of files.' },
   tail: { synopsis: 'tail [-n lines] <file>', description: 'Output the last part of files.' },
   ll: { synopsis: 'll [path]', description: 'List directory contents in long format.' },
+  sl: { synopsis: 'sl', description: 'Steam Locomotive. A classic punishment for mistyping ls.' },
+  cowsay: { synopsis: 'cowsay <message>', description: 'Generate an ASCII picture of a cow saying something.' },
+  figlet: { synopsis: 'figlet <text>', description: 'Display large characters made up of ordinary screen characters.' },
+  htop: { synopsis: 'htop', description: 'Interactive process viewer showing CPU, memory, and processes.' },
+  screenfetch: { synopsis: 'screenfetch', description: 'Display system info with ASCII art (alternative to neofetch).' },
+  vim: { synopsis: 'vim', description: 'The inescapable text editor. Good luck getting out.' },
+  apt: { synopsis: 'apt install <pkg>', description: 'Debian package manager. Wrong distro though.' },
+  pacman: { synopsis: 'pacman -S <pkg> | -Syu', description: 'Arch Linux package manager.' },
+  ping: { synopsis: 'ping <host>', description: 'Send ICMP ECHO_REQUEST to network hosts.' },
+  exit: { synopsis: 'exit', description: 'Close the terminal window.' },
+  portfolio: { synopsis: 'portfolio', description: 'Switch to the standard, non-technical portfolio.' },
+  cmatrix: { synopsis: 'cmatrix', description: 'See the Matrix in your terminal.' },
 };
 
 export const commands: Record<string, CommandHandler> = {
@@ -245,12 +257,24 @@ export const commands: Record<string, CommandHandler> = {
         <div><span style={{ color: 'var(--accent-tertiary)' }}>contact</span> — Connect with me</div>
         <div><span style={{ color: 'var(--accent-tertiary)' }}>about</span> — About me</div>
         <div><span style={{ color: 'var(--accent-tertiary)' }}>resume</span> — Open PDF Resume</div>
+        <div><span style={{ color: 'var(--accent-tertiary)' }}>portfolio</span> — Go to non-tech portfolio version</div>
 
         <div style={{ marginTop: '12px', color: 'var(--accent-warning)', fontWeight: 600 }}>
-          Fun:
+          Fun & Easter Eggs:
         </div>
         <div><span style={{ color: 'var(--accent-warning)' }}>fortune</span> — Random dev wisdom</div>
         <div><span style={{ color: 'var(--accent-warning)' }}>curl</span> — Fetch data (try: curl dhruv.dev/api)</div>
+        <div><span style={{ color: 'var(--accent-warning)' }}>cowsay</span> — ASCII cow says your message</div>
+        <div><span style={{ color: 'var(--accent-warning)' }}>figlet</span> — Large ASCII text art</div>
+        <div><span style={{ color: 'var(--accent-warning)' }}>sl</span> — Choo choo!</div>
+        <div><span style={{ color: 'var(--accent-warning)' }}>cmatrix</span> — Enter the Matrix</div>
+        <div><span style={{ color: 'var(--accent-warning)' }}>htop</span> — System process viewer</div>
+        <div><span style={{ color: 'var(--accent-warning)' }}>screenfetch</span> — Alt system info</div>
+        <div><span style={{ color: 'var(--accent-warning)' }}>vim</span> — You dare?</div>
+        <div><span style={{ color: 'var(--accent-warning)' }}>pacman</span> — Package manager</div>
+        <div><span style={{ color: 'var(--accent-warning)' }}>ping</span> — Network ping</div>
+        <div><span style={{ color: 'var(--accent-warning)' }}>exit</span> — Close terminal</div>
+        <div><span style={{ color: 'var(--accent-primary)' }}>portfolio</span> — Standard Portfolio</div>
       </div>
     ),
   }),
@@ -263,24 +287,44 @@ export const commands: Record<string, CommandHandler> = {
           <div className="neofetch-title">dhruv@portfolio</div>
           <div className="neofetch-separator">───────────────────</div>
           <div className="neofetch-row">
+            <span className="neofetch-label">OS</span>
+            <span className="neofetch-value">Arch Linux x86_64</span>
+          </div>
+          <div className="neofetch-row">
             <span className="neofetch-label">Host</span>
-            <span className="neofetch-value">NASA Winner Workstation</span>
+            <span className="neofetch-value">Portfolio Workstation</span>
           </div>
           <div className="neofetch-row">
             <span className="neofetch-label">Kernel</span>
-            <span className="neofetch-value">Engineering Mindset v1.0</span>
+            <span className="neofetch-value">6.12.1-arch1-1</span>
           </div>
           <div className="neofetch-row">
-            <span className="neofetch-label">Uptime</span>
-            <span className="neofetch-value">∞ (High Availability)</span>
+            <span className="neofetch-label">WM</span>
+            <span className="neofetch-value">Hyprland</span>
+          </div>
+          <div className="neofetch-row">
+            <span className="neofetch-label">Shell</span>
+            <span className="neofetch-value">zsh 5.9</span>
+          </div>
+          <div className="neofetch-row">
+            <span className="neofetch-label">Terminal</span>
+            <span className="neofetch-value">foot</span>
+          </div>
+          <div className="neofetch-row">
+            <span className="neofetch-label">Editor</span>
+            <span className="neofetch-value">Neovim 0.10</span>
           </div>
           <div className="neofetch-row">
             <span className="neofetch-label">Role</span>
             <span className="neofetch-value">Full Stack · DevOps · ML</span>
           </div>
           <div className="neofetch-row">
-            <span className="neofetch-label">Focus</span>
-            <span className="neofetch-value">AI-Native Web Systems</span>
+            <span className="neofetch-label">CPU</span>
+            <span className="neofetch-value">AMD Ryzen 7 (simulated)</span>
+          </div>
+          <div className="neofetch-row">
+            <span className="neofetch-label">Memory</span>
+            <span className="neofetch-value">5.2 GiB / 16.0 GiB</span>
           </div>
           <div className="neofetch-colors">
             {['#f7768e', '#ff9e64', '#e0af68', '#9ece6a', '#73daca', '#7dcfff', '#7aa2f7', '#bb9af7'].map((color, i) => (
@@ -461,7 +505,7 @@ export const commands: Record<string, CommandHandler> = {
     output: (
       <div style={{ lineHeight: 1.8 }}>
         <div style={{ color: 'var(--accent-primary)', fontSize: '18px', fontWeight: 700, marginBottom: '12px' }}>
-          👋 Hey, I&apos;m Dhruv!
+          Hey, I&apos;m Dhruv!
         </div>
         <div style={{ marginBottom: '12px' }}>
           <span style={{ color: 'var(--accent-tertiary)' }}>Full-Stack Developer</span> •{' '}
@@ -477,14 +521,22 @@ export const commands: Record<string, CommandHandler> = {
           Currently completing B.Tech at <span style={{ color: 'var(--accent-cyan)' }}>LPU</span> (8.72 CGPA).
         </div>
         <div style={{ marginBottom: '12px', padding: '12px', background: 'var(--bg-tertiary)', borderRadius: '8px', borderLeft: '3px solid var(--accent-warning)' }}>
-          🏆 <span style={{ color: 'var(--accent-warning)' }}>NASA Space Apps 2025 — Global Honorable Mention</span>
+          [*] <span style={{ color: 'var(--accent-warning)' }}>NASA Space Apps 2025 — Global Honorable Mention</span>
           <br />
           <span style={{ color: 'var(--text-muted)', fontSize: '13px' }}>Recognized among top teams worldwide from 11,500+ submissions for CALYX</span>
         </div>
         <div style={{ padding: '12px', background: 'var(--bg-tertiary)', borderRadius: '8px', borderLeft: '3px solid var(--accent-cyan)' }}>
-          🥇 <span style={{ color: 'var(--accent-cyan)' }}>Innov-a-thon — National Top 100</span>
+          [*] <span style={{ color: 'var(--accent-cyan)' }}>Innov-a-thon — National Top 100</span>
           <br />
           <span style={{ color: 'var(--text-muted)', fontSize: '13px' }}>NIT Rourkela national competition</span>
+        </div>
+        <div style={{ marginTop: '12px', padding: '12px', background: 'var(--bg-tertiary)', borderRadius: '8px', borderLeft: '3px solid var(--accent-primary)' }}>
+          <span style={{ color: 'var(--accent-primary)' }}>See the traditional portfolio:</span>{' '}
+          <a href={process.env.NEXT_PUBLIC_NON_TECH_PORTFOLIO_URL || 'https://dhruv-portfolio.vercel.app'}
+             target="_blank" rel="noopener noreferrer"
+             style={{ color: 'var(--accent-cyan)', textDecoration: 'underline' }}>
+            dhruv-portfolio.vercel.app
+          </a>
         </div>
       </div>
     ),
@@ -494,7 +546,7 @@ export const commands: Record<string, CommandHandler> = {
     output: (
       <div>
         <div style={{ color: 'var(--accent-primary)', fontWeight: 600, marginBottom: '16px' }}>
-          🚀 Featured Projects:
+          Featured Projects:
         </div>
         {PROJECTS.map((project, i) => (
           <div key={i} style={{ marginBottom: '24px', paddingLeft: '16px', borderLeft: '2px solid var(--border-color)' }}>
@@ -518,7 +570,7 @@ export const commands: Record<string, CommandHandler> = {
     output: (
       <div>
         <div style={{ color: 'var(--accent-primary)', fontWeight: 600, marginBottom: '12px' }}>
-          💼 Professional History:
+          Professional History:
         </div>
         <div style={{ padding: '16px', background: 'var(--bg-tertiary)', borderRadius: '8px', border: '1px solid var(--border-color)' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '8px', flexWrap: 'wrap', gap: '8px' }}>
@@ -532,13 +584,19 @@ export const commands: Record<string, CommandHandler> = {
           </div>
           <ul style={{ color: 'var(--text-secondary)', margin: 0, paddingLeft: '20px', lineHeight: 1.8 }}>
             <li>
-              <strong style={{ color: 'var(--text-primary)' }}>Performance Engineering:</strong> Built responsive client websites with Next.js + Tailwind CSS. Achieved <span style={{ color: 'var(--accent-tertiary)' }}>99/100 Core Web Vitals</span>.
+              <strong style={{ color: 'var(--text-primary)' }}>UI/UX Development:</strong> Developed responsive client websites focusing on UI/UX, mobile-first layouts, and performance optimization.
             </li>
             <li>
-              <strong style={{ color: 'var(--text-primary)' }}>Backend Automation:</strong> Integrated NodeMailer + Firebase for automated enquiry systems and centralized lead management pipelines.
+              <strong style={{ color: 'var(--text-primary)' }}>Frontend Architecture:</strong> Built front-end systems using Next.js, Tailwind CSS, and semantic HTML/CSS with clean component architecture.
+            </li>
+            <li>
+              <strong style={{ color: 'var(--text-primary)' }}>Backend Automation:</strong> Automated enquiry workflows using NodeMailer and integrated Firebase with Google Sheets API for centralized lead management.
             </li>
             <li>
               <strong style={{ color: 'var(--text-primary)' }}>SEO Strategy:</strong> Implemented structured JSON-LD schemas and semantic HTML5, driving 40% increase in organic traffic.
+            </li>
+            <li>
+              <strong style={{ color: 'var(--text-primary)' }}>Project Delivery:</strong> Managed end-to-end delivery from requirement gathering through deployment, using Git-based workflows and CI/CD pipelines.
             </li>
           </ul>
         </div>
@@ -550,7 +608,7 @@ export const commands: Record<string, CommandHandler> = {
     output: (
       <div>
         <div style={{ color: 'var(--accent-primary)', fontWeight: 600, marginBottom: '12px' }}>
-          🛠️ Technical Stack:
+          Technical Stack:
         </div>
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px' }}>
           <div>
@@ -741,7 +799,7 @@ export const commands: Record<string, CommandHandler> = {
             <pre style={{ color: 'var(--accent-error)', margin: 0, fontFamily: 'var(--font-mono)' }}>{`
   ┌─────────────────────────────────────────┐
   │                                         │
-  │   Nice try. 😈                          │
+  │   Nice try. ;)                          │
   │                                         │
   │   This is a portfolio, not a server.    │
   │   But I appreciate the audacity.        │
@@ -845,6 +903,367 @@ export const commands: Record<string, CommandHandler> = {
     const lines = text.split('\n');
     const outText = lines.slice(Math.max(lines.length - linesCount, 0)).join('\n');
     return { output: <pre style={{ margin: 0, whiteSpace: 'pre-wrap', fontFamily: 'var(--font-mono)' }}>{outText}</pre>, rawText: outText };
+  },
+
+  // ═══════════════════════════════════════════
+  // Easter Egg & Fun Commands
+  // ═══════════════════════════════════════════
+
+  sl: () => {
+    const train = `      ====        ________                ___________
+  _D _|  |_______/        \\__I_I_____===__|_________|
+   |(_)---  |   H\\________/ |   |        =|___ ___|
+   /     |  |   H  |  |     |   |         ||_| |_||
+  |      |  |   H  |__--------------------| [___] |
+  | ________|___H__/__|_____/[][]~\\_______|       |
+  |/ |   |-----------I_____I [][] []  D   |=======|_
+__/ =| o |=-~~\\  /~~\\  /~~\\  /~~\\ ____Y___________|__
+ |/-=|___|=    ||    ||    ||    |_____/~\\___/
+  \\_/      \\O=====O=====O=====O_/      \\_/`;
+
+    return {
+      output: (
+        <div>
+          <pre style={{ margin: 0, color: 'var(--accent-warning)', fontFamily: 'var(--font-mono)', fontSize: '11px', lineHeight: 1.3 }}>
+            {train}
+          </pre>
+          <div style={{ color: 'var(--text-muted)', marginTop: '8px', fontSize: '12px' }}>
+            You meant <span style={{ color: 'var(--accent-primary)' }}>ls</span>, didn&apos;t you?
+          </div>
+        </div>
+      ),
+    };
+  },
+
+  cowsay: (args) => {
+    const message = args.length > 0 ? args.join(' ') : 'moo!';
+    const border = '-'.repeat(message.length + 2);
+    const cow = `        \\   ^__^
+         \\  (oo)\\_______
+            (__)\\       )\\/\\
+                ||----w |
+                ||     ||`;
+    return {
+      output: (
+        <pre style={{ margin: 0, color: 'var(--text-primary)', fontFamily: 'var(--font-mono)' }}>
+{` ${border}
+< ${message} >
+ ${border}
+${cow}`}
+        </pre>
+      ),
+    };
+  },
+
+  figlet: (args) => {
+    const text = args.join(' ') || 'DHRUV';
+    // Simple big text using block characters
+    const charMap: Record<string, string[]> = {
+      'A': ['  █  ','█   █','█████','█   █','█   █'],
+      'B': ['████ ','█   █','████ ','█   █','████ '],
+      'C': [' ████','█    ','█    ','█    ',' ████'],
+      'D': ['████ ','█   █','█   █','█   █','████ '],
+      'E': ['█████','█    ','███  ','█    ','█████'],
+      'F': ['█████','█    ','███  ','█    ','█    '],
+      'G': [' ████','█    ','█  ██','█   █',' ████'],
+      'H': ['█   █','█   █','█████','█   █','█   █'],
+      'I': ['█████','  █  ','  █  ','  █  ','█████'],
+      'J': ['█████','    █','    █','█   █',' ███ '],
+      'K': ['█   █','█  █ ','███  ','█  █ ','█   █'],
+      'L': ['█    ','█    ','█    ','█    ','█████'],
+      'M': ['█   █','██ ██','█ █ █','█   █','█   █'],
+      'N': ['█   █','██  █','█ █ █','█  ██','█   █'],
+      'O': [' ███ ','█   █','█   █','█   █',' ███ '],
+      'P': ['████ ','█   █','████ ','█    ','█    '],
+      'Q': [' ███ ','█   █','█ █ █','█  █ ',' ██ █'],
+      'R': ['████ ','█   █','████ ','█  █ ','█   █'],
+      'S': [' ████','█    ',' ███ ','    █','████ '],
+      'T': ['█████','  █  ','  █  ','  █  ','  █  '],
+      'U': ['█   █','█   █','█   █','█   █',' ███ '],
+      'V': ['█   █','█   █','█   █',' █ █ ','  █  '],
+      'W': ['█   █','█   █','█ █ █','██ ██','█   █'],
+      'X': ['█   █',' █ █ ','  █  ',' █ █ ','█   █'],
+      'Y': ['█   █',' █ █ ','  █  ','  █  ','  █  '],
+      'Z': ['█████','   █ ','  █  ',' █   ','█████'],
+      ' ': ['     ','     ','     ','     ','     '],
+      '!': ['  █  ','  █  ','  █  ','     ','  █  '],
+    };
+    
+    const lines = [0,1,2,3,4].map(row => 
+      text.toUpperCase().split('').map(ch => (charMap[ch] || charMap[' '])[row]).join(' ')
+    ).join('\n');
+
+    return {
+      output: (
+        <pre style={{ margin: 0, color: 'var(--accent-primary)', fontFamily: 'var(--font-mono)', fontSize: '12px', lineHeight: 1.2 }}>
+          {lines}
+        </pre>
+      ),
+    };
+  },
+
+  htop: () => {
+    const processes = [
+      { pid: 1, user: 'root', cpu: 0.1, mem: 0.3, cmd: '/sbin/init' },
+      { pid: 420, user: 'dhruv', cpu: 12.4, mem: 4.2, cmd: 'hyprland' },
+      { pid: 421, user: 'dhruv', cpu: 8.7, mem: 3.1, cmd: 'waybar' },
+      { pid: 500, user: 'dhruv', cpu: 24.6, mem: 8.5, cmd: 'firefox' },
+      { pid: 501, user: 'dhruv', cpu: 6.3, mem: 2.8, cmd: 'foot' },
+      { pid: 510, user: 'dhruv', cpu: 3.2, mem: 1.4, cmd: 'nvim' },
+      { pid: 600, user: 'dhruv', cpu: 15.8, mem: 12.3, cmd: 'next-server (portfolio)' },
+      { pid: 601, user: 'dhruv', cpu: 2.1, mem: 1.0, cmd: 'node (dev)' },
+      { pid: 700, user: 'dhruv', cpu: 0.5, mem: 0.8, cmd: 'pipewire' },
+      { pid: 800, user: 'dhruv', cpu: 1.2, mem: 0.6, cmd: 'mako' },
+    ];
+
+    const bar = (pct: number, color: string, width: number = 20) => {
+      const filled = Math.round(pct / 100 * width);
+      return (
+        <span>
+          <span style={{ color }}>{`[${'|'.repeat(filled)}${' '.repeat(width - filled)}]`}</span>
+          <span style={{ color: 'var(--text-muted)' }}> {pct.toFixed(1)}%</span>
+        </span>
+      );
+    };
+
+    return {
+      output: (
+        <div style={{ fontFamily: 'var(--font-mono)', fontSize: '12px' }}>
+          <div style={{ marginBottom: '8px', display: 'flex', gap: '24px' }}>
+            <div>CPU {bar(74.9, 'var(--accent-primary)')}</div>
+            <div>Mem {bar(34.0, 'var(--accent-tertiary)')}</div>
+          </div>
+          <div style={{ marginBottom: '4px', color: 'var(--accent-cyan)', fontWeight: 600 }}>
+            {'PID'.padEnd(8)}{'USER'.padEnd(10)}{'%CPU'.padEnd(8)}{'%MEM'.padEnd(8)}COMMAND
+          </div>
+          {processes.map(p => (
+            <div key={p.pid} style={{ color: p.cpu > 10 ? 'var(--accent-warning)' : 'var(--text-secondary)' }}>
+              {String(p.pid).padEnd(8)}{p.user.padEnd(10)}{p.cpu.toFixed(1).padStart(5).padEnd(8)}{p.mem.toFixed(1).padStart(5).padEnd(8)}{p.cmd}
+            </div>
+          ))}
+          <div style={{ marginTop: '8px', color: 'var(--text-muted)' }}>
+            Tasks: {processes.length}, Load average: 0.42, 0.31, 0.27
+          </div>
+        </div>
+      ),
+    };
+  },
+
+  screenfetch: () => {
+    const ascii = `                  -\`
+                 .o+\`
+                \`ooo/
+               \`+oooo:
+              \`+oooooo:
+              -+oooooo+:
+            \`/:-:++oooo+:
+           \`/++++/+++++++:
+          \`/++++++++++++++:
+         \`/+++ooooooooooooo/\`
+        ./ooosssso++osssssso+\`
+       .oossssso-\`\`\`/ossssss+\`
+      -osssssso.      :ssssso.
+     :osssssss/        osssso+
+    /ossssssss/        +sssso/-
+  \`/ossssso+/:-        -:/+oss+
+ \`+sso+:-\`                .-/+o
+ \`+:.                        -/`;
+
+    return {
+      output: (
+        <div className="neofetch">
+          <pre className="neofetch-ascii">{ascii}</pre>
+          <div className="neofetch-info">
+            <div className="neofetch-title">dhruv@arch</div>
+            <div className="neofetch-separator">────────────────────</div>
+            <div className="neofetch-row"><span className="neofetch-label">OS</span><span className="neofetch-value">Arch Linux x86_64</span></div>
+            <div className="neofetch-row"><span className="neofetch-label">Host</span><span className="neofetch-value">Portfolio Workstation</span></div>
+            <div className="neofetch-row"><span className="neofetch-label">Kernel</span><span className="neofetch-value">6.12.1-arch1-1</span></div>
+            <div className="neofetch-row"><span className="neofetch-label">WM</span><span className="neofetch-value">Hyprland</span></div>
+            <div className="neofetch-row"><span className="neofetch-label">Shell</span><span className="neofetch-value">zsh 5.9</span></div>
+            <div className="neofetch-row"><span className="neofetch-label">Terminal</span><span className="neofetch-value">foot</span></div>
+            <div className="neofetch-row"><span className="neofetch-label">Editor</span><span className="neofetch-value">Neovim 0.10</span></div>
+            <div className="neofetch-row"><span className="neofetch-label">CPU</span><span className="neofetch-value">AMD Ryzen 7 (simulated)</span></div>
+            <div className="neofetch-row"><span className="neofetch-label">GPU</span><span className="neofetch-value">NVIDIA RTX (simulated)</span></div>
+            <div className="neofetch-row"><span className="neofetch-label">Memory</span><span className="neofetch-value">5.2 GiB / 16.0 GiB</span></div>
+            <div className="neofetch-colors">
+              {['#f7768e', '#ff9e64', '#e0af68', '#9ece6a', '#73daca', '#7dcfff', '#7aa2f7', '#bb9af7'].map((color, i) => (
+                <div key={i} className="neofetch-color" style={{ background: color }} />
+              ))}
+            </div>
+          </div>
+        </div>
+      ),
+    };
+  },
+
+  vim: () => ({
+    output: (
+      <div style={{ fontFamily: 'var(--font-mono)' }}>
+        <pre style={{ color: 'var(--accent-primary)', margin: 0 }}>{`
+  ╔══════════════════════════════════════╗
+  ║                                      ║
+  ║   You're now trapped in Vim!          ║
+  ║                                      ║
+  ║   Just kidding. This is a terminal   ║
+  ║   emulator, not actual Vim.          ║
+  ║                                      ║
+  ║   But if you want the REAL thing,    ║
+  ║   check out my Neovim config:        ║
+  ║                                      ║
+  ║   Type: cat .config/nvim/init.lua    ║
+  ║                                      ║
+  ║   Hint: :q won't work here. ;)      ║
+  ║                                      ║
+  ╚══════════════════════════════════════╝`}</pre>
+      </div>
+    ),
+  }),
+
+  apt: (args) => {
+    if (args[0] === 'install' && args[1]) {
+      const pkg = args.slice(1).join(' ');
+      if (pkg.includes('girlfriend') || pkg.includes('social-life')) {
+        return {
+          output: (
+            <div style={{ fontFamily: 'var(--font-mono)' }}>
+              <div>Reading package lists... Done</div>
+              <div>Building dependency tree... Done</div>
+              <div style={{ color: 'var(--accent-error)' }}>E: Unable to locate package {pkg}</div>
+              <div style={{ color: 'var(--text-muted)', marginTop: '4px' }}>
+                Tip: This package is not available in any repository. Have you tried going outside?
+              </div>
+            </div>
+          ),
+        };
+      }
+      return {
+        output: (
+          <div style={{ fontFamily: 'var(--font-mono)' }}>
+            <div style={{ color: 'var(--accent-warning)' }}>
+              E: This is Arch Linux. We use <span style={{ color: 'var(--accent-primary)' }}>pacman</span> here, btw.
+            </div>
+          </div>
+        ),
+      };
+    }
+    return { output: <span style={{ color: 'var(--accent-warning)' }}>This is Arch Linux. We use <span style={{ color: 'var(--accent-primary)' }}>pacman</span> here, btw.</span> };
+  },
+
+  pacman: (args) => {
+    if (args[0] === '-S' && args[1]) {
+      const pkg = args.slice(1).join(' ');
+      if (pkg.includes('girlfriend') || pkg.includes('social-life')) {
+        return {
+          output: (
+            <div style={{ fontFamily: 'var(--font-mono)' }}>
+              <div>:: Synchronizing package databases...</div>
+              <div>resolving dependencies...</div>
+              <div style={{ color: 'var(--accent-error)' }}>error: target not found: {pkg}</div>
+              <div style={{ color: 'var(--text-muted)', marginTop: '4px' }}>
+                Have you checked the AUR? Oh wait, they don&apos;t have it either.
+              </div>
+            </div>
+          ),
+        };
+      }
+      return {
+        output: (
+          <div style={{ fontFamily: 'var(--font-mono)' }}>
+            <div>:: Synchronizing package databases...</div>
+            <div style={{ color: 'var(--accent-warning)' }}>warning: {pkg} is simulated — this is a portfolio, btw.</div>
+          </div>
+        ),
+      };
+    }
+    if (args[0] === '-Syu') {
+      return {
+        output: (
+          <div style={{ fontFamily: 'var(--font-mono)' }}>
+            <div>:: Synchronizing package databases...</div>
+            <div> core is up to date</div>
+            <div> extra is up to date</div>
+            <div> multilib is up to date</div>
+            <div>:: Starting full system upgrade...</div>
+            <div style={{ color: 'var(--accent-tertiary)' }}> there is nothing to do</div>
+            <div style={{ color: 'var(--text-muted)', marginTop: '4px' }}>System already up to date. (This is a portfolio, btw.)</div>
+          </div>
+        ),
+      };
+    }
+    return { output: <span style={{ color: 'var(--text-muted)' }}>Usage: pacman -S &lt;package&gt; | pacman -Syu</span> };
+  },
+
+  ping: (args) => {
+    const host = args[0] || 'localhost';
+    const pings = Array.from({ length: 4 }, (_, i) => {
+      const time = (0.02 + Math.random() * 0.08).toFixed(3);
+      return `64 bytes from ${host === 'localhost' ? '127.0.0.1' : host}: icmp_seq=${i + 1} ttl=64 time=${time} ms`;
+    });
+    const avg = (pings.reduce((s, p) => s + parseFloat(p.split('time=')[1]), 0) / 4).toFixed(3);
+
+    return {
+      output: (
+        <div style={{ fontFamily: 'var(--font-mono)' }}>
+          <div>PING {host} ({host === 'localhost' ? '127.0.0.1' : host}) 56(84) bytes of data.</div>
+          {pings.map((line, i) => <div key={i}>{line}</div>)}
+          <div style={{ marginTop: '4px' }}>--- {host} ping statistics ---</div>
+          <div>4 packets transmitted, 4 received, 0% packet loss</div>
+          <div>rtt min/avg/max = 0.020/{avg}/0.100 ms</div>
+        </div>
+      ),
+    };
+  },
+
+  exit: () => {
+    return { output: '__EXIT__' };
+  },
+
+  portfolio: () => {
+    if (typeof window !== 'undefined') {
+      setTimeout(() => {
+        window.open(process.env.NEXT_PUBLIC_NON_TECH_PORTFOLIO_URL || 'https://dhruv-portfolio.vercel.app', '_self');
+      }, 1000);
+    }
+    return {
+      output: (
+        <div style={{ fontFamily: 'var(--font-mono)' }}>
+          <div style={{ color: 'var(--accent-primary)' }}>Redirecting...</div>
+          <div style={{ color: 'var(--text-muted)' }}>Taking you to the standard portfolio...</div>
+        </div>
+      )
+    };
+  },
+
+  cmatrix: () => {
+    // Generate a fake matrix rain snapshot
+    const cols = 60;
+    const rows = 12;
+    const chars = 'ﾊﾐﾋｰｳｼﾅﾓﾆｻﾜﾂｵﾘｱﾎﾃﾏｹﾒｴｶｷﾑﾕﾗｾﾈｽﾀﾇﾍ0123456789ABCDEF';
+    const matrixLines = Array.from({ length: rows }, () =>
+      Array.from({ length: cols }, () => chars[Math.floor(Math.random() * chars.length)]).join('')
+    );
+
+    return {
+      output: (
+        <div>
+          <pre style={{
+            margin: 0,
+            color: 'var(--accent-primary)',
+            fontFamily: 'var(--font-mono)',
+            fontSize: '11px',
+            lineHeight: 1.1,
+            opacity: 0.8,
+            textShadow: '0 0 5px var(--accent-primary)',
+          }}>
+            {matrixLines.join('\n')}
+          </pre>
+          <div style={{ color: 'var(--text-muted)', marginTop: '8px', fontSize: '12px' }}>
+            You took the red pill. Welcome to the Matrix.
+          </div>
+        </div>
+      ),
+    };
   },
 };
 

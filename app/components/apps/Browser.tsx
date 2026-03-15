@@ -3,12 +3,15 @@
 import React, { useState, useCallback, useEffect, useRef } from 'react';
 import { motion, AnimatePresence, useInView } from 'framer-motion';
 import {
+  Home, Folder, File, Server, Terminal as TermIcon, User, Layers,
   Globe, Search, ArrowLeft, ArrowRight, RotateCw,
   Lock, ExternalLink, X, Plus,
   ChevronDown, FileText, Briefcase, GraduationCap, MapPin,
-  Trophy, Award, Code2, Cloud, Brain,
+  Trophy, Award, Code2, Cloud, Brain, Cpu, Database,
   Mail, Github, Linkedin, ArrowUpRight
 } from 'lucide-react';
+import TiltedCard from '../ui/TiltedCard';
+import BrowserNavbar from './BrowserNavbar';
 import Image from 'next/image';
 
 /* ═══════════════ Exact Data from non-tech portfolio-data.ts ═══════════════ */
@@ -162,7 +165,8 @@ function HomePage({ openTab }: { openTab: (url: string, title: string) => void }
   }, []);
 
   return (
-    <div>
+    <div style={{ position: 'relative' }}>
+      <BrowserNavbar />
       {/* ── HERO ── */}
       <section style={{ position: 'relative', minHeight: '80vh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', overflow: 'hidden', padding: '48px 24px' }}>
         {/* Ambient glows */}
@@ -246,8 +250,34 @@ function HomePage({ openTab }: { openTab: (url: string, title: string) => void }
 
       <div style={sectionDivider} />
 
+      {/* ── STANDARD PORTFOLIO LINK ── */}
+      <section style={{ ...sectionPadding, textAlign: 'center', position: 'relative', overflow: 'hidden' }}>
+        <AnimateOnScroll>
+          <motion.div
+            whileHover={{ scale: 1.02 }}
+            style={{ ...glassCard, padding: '48px', cursor: 'pointer', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '24px' }}
+            onClick={() => window.open('https://dhruv-portfolio-nontech.vercel.app', '_blank')}
+          >
+            <div style={{ padding: '16px', borderRadius: '16px', background: V.accentDim, color: V.accent }}>
+              <FileText size={32} />
+            </div>
+            <div>
+              <h3 style={{ fontSize: '24px', fontWeight: 700, color: V.textPrimary, marginBottom: '12px' }}>Standard View</h3>
+              <p style={{ color: V.textSecondary, maxWidth: '500px', margin: '0 auto', lineHeight: 1.6 }}>
+                Experience my streamlined, non-technical portfolio tailored for recruiters and HR professionals.
+              </p>
+            </div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: V.accent, fontWeight: 600, marginTop: '8px' }}>
+              <span>View Standard Portfolio</span> <ArrowRight size={16} />
+            </div>
+          </motion.div>
+        </AnimateOnScroll>
+      </section>
+
+      <div style={sectionDivider} />
+
       {/* ── ABOUT ── */}
-      <section style={sectionPadding}>
+      <section id="about" style={sectionPadding}>
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '80px', alignItems: 'center' }}>
           <div>
             <AnimateOnScroll>
@@ -285,7 +315,7 @@ function HomePage({ openTab }: { openTab: (url: string, title: string) => void }
       <div style={sectionDivider} />
 
       {/* ── PROJECTS ── */}
-      <section style={sectionPadding}>
+      <section id="projects" style={sectionPadding}>
         <AnimateOnScroll>
           <p style={sectionLabel}>Projects</p>
           <h2 style={sectionTitle}><span style={gradientText}>Featured Engineering Work</span></h2>
@@ -301,18 +331,26 @@ function HomePage({ openTab }: { openTab: (url: string, title: string) => void }
               <AnimateOnScroll key={project.title} delay={0.1}>
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '48px', alignItems: 'center' }}>
                   {/* Image */}
-                  <motion.div
-                    whileHover={{ scale: 1.02 }}
-                    transition={{ type: 'spring', stiffness: 300, damping: 25 }}
-                    style={{ order: isEven ? 1 : 2, borderRadius: '16px', overflow: 'hidden', border: `1px solid ${V.borderGlass}`, position: 'relative', aspectRatio: '16/10' }}>
+                  <div style={{ order: isEven ? 1 : 2, position: 'relative', aspectRatio: '16/10', width: '100%' }}>
                     {project.image ? (
-                      <Image src={project.image} alt={project.title} fill style={{ objectFit: 'cover', objectPosition: 'top' }} />
+                      <TiltedCard
+                        imageSrc={project.image}
+                        altText={project.title}
+                        containerHeight="100%"
+                        containerWidth="100%"
+                        imageHeight="100%"
+                        imageWidth="100%"
+                        rotateAmplitude={12}
+                        scaleOnHover={1.05}
+                        showMobileWarning={false}
+                        showTooltip={false}
+                      />
                     ) : (
-                      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%', background: V.bgCard }}>
+                      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%', background: V.bgCard, borderRadius: '16px', border: `1px solid ${V.borderGlass}` }}>
                         <span style={{ fontSize: '32px', color: V.accent, opacity: 0.4, fontWeight: 700 }}>{project.title}</span>
                       </div>
                     )}
-                  </motion.div>
+                  </div>
                   {/* Text */}
                   <div style={{ order: isEven ? 2 : 1 }}>
                     {project.badge && <span style={{ ...badgeGlow, marginBottom: '16px' }}>{project.badge}</span>}
@@ -386,7 +424,7 @@ function HomePage({ openTab }: { openTab: (url: string, title: string) => void }
       <div style={sectionDivider} />
 
       {/* ── EXPERIENCE ── */}
-      <section style={sectionPadding}>
+      <section id="experience" style={sectionPadding}>
         <AnimateOnScroll>
           <p style={sectionLabel}>Experience</p>
           <h2 style={sectionTitle}><span style={gradientText}>Professional</span></h2>
@@ -469,7 +507,7 @@ function HomePage({ openTab }: { openTab: (url: string, title: string) => void }
       <div style={sectionDivider} />
 
       {/* ── CONTACT ── */}
-      <section style={{ ...sectionPadding, position: 'relative', overflow: 'hidden' }}>
+      <section id="contact" style={{ ...sectionPadding, position: 'relative', overflow: 'hidden' }}>
         <div style={{ position: 'absolute', inset: 0, pointerEvents: 'none' }}>
           <div style={{ position: 'absolute', bottom: '10%', left: '50%', transform: 'translateX(-50%)', width: '500px', height: '400px', borderRadius: '50%', filter: 'blur(160px)', opacity: 0.06, background: V.accent }} />
         </div>

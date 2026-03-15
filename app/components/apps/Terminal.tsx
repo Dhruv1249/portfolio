@@ -14,7 +14,11 @@ interface HistoryEntry {
   id?: string;
 }
 
-const Terminal = React.memo(function Terminal() {
+interface TerminalProps {
+  focused?: boolean;
+}
+
+const Terminal = React.memo(function Terminal({ focused }: TerminalProps) {
   const [history, setHistory] = useState<HistoryEntry[]>([]);
   const [input, setInput] = useState('');
   const [currentPath, setCurrentPath] = useState('~');
@@ -25,7 +29,7 @@ const Terminal = React.memo(function Terminal() {
   const [originalInput, setOriginalInput] = useState('');
   const [isExecuting, setIsExecuting] = useState(false);
 
-  const { openWindow } = useWindowManager();
+  const { openWindow, closeWindow, focusedWindowId } = useWindowManager();
   const { animations } = useTheme();
 
   const inputRef = useRef<HTMLInputElement>(null);
@@ -37,6 +41,15 @@ const Terminal = React.memo(function Terminal() {
       inputRef.current?.focus();
     }
   }, [isExecuting]);
+
+  // Auto-focus when window becomes focused, blur when unfocused
+  useEffect(() => {
+    if (focused && !isExecuting) {
+      inputRef.current?.focus();
+    } else if (!focused) {
+      inputRef.current?.blur();
+    }
+  }, [focused, isExecuting]);
 
   // Scroll to bottom on new output
   useEffect(() => {
@@ -87,6 +100,15 @@ const Terminal = React.memo(function Terminal() {
     // Handle clear command
     if (result.output === '__CLEAR__') {
       setHistory([]);
+      setIsExecuting(false);
+      return;
+    }
+
+    // Handle exit command
+    if (result.output === '__EXIT__') {
+      if (focusedWindowId) {
+        closeWindow(focusedWindowId);
+      }
       setIsExecuting(false);
       return;
     }
@@ -282,7 +304,6 @@ const Terminal = React.memo(function Terminal() {
           spellCheck={false}
           autoComplete="off"
           disabled={isExecuting}
-          autoFocus
         />
       </div>
 

@@ -6,10 +6,14 @@ import AppLauncher from './AppLauncher';
 import Tutorial from './Tutorial';
 import Notifications from './Notifications';
 import WindowManager from '../window/WindowManager';
+import KernelPanic from './KernelPanic';
+import ParticleBackground from '../effects/ParticleBackground';
 import { useWindowManager } from '../../contexts/WindowContext';
+import { useTheme } from '../../contexts/ThemeContext';
 
 export default function Desktop() {
   const { closeAppLauncher } = useWindowManager();
+  const { particleMode } = useTheme();
   const [showTutorial, setShowTutorial] = useState(false);
 
   // Auto-show tutorial on first visit
@@ -35,12 +39,14 @@ export default function Desktop() {
 
   return (
     <div className="desktop" onClick={handleDesktopClick}>
+      <ParticleBackground mode={particleMode as any} />
       <TopBar onShowTutorial={() => setShowTutorial(true)} />
       <div className="desktop-content">
         <WindowManager />
       </div>
       <AppLauncher />
       <Notifications />
+      <KernelPanic />
       <Tutorial show={showTutorial} onClose={handleCloseTutorial} />
     </div>
   );

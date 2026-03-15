@@ -2,14 +2,16 @@
 
 import React, { useState, useEffect } from 'react';
 import { useWindowManager, AppType } from '../../contexts/WindowContext';
-import { Terminal, Globe, FolderOpen, Code, Settings } from 'lucide-react';
+import { Terminal, Globe, FolderOpen, Code, Settings, FileText, AppWindow } from 'lucide-react';
 
 const APPS: { id: AppType; name: string; icon: React.ReactNode }[] = [
   { id: 'terminal', name: 'Terminal', icon: <Terminal size={28} /> },
   { id: 'browser', name: 'Browser', icon: <Globe size={28} /> },
   { id: 'filemanager', name: 'Files', icon: <FolderOpen size={28} /> },
   { id: 'neovim', name: 'Neovim', icon: <Code size={28} /> },
+  { id: 'pdfviewer', name: 'Resume', icon: <FileText size={28} /> },
   { id: 'settings', name: 'Settings', icon: <Settings size={28} /> },
+  { id: 'standard' as any, name: 'Standard View', icon: <AppWindow size={28} /> },
 ];
 
   export default function AppLauncher() {
@@ -28,8 +30,14 @@ const APPS: { id: AppType; name: string; icon: React.ReactNode }[] = [
       app.name.toLowerCase().includes(search.toLowerCase())
     );
 
-  const handleAppClick = (appType: AppType) => {
-    openWindow(appType);
+  const handleAppClick = (appType: AppType | string) => {
+    if (appType === 'standard') {
+      window.open('https://dhruv-portfolio-nontech.vercel.app', '_blank');
+      closeAppLauncher();
+      setSearch('');
+      return;
+    }
+    openWindow(appType as AppType);
     setSearch('');
   };
 

@@ -213,6 +213,8 @@ interface ThemeContextType {
   setProfile: (id: string) => void;
   animations: boolean;
   setAnimations: (val: boolean) => void;
+  particleMode: string;
+  setParticleMode: (mode: string) => void;
 }
 
 const ThemeContext = createContext<ThemeContextType>({
@@ -220,11 +222,14 @@ const ThemeContext = createContext<ThemeContextType>({
   setProfile: () => {},
   animations: true,
   setAnimations: () => {},
+  particleMode: 'nodes',
+  setParticleMode: () => {},
 });
 
 export function ThemeProvider({ children }: { children: React.ReactNode }) {
   const [activeProfile, setActiveProfile] = useState<ColorProfile>(COLOR_PROFILES[0]);
   const [animations, setAnimationsState] = useState(true);
+  const [particleMode, setParticleModeState] = useState<string>('nodes');
 
   // Load from localStorage on mount
   useEffect(() => {
@@ -243,12 +248,22 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
       setAnimationsState(isEnabled);
       document.body.classList.toggle('disable-animations', !isEnabled);
     }
+
+    const savedParticle = localStorage.getItem('portfolio-particles');
+    if (savedParticle) {
+      setParticleModeState(savedParticle);
+    }
   }, []);
 
   const setAnimations = useCallback((val: boolean) => {
     setAnimationsState(val);
     localStorage.setItem('portfolio-animations', val.toString());
     document.body.classList.toggle('disable-animations', !val);
+  }, []);
+
+  const setParticleMode = useCallback((mode: string) => {
+    setParticleModeState(mode);
+    localStorage.setItem('portfolio-particles', mode);
   }, []);
 
   const applyTheme = useCallback((profile: ColorProfile) => {
@@ -268,7 +283,7 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
   }, [applyTheme]);
 
   return (
-    <ThemeContext.Provider value={{ activeProfile, setProfile, animations, setAnimations }}>
+    <ThemeContext.Provider value={{ activeProfile, setProfile, animations, setAnimations, particleMode, setParticleMode }}>
       {children}
     </ThemeContext.Provider>
   );

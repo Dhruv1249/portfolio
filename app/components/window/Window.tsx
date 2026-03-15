@@ -70,7 +70,7 @@ export default function Window({
   const appContent = useMemo(() => {
     switch (appType) {
       case 'terminal':
-        return <Terminal />;
+        return <Terminal focused={focused} />;
       case 'browser':
         return <Browser />;
       case 'filemanager':
@@ -90,7 +90,7 @@ export default function Window({
       default:
         return null;
     }
-  }, [appType, appData]);
+  }, [appType, appData, focused]);
 
   return (
     <div
