@@ -345,7 +345,7 @@ function HomePage({ openTab }: { openTab: (url: string, title: string) => void }
           <motion.div
             whileHover={{ scale: 1.02 }}
             style={{ ...glassCard, padding: '48px', cursor: 'pointer', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '24px' }}
-            onClick={() => window.open('https://dhruv-portfolio-nontech.vercel.app', '_blank')}
+            onClick={() => window.open(process.env.NEXT_PUBLIC_NON_TECH_PORTFOLIO_URL, '_blank')}
           >
             <div style={{ padding: '16px', borderRadius: '16px', background: V.accentDim, color: V.accent }}>
               <FileText size={32} />
