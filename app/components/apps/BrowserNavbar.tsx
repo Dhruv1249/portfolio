@@ -51,14 +51,14 @@ export default function BrowserNavbar() {
         borderBottom: scrolled ? "1px solid var(--border-subtle)" : "1px solid transparent",
       }}
     >
-      <div style={{ maxWidth: '80rem', margin: '0 auto', padding: '0 2rem', display: 'flex', alignItems: 'center', justifyContent: 'space-between', height: '5rem', width: '100%' }}>
+      <div style={{ maxWidth: '80rem', margin: '0 auto', padding: '0 1.5rem', display: 'flex', alignItems: 'center', justifyContent: 'space-between', height: '5rem', width: '100%' }}>
         {/* Logo */}
         <a href="#" className="text-xl font-bold tracking-tight shrink-0" style={{ color: "var(--text-primary)", fontSize: '1.5rem' }}>
           Dhruv<span style={{ color: "var(--accent-primary, #2dd4bf)" }}>.</span>
         </a>
 
         {/* Desktop Nav */}
-        <div className="hidden md:flex items-center" style={{ gap: '2rem' }}>
+        <div className="hidden md:flex items-center" style={{ gap: '1.5rem' }}>
           {navLinks.map((link, i) => (
             <motion.a
               key={link.href}
@@ -164,10 +164,10 @@ export default function BrowserNavbar() {
                 initial={{ opacity: 0, x: -20 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ delay: navLinks.length * 0.06 }}
-                className="text-sm font-medium uppercase tracking-widest py-2 inline-flex items-center gap-2 transition-colors hover:text-[var(--accent)]"
-                style={{ color: "var(--text-secondary)" }}
+                className="text-base font-medium tracking-wide py-2 inline-flex items-center gap-2 transition-colors hover:text-[var(--accent)]"
+                style={{ color: "var(--text-secondary)", fontSize: '1.1rem' }}
               >
-                <FileText size={14} /> Resume
+                <FileText size={18} /> Resume
               </motion.a>
             </div>
           </motion.div>
