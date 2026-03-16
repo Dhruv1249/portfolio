@@ -126,6 +126,16 @@ export default function Settings() {
 
             <div className="settings-option">
               <div className="settings-option-info">
+                <h3>Certifications</h3>
+                <p>
+                  <a href="https://drive.google.com/file/d/1oC01o8KJWbJgoAvF1imNXfG5KLEQgu9r/view?usp=sharing" target="_blank" style={{ color: 'var(--accent-cyan)', marginRight: '16px' }}>Cloud Computing (NPTEL)</a>
+                  <a href="https://drive.google.com/file/d/1Ypk5IU8V_YzrDsZ1wsVm00OnfqWnwZol/view?usp=sharing" target="_blank" style={{ color: 'var(--accent-cyan)' }}>Large Language Models (NPTEL)</a>
+                </p>
+              </div>
+            </div>
+
+            <div className="settings-option">
+              <div className="settings-option-info">
                 <h3>Links</h3>
                 <p>
                   <a href="https://github.com/Dhruv1249" target="_blank" style={{ color: 'var(--accent-cyan)', marginRight: '16px' }}>GitHub</a>

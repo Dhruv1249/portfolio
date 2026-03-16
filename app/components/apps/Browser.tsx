@@ -91,6 +91,11 @@ const achievements = [
   { title: 'Innov-a-thon (NIT Rourkela)', award: 'National Top 100', detail: 'Competitive hackathon — rapid prototyping & system design' },
 ];
 
+const certifications = [
+  { title: 'Cloud Computing', issuer: 'NPTEL', link: 'https://drive.google.com/file/d/1oC01o8KJWbJgoAvF1imNXfG5KLEQgu9r/view?usp=sharing' },
+  { title: 'Introduction to Large Language Models', issuer: 'NPTEL', link: 'https://drive.google.com/file/d/1Ypk5IU8V_YzrDsZ1wsVm00OnfqWnwZol/view?usp=sharing' },
+];
+
 /* ═══════════════ Non-tech CSS Variables (inline) ═══════════════ */
 
 const V = {
@@ -499,6 +504,35 @@ function HomePage({ openTab }: { openTab: (url: string, title: string) => void }
                   <p style={{ color: V.textMuted, fontSize: '14px', margin: 0 }}>{ach.detail}</p>
                 </div>
               </motion.div>
+            </AnimateOnScroll>
+          ))}
+        </div>
+      </section>
+
+      <div style={sectionDivider} />
+
+      {/* ── CERTIFICATIONS ── */}
+      <section style={sectionPadding}>
+        <AnimateOnScroll>
+          <p style={sectionLabel}>Continuous Learning</p>
+          <h2 style={sectionTitle}><span style={gradientText}>Certifications</span></h2>
+        </AnimateOnScroll>
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '24px' }}>
+          {certifications.map((cert, i) => (
+            <AnimateOnScroll key={cert.title} delay={0.1 + i * 0.1}>
+              <motion.a href={cert.link} target="_blank" rel="noopener noreferrer" whileHover={{ scale: 1.02, y: -4 }} transition={{ type: 'spring', stiffness: 400, damping: 25 }}
+                style={{ ...glassCard, padding: '28px', display: 'flex', alignItems: 'flex-start', gap: '16px', cursor: 'pointer', height: '100%', textDecoration: 'none' }}>
+                <div style={{ padding: '12px', borderRadius: '12px', background: V.accentDim, color: V.accent, flexShrink: 0 }}>
+                  <Award size={22} />
+                </div>
+                <div>
+                  <p style={{ color: V.accent, fontWeight: 700, fontSize: '14px', marginBottom: '4px' }}>{cert.issuer}</p>
+                  <h4 style={{ color: V.textPrimary, fontWeight: 700, fontSize: '18px', marginBottom: '8px' }}>{cert.title}</h4>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '12px', color: V.textMuted, marginTop: '12px' }}>
+                    <span>View Certificate</span> <ExternalLink size={12} />
+                  </div>
+                </div>
+              </motion.a>
             </AnimateOnScroll>
           ))}
         </div>
