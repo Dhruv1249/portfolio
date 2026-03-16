@@ -15,10 +15,10 @@ const personalInfo = {
 };
 
 const navLinks = [
-  { label: "About", href: "#about" },
   { label: "Projects", href: "#projects" },
   { label: "Experience", href: "#experience" },
-  { label: "Contact", href: "#contact" },
+  { label: "Certificates", href: "#certificates" },
+  { label: "Achievements", href: "#achievements" },
 ];
 
 export default function BrowserNavbar() {
@@ -26,9 +26,16 @@ export default function BrowserNavbar() {
   const [mobileOpen, setMobileOpen] = useState(false);
 
   useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 50);
-    window.addEventListener("scroll", onScroll);
-    return () => window.removeEventListener("scroll", onScroll);
+    const container = document.querySelector('.browser-content');
+    if (container) {
+      const onScroll = () => setScrolled(container.scrollTop > 50);
+      container.addEventListener("scroll", onScroll);
+      return () => container.removeEventListener("scroll", onScroll);
+    } else {
+      const onScroll = () => setScrolled(window.scrollY > 50);
+      window.addEventListener("scroll", onScroll);
+      return () => window.removeEventListener("scroll", onScroll);
+    }
   }, []);
 
   return (
@@ -36,9 +43,9 @@ export default function BrowserNavbar() {
       initial={{ y: -80, opacity: 0 }}
       animate={{ y: 0, opacity: 1 }}
       transition={{ duration: 0.8, delay: 0.2, ease: [0.25, 0.4, 0.25, 1] }}
-      className="sticky top-0 w-full z-50 transition-all duration-500"
+      className="sticky top-0 left-0 right-0 z-50 transition-all duration-500"
       style={{
-        background: scrolled ? "rgba(5, 5, 5, 0.7)" : "transparent",
+        background: scrolled ? "rgba(var(--bg-primary-rgb, 5, 5, 5), 0.7)" : "transparent",
         backdropFilter: scrolled ? "blur(20px) saturate(180%)" : "none",
         WebkitBackdropFilter: scrolled ? "blur(20px) saturate(180%)" : "none",
         borderBottom: scrolled ? "1px solid var(--border-subtle)" : "1px solid transparent",
@@ -47,7 +54,7 @@ export default function BrowserNavbar() {
       <div style={{ maxWidth: '1280px', margin: '0 auto', padding: '0 32px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', height: '80px', width: '100%' }}>
         {/* Logo */}
         <a href="#" className="text-xl font-bold tracking-tight" style={{ color: "var(--text-primary)" }}>
-          DHRUV<span style={{ color: "var(--accent)" }}>.</span>
+          DHRUV<span style={{ color: "var(--accent-primary, #2dd4bf)" }}>.</span>
         </a>
 
         {/* Desktop Nav */}
@@ -59,7 +66,7 @@ export default function BrowserNavbar() {
               initial={{ opacity: 0, y: -10 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.4 + i * 0.08 }}
-              className="text-xs font-medium uppercase tracking-[0.15em] transition-colors duration-300 hover:text-[var(--accent)]"
+              className="text-xs font-medium uppercase tracking-[0.15em] transition-colors duration-300 hover:text-[var(--accent-primary, #2dd4bf)]"
               style={{ color: "var(--text-muted)" }}
             >
               {link.label}
@@ -72,7 +79,7 @@ export default function BrowserNavbar() {
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ delay: 0.75 }}
-            className="text-xs font-medium uppercase tracking-[0.15em] inline-flex items-center gap-1.5 transition-colors duration-300 hover:text-[var(--accent)]"
+            className="text-xs font-medium uppercase tracking-[0.15em] inline-flex items-center gap-1.5 transition-colors duration-300 hover:text-[var(--accent-primary, #2dd4bf)]"
             style={{ color: "var(--text-muted)" }}
           >
             <FileText size={13} /> Resume
@@ -83,21 +90,22 @@ export default function BrowserNavbar() {
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ delay: 0.85 }}
-            className="text-xs font-semibold uppercase tracking-wider px-5 py-2.5 rounded-xl transition-all duration-300"
+            className="text-xs font-semibold uppercase tracking-wider rounded-xl transition-all duration-300"
             style={{
-              background: "var(--accent-dim)",
-              color: "var(--accent)",
-              border: "1px solid var(--accent-glow)",
+              padding: "0.875rem 1.75rem",
+              background: "var(--accent-dim, rgba(45,212,191,0.12))",
+              color: "var(--accent-primary, #2dd4bf)",
+              border: "1px solid var(--accent-glow, rgba(45,212,191,0.25))",
             }}
             onMouseEnter={(e) => {
-              e.currentTarget.style.background = "var(--accent)";
-              e.currentTarget.style.color = "var(--bg-primary)";
+              e.currentTarget.style.background = "var(--accent-primary, #2dd4bf)";
+              e.currentTarget.style.color = "#050505";
               e.currentTarget.style.transform = "translateY(-1px)";
-              e.currentTarget.style.boxShadow = "0 4px 20px var(--accent-glow)";
+              e.currentTarget.style.boxShadow = "0 4px 20px var(--accent-glow, rgba(45,212,191,0.25))";
             }}
             onMouseLeave={(e) => {
-              e.currentTarget.style.background = "var(--accent-dim)";
-              e.currentTarget.style.color = "var(--accent)";
+              e.currentTarget.style.background = "var(--accent-dim, rgba(45,212,191,0.12))";
+              e.currentTarget.style.color = "var(--accent-primary, #2dd4bf)";
               e.currentTarget.style.transform = "translateY(0)";
               e.currentTarget.style.boxShadow = "none";
             }}

@@ -8,8 +8,15 @@ import {
   Lock, ExternalLink, X, Plus,
   ChevronDown, FileText, Briefcase, GraduationCap, MapPin,
   Trophy, Award, Code2, Cloud, Brain, Cpu, Database,
-  Mail, Github, Linkedin, ArrowUpRight
+  Mail, Github, Linkedin, ArrowUpRight, Calendar
 } from 'lucide-react';
+import {
+  SiReact, SiNextdotjs, SiTypescript, SiJavascript, SiPython,
+  SiNodedotjs, SiDocker, SiGooglecloud, SiFirebase, SiMongodb,
+  SiTailwindcss, SiGit, SiGithub, SiFastapi, SiHtml5, SiCss,
+  SiScikitlearn, SiNumpy, SiPandas, SiCplusplus, SiPostgresql, SiTensorflow
+} from "react-icons/si";
+import { TbBinaryTree } from "react-icons/tb";
 import TiltedCard from '../ui/TiltedCard';
 import BrowserNavbar from './BrowserNavbar';
 import Image from 'next/image';
@@ -39,6 +46,7 @@ const focusIcons = [<Code2 key="c" size={22} />, <Cloud key="cl" size={22} />, <
 interface FeaturedProject {
   title: string; subtitle: string; description: string; tech: string[];
   badge?: string; github: string; live?: string; image?: string;
+  period?: string;
 }
 
 const featuredProjects: FeaturedProject[] = [
@@ -50,6 +58,7 @@ const featuredProjects: FeaturedProject[] = [
     github: 'https://github.com/Dhruv1249/Plant-Phenology-State-Detector',
     live: 'https://plant-phenology-state-detector.vercel.app/',
     image: '/calyx.png',
+    period: "Oct '25 — Nov '25",
   },
   {
     title: 'UrbanSwap', subtitle: 'AI Marketplace Listing Generator',
@@ -58,6 +67,7 @@ const featuredProjects: FeaturedProject[] = [
     github: 'https://github.com/Dhruv1249/ai-marketplace-assistant',
     live: 'https://ai-marketplace-assistant-162648101104.asia-south1.run.app/',
     image: '/urbanswap.png',
+    period: "Sep '25",
   },
   {
     title: 'PR Tracker', subtitle: 'Developer Collaboration Monitor',
@@ -66,18 +76,20 @@ const featuredProjects: FeaturedProject[] = [
     github: 'https://github.com/Dhruv1249/Pr-Tracker',
     live: 'https://pr-tracker-client.vercel.app/',
     image: '/pr-tracker.png',
+    period: "Jan '26 — Feb '26",
   },
 ];
 
 const additionalProjects = [
-  { title: 'Expense Tracker', short: 'MERN-stack financial management with interactive dashboards', tech: ['React', 'Node.js', 'MongoDB', 'REST'], github: 'https://github.com/Dhruv1249/expense-react-client', live: 'https://expense-react-client.vercel.app/' },
-  { title: 'Neovim Config', short: 'Custom dev environment with LSP, plugins & keybindings', tech: ['Lua', 'Neovim', 'LSP'], github: 'https://github.com/Dhruv1249/my-customized-nvim-config' },
+  { title: 'Expense Tracker', short: 'MERN-stack financial management with interactive dashboards', tech: ['React', 'Node.js', 'MongoDB', 'REST'], github: 'https://github.com/Dhruv1249/expense-react-client', live: 'https://expense-react-client.vercel.app/', period: "Jan '26" },
+  { title: 'Neovim Config', short: 'Custom dev environment with LSP, plugins & keybindings', tech: ['Lua', 'Neovim', 'LSP'], github: 'https://github.com/Dhruv1249/my-customized-nvim-config', period: "Jan '26 — Present" },
 ];
 
 const experience = {
   role: 'Freelance Full-Stack Developer',
   description: 'Building responsive client websites with Next.js, Tailwind, and Firebase. Automated enquiry systems and lead management pipelines.',
   tech: ['Next.js', 'Tailwind CSS', 'Firebase', 'NodeMailer'],
+  period: "Nov '25 — Present",
 };
 
 const education = [
@@ -87,14 +99,65 @@ const education = [
 ];
 
 const achievements = [
-  { title: 'NASA Space Apps Challenge', award: 'Global Honorable Mention', detail: 'One of the top 23 teams worldwide out of 11,000+ submissions' },
-  { title: 'Innov-a-thon (NIT Rourkela)', award: 'National Top 100', detail: 'Competitive hackathon — rapid prototyping & system design' },
+  { title: 'NASA Space Apps Challenge', award: 'Global Honorable Mention', detail: 'One of the top 23 teams worldwide out of 11,000+ submissions', period: "Nov '25" },
+  { title: 'Innov-a-thon (NIT Rourkela)', award: 'National Top 100', detail: 'Competitive hackathon — rapid prototyping & system design', period: "Oct '25" },
 ];
 
 const certifications = [
-  { title: 'Cloud Computing', issuer: 'NPTEL', link: 'https://drive.google.com/file/d/1oC01o8KJWbJgoAvF1imNXfG5KLEQgu9r/view?usp=sharing' },
-  { title: 'Introduction to Large Language Models', issuer: 'NPTEL', link: 'https://drive.google.com/file/d/1Ypk5IU8V_YzrDsZ1wsVm00OnfqWnwZol/view?usp=sharing' },
+  { title: 'Cloud Computing', issuer: 'NPTEL', link: 'https://drive.google.com/file/d/1oC01o8KJWbJgoAvF1imNXfG5KLEQgu9r/view?usp=sharing', period: "Apr '25" },
+  { title: 'Introduction to Large Language Models', issuer: 'NPTEL', link: 'https://drive.google.com/file/d/1Ypk5IU8V_YzrDsZ1wsVm00OnfqWnwZol/view?usp=sharing', period: "Apr '25" },
 ];
+
+interface SkillItem { name: string; icon: React.ReactNode; color: string; }
+interface SkillCategory { title: string; skills: SkillItem[]; }
+
+const skillCategories: SkillCategory[] = [
+  {
+    title: "Frontend",
+    skills: [
+      { name: "React", icon: <SiReact size={28} />, color: "#61DAFB" },
+      { name: "Next.js", icon: <SiNextdotjs size={28} />, color: "#ffffff" },
+      { name: "TypeScript", icon: <SiTypescript size={28} />, color: "#3178C6" },
+      { name: "JavaScript", icon: <SiJavascript size={28} />, color: "#F7DF1E" },
+      { name: "Tailwind", icon: <SiTailwindcss size={28} />, color: "#06B6D4" },
+      { name: "HTML/CSS", icon: <SiHtml5 size={28} />, color: "#E34F26" },
+    ],
+  },
+  {
+    title: "Backend & Databases",
+    skills: [
+      { name: "Node.js", icon: <SiNodedotjs size={28} />, color: "#339933" },
+      { name: "FastAPI", icon: <SiFastapi size={28} />, color: "#009688" },
+      { name: "MongoDB", icon: <SiMongodb size={28} />, color: "#47A248" },
+      { name: "Firebase", icon: <SiFirebase size={28} />, color: "#FFCA28" },
+    ],
+  },
+  {
+    title: "ML & Data Science",
+    skills: [
+      { name: "Python", icon: <SiPython size={28} />, color: "#3776AB" },
+      { name: "scikit-learn", icon: <SiScikitlearn size={28} />, color: "#F7931E" },
+      { name: "NumPy", icon: <SiNumpy size={28} />, color: "#013243" },
+      { name: "Pandas", icon: <SiPandas size={28} />, color: "#150458" },
+      { name: "XGBoost", icon: <TbBinaryTree size={28} />, color: "#FF6600" },
+    ],
+  },
+  {
+    title: "Cloud & DevOps",
+    skills: [
+      { name: "Docker", icon: <SiDocker size={28} />, color: "#2496ED" },
+      { name: "GCP", icon: <SiGooglecloud size={28} />, color: "#4285F4" },
+      { name: "Git", icon: <SiGit size={28} />, color: "#F05032" },
+      { name: "GitHub", icon: <SiGithub size={28} />, color: "#ffffff" },
+      { name: "CI/CD", icon: <SiGit size={28} />, color: "#E44332" },
+      { name: "Cloud Run", icon: <SiGooglecloud size={28} />, color: "#4285F4" },
+    ],
+  },
+];
+
+const allSkills = skillCategories.flatMap((c) => c.skills);
+const trailRow1 = [...allSkills.slice(0, 12), ...allSkills.slice(0, 12)];
+const trailRow2 = [...allSkills.slice(12), ...allSkills.slice(12)];
 
 /* ═══════════════ Non-tech CSS Variables (inline) ═══════════════ */
 
@@ -220,10 +283,24 @@ function HomePage({ openTab }: { openTab: (url: string, title: string) => void }
                 border: `1px solid ${V.accentGlow}`, textDecoration: 'none',
               }}><FileText size={16} /> View CV</a>
               <a href={`mailto:${personalInfo.email}`} style={{
-                padding: '14px 28px', borderRadius: '12px', fontSize: '14px', fontWeight: 600,
+                padding: '1rem 2.25rem', borderRadius: '0.75rem', fontSize: '0.875rem', fontWeight: 600,
                 border: `1px solid ${V.borderSubtle}`, color: V.textSecondary,
-                background: 'rgba(255,255,255,0.03)', textDecoration: 'none',
-              }}>Get In Touch</a>
+                background: 'rgba(255,255,255,0.03)', backdropFilter: 'blur(10px)',
+                textDecoration: 'none', transition: 'all 0.4s', cursor: 'pointer'
+              }}
+                 onMouseEnter={(e) => {
+                   e.currentTarget.style.borderColor = V.accent;
+                   e.currentTarget.style.color = '#050505';
+                   e.currentTarget.style.background = V.accent;
+                   e.currentTarget.style.transform = 'translateY(-2px)';
+                 }}
+                 onMouseLeave={(e) => {
+                   e.currentTarget.style.borderColor = V.borderSubtle;
+                   e.currentTarget.style.color = V.textSecondary;
+                   e.currentTarget.style.background = 'rgba(255,255,255,0.03)';
+                   e.currentTarget.style.transform = 'translateY(0)';
+                 }}
+              >Get In Touch</a>
             </motion.div>
           </div>
 
@@ -362,6 +439,11 @@ function HomePage({ openTab }: { openTab: (url: string, title: string) => void }
                     <h3 style={{ color: V.textPrimary, fontSize: '24px', fontWeight: 700, marginBottom: '8px', marginTop: project.badge ? '16px' : 0 }}>
                       {project.title} — {project.subtitle}
                     </h3>
+                    {project.period && (
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '12px', fontFamily: 'monospace', color: V.accent, marginBottom: '16px' }}>
+                        <Calendar size={14} /> {project.period}
+                      </div>
+                    )}
                     <p style={{ color: V.textSecondary, fontSize: '14px', lineHeight: 1.6, marginBottom: '24px' }}>{project.description}</p>
                     <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px', marginBottom: '24px' }}>
                       {project.tech.map(t => <span key={t} style={techPill}>{t}</span>)}
@@ -370,7 +452,7 @@ function HomePage({ openTab }: { openTab: (url: string, title: string) => void }
                       {project.live && (
                         <button onClick={() => openTab(project.live!, `${project.title} — Live`)} style={{
                           display: 'inline-flex', alignItems: 'center', gap: '8px', padding: '10px 20px',
-                          borderRadius: '12px', background: V.accent, color: V.bgPrimary,
+                          borderRadius: '12px', background: V.accent, color: '#050505',
                           fontWeight: 600, fontSize: '14px', border: 'none', cursor: 'pointer',
                         }}><ExternalLink size={15} /> Live Demo</button>
                       )}
@@ -402,6 +484,11 @@ function HomePage({ openTab }: { openTab: (url: string, title: string) => void }
                   style={{ ...glassCard, padding: '28px', height: '100%', display: 'flex', flexDirection: 'column', justifyContent: 'space-between', cursor: 'default' }}>
                   <div>
                     <h4 style={{ color: V.textPrimary, fontSize: '18px', fontWeight: 700, marginBottom: '8px' }}>{proj.title}</h4>
+                    {proj.period && (
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '12px', fontFamily: 'monospace', color: V.accent, marginBottom: '12px' }}>
+                        <Calendar size={12} /> {proj.period}
+                      </div>
+                    )}
                     <p style={{ color: V.textMuted, fontSize: '14px', marginBottom: '16px' }}>{proj.short}</p>
                     <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px', marginBottom: '20px' }}>
                       {proj.tech.map(t => <span key={t} style={techPill}>{t}</span>)}
@@ -428,6 +515,83 @@ function HomePage({ openTab }: { openTab: (url: string, title: string) => void }
 
       <div style={sectionDivider} />
 
+      {/* ── SKILLS ── */}
+      <section id="skills" style={sectionPadding}>
+        <div style={{ maxWidth: '1152px', margin: '0 auto' }}>
+          <AnimateOnScroll>
+            <div style={{ textAlign: 'center', marginBottom: '80px' }}>
+              <p style={sectionLabel}>Tech Stack</p>
+              <h2 style={sectionTitle}>
+                <span style={gradientText}>Core Toolkit</span>
+              </h2>
+              <p style={{ fontSize: '16px', color: V.textMuted, maxWidth: '600px', margin: '-24px auto 0' }}>
+                Technologies I work with daily to build production-ready systems.
+              </p>
+            </div>
+          </AnimateOnScroll>
+
+          {/* 2×2 Symmetric Category Grid */}
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '24px' }}>
+            {skillCategories.map((category, catIdx) => (
+              <AnimateOnScroll key={category.title} delay={catIdx * 0.1}>
+                <div style={{ ...glassCard, padding: '32px', height: '100%' }}>
+                  <h3 style={{ fontSize: '14px', fontFamily: 'monospace', letterSpacing: '0.2em', textTransform: 'uppercase', marginBottom: '32px', textAlign: 'center', color: V.accent }}>
+                    {category.title}
+                  </h3>
+                  <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'center', gap: '16px' }}>
+                    {category.skills.map(skill => (
+                      <motion.div key={skill.name}
+                        whileHover={{ scale: 1.08, y: -4 }}
+                        transition={{ type: "spring", stiffness: 400, damping: 20 }}
+                        style={{
+                          display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
+                          background: 'rgba(255,255,255,0.02)', border: `1px solid ${V.borderGlass}`, borderRadius: '16px',
+                          padding: '16px', gap: '12px', transition: 'all 0.3s', cursor: 'default',
+                          width: 'calc(33.333% - 11px)', minWidth: '80px'
+                        }}
+                      >
+                        <span style={{ color: skill.color, transition: 'all 0.3s' }}>{skill.icon}</span>
+                        <span style={{ fontSize: '11px', fontWeight: 500, textAlign: 'center', color: V.textMuted, lineHeight: 1.1 }}>
+                          {skill.name}
+                        </span>
+                      </motion.div>
+                    ))}
+                  </div>
+                </div>
+              </AnimateOnScroll>
+            ))}
+          </div>
+        </div>
+
+        {/* Moving Icon Trail */}
+        <div style={{ marginTop: '80px', padding: '40px 0', overflow: 'hidden', display: 'flex', flexDirection: 'column', gap: '20px' }}>
+          <div style={{ overflow: 'hidden' }}>
+            <motion.div style={{ display: 'flex', gap: '24px', width: 'max-content' }}
+              animate={{ x: [0, -1000] }} transition={{ repeat: Infinity, ease: "linear", duration: 30 }}>
+              {trailRow1.map((skill, i) => (
+                <div key={`r1-${skill.name}-${i}`} style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '12px 20px', borderRadius: '999px', background: 'rgba(255,255,255,0.02)', border: `1px solid ${V.borderSubtle}`, flexShrink: 0 }}>
+                  <span style={{ color: skill.color, opacity: 0.7 }}>{skill.icon}</span>
+                  <span style={{ fontSize: '14px', fontWeight: 500, whiteSpace: 'nowrap', color: V.textMuted }}>{skill.name}</span>
+                </div>
+              ))}
+            </motion.div>
+          </div>
+          <div style={{ overflow: 'hidden' }}>
+            <motion.div style={{ display: 'flex', gap: '24px', width: 'max-content' }}
+              animate={{ x: [-1000, 0] }} transition={{ repeat: Infinity, ease: "linear", duration: 30 }}>
+              {trailRow2.map((skill, i) => (
+                <div key={`r2-${skill.name}-${i}`} style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '12px 20px', borderRadius: '999px', background: 'rgba(255,255,255,0.02)', border: `1px solid ${V.borderSubtle}`, flexShrink: 0 }}>
+                  <span style={{ color: skill.color, opacity: 0.7 }}>{skill.icon}</span>
+                  <span style={{ fontSize: '14px', fontWeight: 500, whiteSpace: 'nowrap', color: V.textMuted }}>{skill.name}</span>
+                </div>
+              ))}
+            </motion.div>
+          </div>
+        </div>
+      </section>
+
+      <div style={sectionDivider} />
+
       {/* ── EXPERIENCE ── */}
       <section id="experience" style={sectionPadding}>
         <AnimateOnScroll>
@@ -439,7 +603,17 @@ function HomePage({ openTab }: { openTab: (url: string, title: string) => void }
             style={{ ...glassCard, padding: '32px 40px', display: 'flex', alignItems: 'flex-start', gap: '20px', cursor: 'default' }}>
             <div style={{ padding: '12px', borderRadius: '12px', background: V.accentDim, color: V.accent, flexShrink: 0 }}><Briefcase size={22} /></div>
             <div>
-              <h3 style={{ color: V.textPrimary, fontSize: '20px', fontWeight: 700, marginBottom: '4px' }}>{experience.role}</h3>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '4px', marginBottom: '20px' }}>
+                <h3 style={{ color: V.textPrimary, fontSize: '20px', fontWeight: 700 }}>{experience.role}</h3>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                  <span style={{ display: 'flex', alignItems: 'center', gap: '6px', color: V.textMuted, fontSize: '12px' }}>
+                    <MapPin size={12} /> Remote
+                  </span>
+                  <span style={{ display: 'flex', alignItems: 'center', gap: '6px', color: V.accent, fontSize: '12px', fontFamily: 'monospace' }}>
+                    <Calendar size={12} /> {experience.period}
+                  </span>
+                </div>
+              </div>
               <p style={{ color: V.textMuted, fontSize: '14px', lineHeight: 1.6, marginBottom: '20px' }}>{experience.description}</p>
               <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
                 {experience.tech.map(t => <span key={t} style={techPill}>{t}</span>)}
@@ -466,7 +640,7 @@ function HomePage({ openTab }: { openTab: (url: string, title: string) => void }
                 <div style={{ flex: 1 }}>
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '8px' }}>
                     <h3 style={{ color: V.textPrimary, fontWeight: 700, margin: 0 }}>{edu.institution}</h3>
-                    <span style={{ color: V.textMuted, fontSize: '12px', fontFamily: 'monospace' }}>{edu.period}</span>
+                    <span style={{ color: V.accent, fontSize: '12px', fontFamily: 'monospace' }}>{edu.period}</span>
                   </div>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '4px', margin: '4px 0' }}>
                     <MapPin size={12} style={{ color: V.textMuted }} />
@@ -485,7 +659,7 @@ function HomePage({ openTab }: { openTab: (url: string, title: string) => void }
       <div style={sectionDivider} />
 
       {/* ── ACHIEVEMENTS ── */}
-      <section style={sectionPadding}>
+      <section id="achievements" style={sectionPadding}>
         <AnimateOnScroll>
           <p style={sectionLabel}>Recognition</p>
           <h2 style={sectionTitle}><span style={gradientText}>Achievements</span></h2>
@@ -498,8 +672,13 @@ function HomePage({ openTab }: { openTab: (url: string, title: string) => void }
                 <div style={{ padding: '12px', borderRadius: '12px', background: V.accentDim, color: V.accent, flexShrink: 0 }}>
                   {i === 0 ? <Trophy size={22} /> : <Award size={22} />}
                 </div>
-                <div>
-                  <p style={{ color: V.accent, fontWeight: 700, fontSize: '14px', marginBottom: '4px' }}>{ach.award}</p>
+                <div style={{ flex: 1 }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '4px' }}>
+                    <p style={{ color: V.accent, fontWeight: 700, fontSize: '14px', margin: 0 }}>{ach.award}</p>
+                    {ach.period && (
+                      <span style={{ color: V.accent, fontSize: '12px', fontFamily: 'monospace' }}>{ach.period}</span>
+                    )}
+                  </div>
                   <h4 style={{ color: V.textPrimary, fontWeight: 700, fontSize: '18px', marginBottom: '8px' }}>{ach.title}</h4>
                   <p style={{ color: V.textMuted, fontSize: '14px', margin: 0 }}>{ach.detail}</p>
                 </div>
@@ -511,11 +690,11 @@ function HomePage({ openTab }: { openTab: (url: string, title: string) => void }
 
       <div style={sectionDivider} />
 
-      {/* ── CERTIFICATIONS ── */}
-      <section style={sectionPadding}>
+      {/* ── CERTIFICATES ── */}
+      <section id="certificates" style={sectionPadding}>
         <AnimateOnScroll>
           <p style={sectionLabel}>Continuous Learning</p>
-          <h2 style={sectionTitle}><span style={gradientText}>Certifications</span></h2>
+          <h2 style={sectionTitle}><span style={gradientText}>Certificates</span></h2>
         </AnimateOnScroll>
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '24px' }}>
           {certifications.map((cert, i) => (
@@ -525,8 +704,13 @@ function HomePage({ openTab }: { openTab: (url: string, title: string) => void }
                 <div style={{ padding: '12px', borderRadius: '12px', background: V.accentDim, color: V.accent, flexShrink: 0 }}>
                   <Award size={22} />
                 </div>
-                <div>
-                  <p style={{ color: V.accent, fontWeight: 700, fontSize: '14px', marginBottom: '4px' }}>{cert.issuer}</p>
+                <div style={{ flex: 1 }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '4px' }}>
+                    <p style={{ color: V.accent, fontWeight: 700, fontSize: '14px', margin: 0 }}>{cert.issuer}</p>
+                    {cert.period && (
+                      <span style={{ color: V.accent, fontSize: '12px', fontFamily: 'monospace' }}>{cert.period}</span>
+                    )}
+                  </div>
                   <h4 style={{ color: V.textPrimary, fontWeight: 700, fontSize: '18px', marginBottom: '8px' }}>{cert.title}</h4>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '12px', color: V.textMuted, marginTop: '12px' }}>
                     <span>View Certificate</span> <ExternalLink size={12} />
