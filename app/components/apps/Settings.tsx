@@ -106,7 +106,7 @@ export default function Settings() {
             <div className="settings-option">
               <div className="settings-option-info">
                 <h3>Education — B.Tech CSE</h3>
-                <p>Lovely Professional University, Punjab | CGPA: 8.72 | Aug &apos;23 – Present</p>
+                <p>Lovely Professional University, Punjab | CGPA: 8.66 | Aug &apos;23 – Present</p>
               </div>
             </div>
 

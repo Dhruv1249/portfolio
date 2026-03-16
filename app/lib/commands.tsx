@@ -518,7 +518,7 @@ export const commands: Record<string, CommandHandler> = {
           data pipelines, and AI-driven applications deployed using containerized environments.
         </div>
         <div style={{ marginBottom: '12px' }}>
-          Currently completing B.Tech at <span style={{ color: 'var(--accent-cyan)' }}>LPU</span> (8.72 CGPA).
+          Currently completing B.Tech at <span style={{ color: 'var(--accent-cyan)' }}>LPU</span> (8.66 CGPA).
         </div>
         <div style={{ marginBottom: '12px', padding: '12px', background: 'var(--bg-tertiary)', borderRadius: '8px', borderLeft: '3px solid var(--accent-warning)' }}>
           [*] <span style={{ color: 'var(--accent-warning)' }}>NASA Space Apps 2025 — Global Honorable Mention</span>
@@ -729,7 +729,7 @@ export const commands: Record<string, CommandHandler> = {
       const jsonData = {
         name: 'Dhruv',
         role: 'Full-Stack Developer | DevOps | ML Engineer',
-        education: 'B.Tech CSE @ LPU (CGPA: 8.72)',
+        education: 'B.Tech CSE @ LPU (CGPA: 8.66)',
         achievements: ['NASA Space Apps 2025 — Global Honorable Mention', 'Innov-a-thon NIT Rourkela — National Top 100'],
         skills: { languages: ['Python', 'TypeScript', 'JavaScript', 'C++'], frameworks: ['React', 'Next.js', 'FastAPI', 'Node.js'], cloud: ['Docker', 'GCP', 'Firebase'] },
         contact: { email: 'dhruv1249.lm@gmail.com', github: 'github.com/Dhruv1249' },
