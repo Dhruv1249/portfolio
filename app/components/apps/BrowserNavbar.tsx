@@ -51,14 +51,14 @@ export default function BrowserNavbar() {
         borderBottom: scrolled ? "1px solid var(--border-subtle)" : "1px solid transparent",
       }}
     >
-      <div style={{ maxWidth: '1280px', margin: '0 auto', padding: '0 32px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', height: '80px', width: '100%' }}>
+      <div style={{ maxWidth: '80rem', margin: '0 auto', padding: '0 2rem', display: 'flex', alignItems: 'center', justifyContent: 'space-between', height: '5rem', width: '100%' }}>
         {/* Logo */}
-        <a href="#" className="text-xl font-bold tracking-tight" style={{ color: "var(--text-primary)" }}>
-          DHRUV<span style={{ color: "var(--accent-primary, #2dd4bf)" }}>.</span>
+        <a href="#" className="text-xl font-bold tracking-tight shrink-0" style={{ color: "var(--text-primary)", fontSize: '1.5rem' }}>
+          Dhruv<span style={{ color: "var(--accent-primary, #2dd4bf)" }}>.</span>
         </a>
 
         {/* Desktop Nav */}
-        <div className="hidden md:flex items-center" style={{ gap: '32px' }}>
+        <div className="hidden md:flex items-center" style={{ gap: '2rem' }}>
           {navLinks.map((link, i) => (
             <motion.a
               key={link.href}
@@ -66,8 +66,8 @@ export default function BrowserNavbar() {
               initial={{ opacity: 0, y: -10 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.4 + i * 0.08 }}
-              className="text-xs font-medium uppercase tracking-[0.15em] transition-colors duration-300 hover:text-[var(--accent-primary, #2dd4bf)]"
-              style={{ color: "var(--text-muted)" }}
+              className="text-sm font-medium tracking-wide transition-colors duration-300 hover:text-[var(--accent-primary, #2dd4bf)]"
+              style={{ color: "var(--text-muted)", fontSize: '0.9rem' }}
             >
               {link.label}
             </motion.a>
@@ -79,10 +79,10 @@ export default function BrowserNavbar() {
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ delay: 0.75 }}
-            className="text-xs font-medium uppercase tracking-[0.15em] inline-flex items-center gap-1.5 transition-colors duration-300 hover:text-[var(--accent-primary, #2dd4bf)]"
-            style={{ color: "var(--text-muted)" }}
+            className="text-sm font-medium tracking-wide inline-flex items-center gap-1.5 transition-colors duration-300 hover:text-[var(--accent-primary, #2dd4bf)]"
+            style={{ color: "var(--text-muted)", fontSize: '0.9rem' }}
           >
-            <FileText size={13} /> Resume
+            <FileText size={15} /> Resume
           </motion.a>
 
           <motion.a
@@ -90,12 +90,13 @@ export default function BrowserNavbar() {
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ delay: 0.85 }}
-            className="text-xs font-semibold uppercase tracking-wider rounded-xl transition-all duration-300"
+            className="text-sm font-semibold tracking-wide rounded-xl transition-all duration-300"
             style={{
-              padding: "0.875rem 1.75rem",
+              padding: "0.75rem 1.75rem",
               background: "var(--accent-dim, rgba(45,212,191,0.12))",
               color: "var(--accent-primary, #2dd4bf)",
               border: "1px solid var(--accent-glow, rgba(45,212,191,0.25))",
+              fontSize: '0.9rem'
             }}
             onMouseEnter={(e) => {
               e.currentTarget.style.background = "var(--accent-primary, #2dd4bf)";
@@ -149,8 +150,8 @@ export default function BrowserNavbar() {
                   initial={{ opacity: 0, x: -20 }}
                   animate={{ opacity: 1, x: 0 }}
                   transition={{ delay: i * 0.06 }}
-                  className="text-sm font-medium uppercase tracking-widest py-2 transition-colors hover:text-[var(--accent)]"
-                  style={{ color: "var(--text-secondary)" }}
+                  className="text-base font-medium tracking-wide py-2 transition-colors hover:text-[var(--accent)]"
+                  style={{ color: "var(--text-secondary)", fontSize: '1.1rem' }}
                 >
                   {link.label}
                 </motion.a>

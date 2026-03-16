@@ -26,14 +26,15 @@ import Image from 'next/image';
 const personalInfo = {
   name: 'Dhruv',
   roles: ['Full-Stack Developer', 'DevOps Enthusiast', 'ML Engineer'],
-  tagline: 'I build intelligent, scalable systems — from data pipelines to cloud-deployed AI applications.',
+  tagline: 'Designing data-driven applications that combine machine learning, scalable backends, and modern cloud infrastructure.',
   email: 'dhruv1249.lm@gmail.com',
   github: 'https://github.com/Dhruv1249',
-  linkedin: 'https://linkedin.com/in/dhruv124',
+  linkedin: 'https://linkedin.com/in/dhruv-ds',
   resume: 'https://drive.google.com/file/d/15CVRIhP6VVB5kUqO5F8Q3rXjhrVvOvqI/view?usp=sharing',
 };
 
-const aboutText = 'CS undergraduate at Lovely Professional University. I design end-to-end systems that combine data, infrastructure, and intelligent applications — from raw data through ML pipelines to production-ready platforms.';
+const aboutText = `Computer Science undergraduate at Lovely Professional University with a focus on building end-to-end intelligent systems.\n
+I enjoy working across the stack — from data ingestion and ML pipelines to backend services and production deployment. My work focuses on turning raw data into scalable, real-world applications.`;
 
 const engineeringFocus = [
   { title: 'Full-Stack Development', short: 'React • Next.js • Node.js • TypeScript • MongoDB' },
@@ -87,9 +88,15 @@ const additionalProjects = [
 
 const experience = {
   role: 'Freelance Full-Stack Developer',
-  description: 'Building responsive client websites with Next.js, Tailwind, and Firebase. Automated enquiry systems and lead management pipelines.',
-  tech: ['Next.js', 'Tailwind CSS', 'Firebase', 'NodeMailer'],
+  company: 'Remote',
   period: "Nov '25 — Present",
+  bullets: [
+    "Developed responsive client websites focusing on UI/UX, mobile-first layouts, and performance optimization.",
+    "Built front-end systems using Next.js, Tailwind CSS, and HTML/CSS with a focus on accessibility and clean component architecture.",
+    "Automated enquiry workflows using NodeMailer and integrated Firebase with Google Sheets API for centralized lead management.",
+    "Managed end-to-end project delivery from requirement gathering through deployment, using Git-based workflows and CI/CD pipelines.",
+  ],
+  tech: ["Next.js", "Tailwind CSS", "Firebase", "NodeMailer", "Google Sheets API", "SEO"],
 };
 
 const education = [
@@ -178,7 +185,7 @@ const V = {
 
 /* ═══════════════ Shared Style Objects (matching non-tech classes) ═══════════════ */
 
-const sectionPadding: React.CSSProperties = { padding: '80px 24px', maxWidth: '1152px', margin: '0 auto' };
+const sectionPadding: React.CSSProperties = { padding: '5rem 1.5rem', maxWidth: '72rem', margin: '0 auto' };
 const sectionDivider: React.CSSProperties = { height: '1px', background: `linear-gradient(90deg, transparent, ${V.borderSubtle}, transparent)`, margin: '0 auto', maxWidth: '80%' };
 
 const glassCard: React.CSSProperties = {
@@ -187,8 +194,8 @@ const glassCard: React.CSSProperties = {
 };
 
 const badgeGlow: React.CSSProperties = {
-  display: 'inline-block', padding: '5px 16px', borderRadius: '999px', fontSize: '11px',
-  fontFamily: 'monospace', textTransform: 'uppercase', letterSpacing: '0.1em',
+  display: 'inline-block', padding: '0.4rem 1rem', borderRadius: '999px', fontSize: '0.8rem',
+  fontWeight: 600, letterSpacing: '0.05em',
   background: V.accentDim, color: V.accent, border: `1px solid ${V.accentGlow}`,
 };
 
@@ -198,12 +205,12 @@ const gradientText: React.CSSProperties = {
 };
 
 const techPill: React.CSSProperties = {
-  padding: '4px 12px', borderRadius: '999px', fontSize: '11px', fontWeight: 500,
+  padding: '0.3rem 0.8rem', borderRadius: '999px', fontSize: '0.75rem', fontWeight: 500,
   background: V.accentDim, color: V.accent, border: `1px solid ${V.borderGlass}`,
 };
 
-const sectionLabel: React.CSSProperties = { fontSize: '12px', fontFamily: 'monospace', textTransform: 'uppercase', letterSpacing: '0.3em', color: V.accent, marginBottom: '12px' };
-const sectionTitle: React.CSSProperties = { fontSize: 'clamp(32px, 5vw, 56px)', fontWeight: 700, letterSpacing: '-0.02em', marginBottom: '48px', lineHeight: 1.1 };
+const sectionLabel: React.CSSProperties = { fontSize: '1.2rem', fontWeight: 600, letterSpacing: '0.1em', color: V.accent, marginBottom: '1rem' };
+const sectionTitle: React.CSSProperties = { fontSize: 'clamp(2.5rem, 8vw, 5rem)', fontWeight: 700, letterSpacing: '-0.05em', marginBottom: '3rem', lineHeight: 0.9 };
 
 /* ═══════════════ AnimateOnScroll (same as non-tech) ═══════════════ */
 
@@ -266,7 +273,7 @@ function HomePage({ openTab }: { openTab: (url: string, title: string) => void }
             </motion.h1>
 
             <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.5 }}
-              style={{ color: V.textMuted, fontSize: '12px', fontFamily: 'monospace', textTransform: 'uppercase', letterSpacing: '0.2em', marginTop: '24px' }}>
+              style={{ color: V.textMuted, fontSize: '1.2rem', fontWeight: 500, letterSpacing: '0.05em', marginTop: '24px' }}>
               {personalInfo.roles.join(' • ')}
             </motion.p>
 
@@ -300,7 +307,7 @@ function HomePage({ openTab }: { openTab: (url: string, title: string) => void }
                    e.currentTarget.style.background = 'rgba(255,255,255,0.03)';
                    e.currentTarget.style.transform = 'translateY(0)';
                  }}
-              >Get In Touch</a>
+              >Get in Touch</a>
             </motion.div>
           </div>
 
@@ -363,16 +370,16 @@ function HomePage({ openTab }: { openTab: (url: string, title: string) => void }
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '80px', alignItems: 'center' }}>
           <div>
             <AnimateOnScroll>
-              <p style={sectionLabel}>About Me</p>
+              <p style={{ ...sectionTitle, fontSize: 'clamp(32px, 5vw, 64px)' }}>About Me</p>
             </AnimateOnScroll>
             <AnimateOnScroll delay={0.1}>
-              <h2 style={{ ...sectionTitle, fontSize: 'clamp(28px, 3vw, 40px)' }}>
+              <h2 style={{ ...sectionLabel, color: V.accent, fontSize: '1.1rem' }}>
                 <span style={gradientText}>Engineering end-to-end intelligent software systems</span>
                 <span style={{ color: V.accent }}>.</span>
               </h2>
             </AnimateOnScroll>
             <AnimateOnScroll delay={0.2}>
-              <p style={{ color: V.textSecondary, lineHeight: 1.7 }}>{aboutText}</p>
+              <p style={{ color: V.textSecondary, lineHeight: 1.7, whiteSpace: 'pre-line' }}>{aboutText}</p>
             </AnimateOnScroll>
           </div>
           <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
@@ -399,9 +406,9 @@ function HomePage({ openTab }: { openTab: (url: string, title: string) => void }
       {/* ── PROJECTS ── */}
       <section id="projects" style={sectionPadding}>
         <AnimateOnScroll>
-          <p style={sectionLabel}>Projects</p>
-          <h2 style={sectionTitle}><span style={gradientText}>Featured Engineering Work</span></h2>
-          <p style={{ color: V.textMuted, marginTop: '-36px', marginBottom: '64px' }}>
+          <p style={{ ...sectionTitle, fontSize: 'clamp(32px, 5vw, 64px)', marginBottom: '12px' }}>Projects</p>
+          <h2 style={{ ...sectionLabel, fontSize: '1.2rem', marginBottom: '40px' }}><span style={gradientText}>Featured Engineering Work</span></h2>
+          <p style={{ color: V.textMuted, marginTop: '-24px', marginBottom: '64px' }}>
             A selection of projects I&apos;ve built — from climate forecasting to AI-powered marketplaces.
           </p>
         </AnimateOnScroll>
@@ -472,8 +479,8 @@ function HomePage({ openTab }: { openTab: (url: string, title: string) => void }
         {/* Additional Projects */}
         <div style={{ marginTop: '96px' }}>
           <AnimateOnScroll>
-            <p style={{ ...sectionLabel, color: V.textMuted }}>Also Built</p>
-            <h3 style={{ fontSize: '24px', fontWeight: 700, marginBottom: '40px' }}>
+            <p style={{ ...sectionTitle, fontSize: '2.5rem', marginBottom: '8px' }}>Also Built</p>
+            <h3 style={{ ...sectionLabel, fontSize: '1.1rem', marginBottom: '40px' }}>
               <span style={gradientText}>Other Engineering Experiments</span>
             </h3>
           </AnimateOnScroll>
@@ -520,11 +527,11 @@ function HomePage({ openTab }: { openTab: (url: string, title: string) => void }
         <div style={{ maxWidth: '1152px', margin: '0 auto' }}>
           <AnimateOnScroll>
             <div style={{ textAlign: 'center', marginBottom: '80px' }}>
-              <p style={sectionLabel}>Tech Stack</p>
-              <h2 style={sectionTitle}>
+              <p style={{ ...sectionTitle, fontSize: 'clamp(32px, 5vw, 64px)', marginBottom: '12px' }}>Tech Stack</p>
+              <h2 style={{ ...sectionLabel, fontSize: '1.2rem' }}>
                 <span style={gradientText}>Core Toolkit</span>
               </h2>
-              <p style={{ fontSize: '16px', color: V.textMuted, maxWidth: '600px', margin: '-24px auto 0' }}>
+              <p style={{ fontSize: '16px', color: V.textMuted, maxWidth: '600px', margin: '16px auto 0' }}>
                 Technologies I work with daily to build production-ready systems.
               </p>
             </div>
@@ -535,7 +542,7 @@ function HomePage({ openTab }: { openTab: (url: string, title: string) => void }
             {skillCategories.map((category, catIdx) => (
               <AnimateOnScroll key={category.title} delay={catIdx * 0.1}>
                 <div style={{ ...glassCard, padding: '32px', height: '100%' }}>
-                  <h3 style={{ fontSize: '14px', fontFamily: 'monospace', letterSpacing: '0.2em', textTransform: 'uppercase', marginBottom: '32px', textAlign: 'center', color: V.accent }}>
+                  <h3 style={{ fontSize: '14px', fontFamily: 'monospace', letterSpacing: '0.2em', marginBottom: '32px', textAlign: 'center', color: V.accent }}>
                     {category.title}
                   </h3>
                   <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'center', gap: '16px' }}>
@@ -595,8 +602,8 @@ function HomePage({ openTab }: { openTab: (url: string, title: string) => void }
       {/* ── EXPERIENCE ── */}
       <section id="experience" style={sectionPadding}>
         <AnimateOnScroll>
-          <p style={sectionLabel}>Experience</p>
-          <h2 style={sectionTitle}><span style={gradientText}>Professional</span></h2>
+          <p style={{ ...sectionTitle, fontSize: 'clamp(32px, 5vw, 64px)', marginBottom: '12px' }}>Experience</p>
+          <h2 style={{ ...sectionLabel, fontSize: '1.2rem' }}><span style={gradientText}>Professional</span></h2>
         </AnimateOnScroll>
         <AnimateOnScroll delay={0.1}>
           <motion.div whileHover={{ x: 4, scale: 1.01 }} transition={{ type: 'spring', stiffness: 400, damping: 25 }}
@@ -607,14 +614,21 @@ function HomePage({ openTab }: { openTab: (url: string, title: string) => void }
                 <h3 style={{ color: V.textPrimary, fontSize: '20px', fontWeight: 700 }}>{experience.role}</h3>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
                   <span style={{ display: 'flex', alignItems: 'center', gap: '6px', color: V.textMuted, fontSize: '12px' }}>
-                    <MapPin size={12} /> Remote
+                    <MapPin size={12} /> {experience.company}
                   </span>
                   <span style={{ display: 'flex', alignItems: 'center', gap: '6px', color: V.accent, fontSize: '12px', fontFamily: 'monospace' }}>
                     <Calendar size={12} /> {experience.period}
                   </span>
                 </div>
               </div>
-              <p style={{ color: V.textMuted, fontSize: '14px', lineHeight: 1.6, marginBottom: '20px' }}>{experience.description}</p>
+              <ul style={{ padding: 0, margin: '0 0 20px 0', listStyle: 'none' }}>
+                {experience.bullets.map((bullet, i) => (
+                  <li key={i} style={{ display: 'flex', alignItems: 'flex-start', gap: '12px', color: V.textMuted, fontSize: '14px', lineHeight: 1.6, marginBottom: '8px' }}>
+                    <span style={{ marginTop: '8px', width: '6px', height: '6px', borderRadius: '50%', background: V.accent, flexShrink: 0 }} />
+                    {bullet}
+                  </li>
+                ))}
+              </ul>
               <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
                 {experience.tech.map(t => <span key={t} style={techPill}>{t}</span>)}
               </div>
