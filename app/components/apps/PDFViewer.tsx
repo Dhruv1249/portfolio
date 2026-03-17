@@ -3,7 +3,7 @@
 import React from 'react';
 import { Download, FileText, ExternalLink } from 'lucide-react';
 
-const DRIVE_FILE_ID = '15CVRIhP6VVB5kUqO5F8Q3rXjhrVvOvqI';
+const DRIVE_FILE_ID = '1o-ec9gvMQjyXs09q_XlcKj9pg4hgCIqx';
 const PREVIEW_URL = `https://drive.google.com/file/d/${DRIVE_FILE_ID}/preview`;
 const DOWNLOAD_URL = `https://drive.google.com/uc?export=download&id=${DRIVE_FILE_ID}`;
 const VIEW_URL = `https://drive.google.com/file/d/${DRIVE_FILE_ID}/view`;

@@ -30,7 +30,7 @@ const personalInfo = {
   email: 'dhruv1249.lm@gmail.com',
   github: 'https://github.com/Dhruv1249',
   linkedin: 'https://linkedin.com/in/dhruv-ds',
-  resume: 'https://drive.google.com/file/d/15CVRIhP6VVB5kUqO5F8Q3rXjhrVvOvqI/view?usp=sharing',
+  resume: 'https://drive.google.com/uc?export=download&id=1o-ec9gvMQjyXs09q_XlcKj9pg4hgCIqx',
 };
 
 const aboutText = `Computer Science undergraduate at Lovely Professional University with a focus on building end-to-end intelligent systems.\n
@@ -284,11 +284,11 @@ function HomePage({ openTab }: { openTab: (url: string, title: string) => void }
 
             <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.9 }}
               style={{ display: 'flex', gap: '12px', flexWrap: 'wrap', marginTop: '40px', justifyContent: photoVisible ? 'flex-start' : 'center' }}>
-              <a href={personalInfo.resume} target="_blank" rel="noopener noreferrer" style={{
+              <a href={personalInfo.resume} download="Dhruv_Resume.pdf" style={{
                 padding: '14px 28px', borderRadius: '12px', display: 'inline-flex', alignItems: 'center', gap: '8px',
                 background: V.accentDim, color: V.accent, fontWeight: 600, fontSize: '14px',
                 border: `1px solid ${V.accentGlow}`, textDecoration: 'none',
-              }}><FileText size={16} /> View CV</a>
+              }}><FileText size={16} /> Download CV</a>
               <a href={`mailto:${personalInfo.email}`} style={{
                 padding: '1rem 2.25rem', borderRadius: '0.75rem', fontSize: '0.875rem', fontWeight: 600,
                 border: `1px solid ${V.borderSubtle}`, color: V.textSecondary,

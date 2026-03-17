@@ -11,7 +11,7 @@ const personalInfo = {
   email: 'dhruv1249.lm@gmail.com',
   github: 'https://github.com/Dhruv1249',
   linkedin: 'https://linkedin.com/in/dhruv124',
-  resume: 'https://drive.google.com/file/d/15CVRIhP6VVB5kUqO5F8Q3rXjhrVvOvqI/view?usp=sharing',
+  resume: 'https://drive.google.com/uc?export=download&id=1o-ec9gvMQjyXs09q_XlcKj9pg4hgCIqx',
 };
 
 const navLinks = [
@@ -74,8 +74,7 @@ export default function BrowserNavbar() {
           ))}
           <motion.a
             href={personalInfo.resume}
-            target="_blank"
-            rel="noopener noreferrer"
+            download="Dhruv_Resume.pdf"
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ delay: 0.75 }}
@@ -158,8 +157,7 @@ export default function BrowserNavbar() {
               ))}
               <motion.a
                 href={personalInfo.resume}
-                target="_blank"
-                rel="noopener noreferrer"
+                download="Dhruv_Resume.pdf"
                 onClick={() => setMobileOpen(false)}
                 initial={{ opacity: 0, x: -20 }}
                 animate={{ opacity: 1, x: 0 }}
