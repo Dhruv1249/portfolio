@@ -17,22 +17,83 @@ export default function FileManager() {
   useEffect(() => {
     if (selectedRepo === null) return;
     const repo = REPOS[selectedRepo];
-    setLoading(true);
-    setFileTree([]);
-    setCurrentPath([]);
-    setSelectedFile(null);
+    let cancelled = false;
 
-    fetchRepoTree(repo.owner, repo.repo)
-      .then(tree => setFileTree(tree))
-      .finally(() => setLoading(false));
+    Promise.resolve().then(() => {
+      if (cancelled) return;
+      setLoading(true);
+      setFileTree([]);
+      setCurrentPath([]);
+      setSelectedFile(null);
+
+      fetchRepoTree(repo.owner, repo.repo)
+        .then(tree => {
+          if (!cancelled) setFileTree(tree);
+        })
+        .finally(() => {
+          if (!cancelled) setLoading(false);
+        });
+    });
+
+    return () => {
+      cancelled = true;
+    };
   }, [selectedRepo]);
+
+  useEffect(() => {
+    if (selectedRepo === null || currentPath.length === 0) return;
+
+    let target: RepoFile | undefined;
+    let items = fileTree;
+
+    for (const segment of currentPath) {
+      target = items.find(f => f.name === segment && f.type === 'directory');
+      if (!target) return;
+      items = target.children || [];
+    }
+
+    if (!target || !target.isSubmodule || target.children !== undefined) return;
+    if (!target.submoduleOwner || !target.submoduleRepo) return;
+
+    let cancelled = false;
+
+    Promise.resolve().then(() => {
+      if (cancelled) return;
+      setLoading(true);
+
+      fetchRepoTree(target.submoduleOwner!, target.submoduleRepo!)
+        .then(subTree => {
+          if (cancelled) return;
+
+          const attachChildren = (nodes: RepoFile[]): RepoFile[] =>
+            nodes.map(node => {
+              if (node.path === target!.path) {
+                return { ...node, children: subTree };
+              }
+              if (node.children) {
+                return { ...node, children: attachChildren(node.children) };
+              }
+              return node;
+            });
+
+          setFileTree(prev => attachChildren(prev));
+        })
+        .finally(() => {
+          if (!cancelled) setLoading(false);
+        });
+    });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [selectedRepo, currentPath, fileTree]);
 
   const getCurrentContents = (): RepoFile[] => {
     if (selectedRepo === null) return [];
     let items = fileTree;
     for (const segment of currentPath) {
       const dir = items.find(f => f.name === segment && f.type === 'directory');
-      if (dir?.children) items = dir.children;
+      if (dir?.children !== undefined) items = dir.children;
       else return [];
     }
     return items;
@@ -52,6 +113,7 @@ export default function FileManager() {
   const handleItemDoubleClick = (item: RepoFile) => {
     if (item.type === 'directory') { handleItemClick(item); return; }
     if (selectedRepo === null) return;
+
     openWindow('neovim', `Neovim — ${item.name}`, {
       repoIndex: selectedRepo,
       filePath: item.path,
@@ -172,9 +234,12 @@ export default function FileManager() {
                   onDoubleClick={() => handleItemDoubleClick(item)}
                 >
                   <div className="file-icon">
-                    <FileIcon name={item.name} type={item.type} size={22} />
+                    <FileIcon name={item.name} type={item.type} isSubmodule={item.isSubmodule} size={22} />
                   </div>
-                  <div className="file-name">{item.name}</div>
+                  <div className="file-name">
+                    {item.name}
+                    {item.isSubmodule ? ' (submodule)' : ''}
+                  </div>
                 </div>
               ))
           )}

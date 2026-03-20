@@ -19,8 +19,77 @@ interface GitHubTreeItem {
   size?: number;
 }
 
+interface SubmoduleMeta {
+  url: string;
+  owner?: string;
+  repo?: string;
+}
+
+function parseGitmodules(content: string): Map<string, SubmoduleMeta> {
+  const map = new Map<string, SubmoduleMeta>();
+  const lines = content.split('\n');
+  let currentPath: string | null = null;
+  let currentUrl: string | null = null;
+
+  const flush = () => {
+    if (!currentPath || !currentUrl) return;
+
+    const url = currentUrl.trim();
+    let owner: string | undefined;
+    let repo: string | undefined;
+
+    const githubMatch = url.match(/github\.com[:/]([^/]+)\/([^/.]+?)(?:\.git)?$/i);
+    if (githubMatch) {
+      owner = githubMatch[1];
+      repo = githubMatch[2];
+    }
+
+    // Relative submodule URLs (e.g. ../repo.git) fall back to same owner.
+    if (!owner || !repo) {
+      const relMatch = url.match(/(?:\.\.\/|\.\/)?([^/]+?)(?:\.git)?$/);
+      if (relMatch) {
+        repo = relMatch[1];
+      }
+    }
+
+    map.set(currentPath, { url, owner, repo });
+  };
+
+  for (const rawLine of lines) {
+    const line = rawLine.trim();
+    if (line.startsWith('[submodule ')) {
+      flush();
+      currentPath = null;
+      currentUrl = null;
+      continue;
+    }
+
+    if (line.startsWith('path = ')) {
+      currentPath = line.slice('path = '.length).trim();
+      continue;
+    }
+
+    if (line.startsWith('url = ')) {
+      currentUrl = line.slice('url = '.length).trim();
+    }
+  }
+
+  flush();
+
+  return map;
+}
+
+async function fetchGitmodules(owner: string, repo: string, branch: string): Promise<Map<string, SubmoduleMeta>> {
+  const url = `https://raw.githubusercontent.com/${owner}/${repo}/${branch}/.gitmodules`;
+  const response = await fetch(url);
+  if (!response.ok) return new Map();
+  const content = await response.text();
+  return parseGitmodules(content);
+}
+
 const fetchTreeFromGitHub = unstable_cache(
-  async (owner: string, repo: string) => {
+  async (owner: string, repo: string, schemaVersion: string) => {
+    void schemaVersion;
     // Try main branch first, then master
     let branch = 'main';
     let response = await fetch(
@@ -43,13 +112,11 @@ const fetchTreeFromGitHub = unstable_cache(
 
     const data = await response.json();
     const items: GitHubTreeItem[] = data.tree || [];
+    const submoduleMap = await fetchGitmodules(owner, repo, branch);
 
-    // Filter out noise AND submodules (type === 'commit')
+    // Filter out noise while preserving submodules (type === 'commit')
     const filtered = items
       .filter(item => {
-        // Skip submodules entirely
-        if (item.type === 'commit') return false;
-        
         const parts = item.path.split('/');
         return !parts.some(p => p.startsWith('.') && p !== '.env.example') &&
           !parts.includes('node_modules') &&
@@ -61,6 +128,18 @@ const fetchTreeFromGitHub = unstable_cache(
       .map(item => ({
         path: item.path,
         type: item.type,
+        ...(item.type === 'commit' && submoduleMap.has(item.path)
+          ? {
+              submoduleUrl: submoduleMap.get(item.path)!.url,
+              submoduleOwner: submoduleMap.get(item.path)!.owner || owner,
+              submoduleRepo: submoduleMap.get(item.path)!.repo || item.path.split('/').pop(),
+            }
+          : item.type === 'commit'
+            ? {
+                submoduleOwner: owner,
+                submoduleRepo: item.path.split('/').pop(),
+              }
+            : {}),
       }));
 
     return { tree: filtered, branch };
@@ -82,7 +161,8 @@ export async function GET(request: NextRequest) {
   }
 
   try {
-    const { tree, branch } = await fetchTreeFromGitHub(owner, repo);
+    const TREE_SCHEMA_VERSION = 'submodule-schema-v2';
+    const { tree, branch } = await fetchTreeFromGitHub(owner, repo, TREE_SCHEMA_VERSION);
     return NextResponse.json({ tree, branch });
   } catch (err) {
     console.error('GitHub tree fetch error:', err);

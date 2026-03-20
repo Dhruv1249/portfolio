@@ -352,12 +352,12 @@ export const commands: Record<string, CommandHandler> = {
               color: item.type === 'directory' ? 'var(--accent-primary)' : 'var(--text-primary)',
               fontWeight: item.type === 'directory' ? 600 : 400
             }}>
-              {item.name}{item.type === 'directory' ? '/' : ''}
+              {item.name}{item.type === 'directory' ? '/' : ''}{item.isSubmodule ? ' [submodule]' : ''}
             </span>
           ))}
         </div>
       ),
-      rawText: contents.map(item => item.name + (item.type === 'directory' ? '/' : '')).join('\n')
+      rawText: contents.map(item => item.name + (item.type === 'directory' ? '/' : '') + (item.isSubmodule ? ' [submodule]' : '')).join('\n')
     };
   },
 
@@ -373,7 +373,8 @@ export const commands: Record<string, CommandHandler> = {
       const perms = item.type === 'directory' ? 'drwxr-xr-x' : '-rw-r--r--';
       const size = item.type === 'directory' ? '4096' : (item.content?.length || 0).toString();
       const date = 'Jan 01 12:00';
-      return `${perms} 1 dhruv dhruv ${size.padStart(5)} ${date} ${item.name}${item.type === 'directory' ? '/' : ''}`;
+      const submoduleTag = item.isSubmodule ? ' <submodule>' : '';
+      return `${perms} 1 dhruv dhruv ${size.padStart(5)} ${date} ${item.name}${item.type === 'directory' ? '/' : ''}${submoduleTag}`;
     });
     return {
       output: <pre style={{ margin: 0, fontFamily: 'var(--font-mono)' }}>{lines.join('\n')}</pre>,

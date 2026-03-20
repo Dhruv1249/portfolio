@@ -5,6 +5,10 @@ export interface RepoFile {
   name: string;
   path: string;
   type: 'file' | 'directory';
+  isSubmodule?: boolean;
+  submoduleUrl?: string;
+  submoduleOwner?: string;
+  submoduleRepo?: string;
   children?: RepoFile[];
 }
 
@@ -26,6 +30,7 @@ export const REPOS: RepoInfo[] = [
 
 // Client-side in-memory cache (avoids repeat fetches within the same session)
 const treeCache = new Map<string, RepoFile[]>();
+const TREE_CACHE_VERSION = 'v2-submodule-map';
 export interface FileContentResult {
   content: string;
   imageUrl?: string;
@@ -36,7 +41,10 @@ const branchCache = new Map<string, string>();
 
 interface TreeItem {
   path: string;
-  type: 'blob' | 'tree';
+  type: 'blob' | 'tree' | 'commit';
+  submoduleUrl?: string;
+  submoduleOwner?: string;
+  submoduleRepo?: string;
 }
 
 function buildFileTree(items: TreeItem[]): RepoFile[] {
@@ -53,14 +61,25 @@ function buildFileTree(items: TreeItem[]): RepoFile[] {
     const name = parts[parts.length - 1];
     const parentPath = parts.slice(0, -1).join('/');
 
+    const isDirectoryLike = item.type === 'tree' || item.type === 'commit';
+    const hasInlineChildren = item.type === 'tree';
+
     const node: RepoFile = {
       name,
       path: item.path,
-      type: item.type === 'tree' ? 'directory' : 'file',
-      ...(item.type === 'tree' ? { children: [] } : {}),
+      type: isDirectoryLike ? 'directory' : 'file',
+      ...(item.type === 'commit'
+        ? {
+            isSubmodule: true,
+            submoduleUrl: item.submoduleUrl,
+            submoduleOwner: item.submoduleOwner,
+            submoduleRepo: item.submoduleRepo,
+          }
+        : {}),
+      ...(hasInlineChildren ? { children: [] } : {}),
     };
 
-    if (item.type === 'tree') {
+    if (hasInlineChildren) {
       dirMap.set(item.path, node);
     }
 
@@ -78,7 +97,7 @@ function buildFileTree(items: TreeItem[]): RepoFile[] {
 }
 
 export async function fetchRepoTree(owner: string, repo: string): Promise<RepoFile[]> {
-  const cacheKey = `${owner}/${repo}`;
+  const cacheKey = `${TREE_CACHE_VERSION}:${owner}/${repo}`;
   if (treeCache.has(cacheKey)) {
     return treeCache.get(cacheKey)!;
   }

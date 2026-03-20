@@ -24,10 +24,13 @@ export function RepoIcon({ icon, size = 18, className }: { icon: string; size?: 
 }
 
 // File extension → icon mapping
-export function FileIcon({ name, type, expanded, size = 14 }: {
-  name: string; type: 'file' | 'directory'; expanded?: boolean; size?: number;
+export function FileIcon({ name, type, expanded, size = 14, isSubmodule = false }: {
+  name: string; type: 'file' | 'directory'; expanded?: boolean; size?: number; isSubmodule?: boolean;
 }) {
   if (type === 'directory') {
+    if (isSubmodule) {
+      return <GitBranch size={size} style={{ color: 'var(--accent-cyan)' }} />;
+    }
     return expanded
       ? <FolderOpen size={size} style={{ color: 'var(--accent-primary)' }} />
       : <Folder size={size} style={{ color: 'var(--accent-primary)' }} />;

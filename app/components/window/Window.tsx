@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect, useMemo, useCallback } from 'react';
+import React, { useState, useEffect, useMemo, useCallback, useRef } from 'react';
 import { useWindowManager, AppType } from '../../contexts/WindowContext';
 import { useTheme } from '../../contexts/ThemeContext';
 
@@ -35,6 +35,7 @@ export default function Window({
 }: WindowProps) {
   const { closeWindow, focusWindow, minimizeWindow, maximizeWindow } = useWindowManager();
   const { transparency, windowOpacity } = useTheme();
+  const hoverTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const [hasAnimated, setHasAnimated] = useState(false);
 
@@ -44,8 +45,34 @@ export default function Window({
   }, [bootDelay]);
 
   const handleMouseDown = useCallback(() => {
-    focusWindow(id);
-  }, [focusWindow, id]);
+    if (!focused) {
+      focusWindow(id);
+    }
+  }, [focusWindow, id, focused]);
+
+  const handleMouseEnter = useCallback(() => {
+    if (focused) return;
+    if (hoverTimerRef.current) clearTimeout(hoverTimerRef.current);
+    hoverTimerRef.current = setTimeout(() => {
+      focusWindow(id);
+      hoverTimerRef.current = null;
+    }, 35);
+  }, [focusWindow, id, focused]);
+
+  const handleMouseLeave = useCallback(() => {
+    if (hoverTimerRef.current) {
+      clearTimeout(hoverTimerRef.current);
+      hoverTimerRef.current = null;
+    }
+  }, []);
+
+  useEffect(() => {
+    return () => {
+      if (hoverTimerRef.current) {
+        clearTimeout(hoverTimerRef.current);
+      }
+    };
+  }, []);
 
   const handleClose = useCallback((e: React.MouseEvent) => {
     e.stopPropagation();
@@ -103,7 +130,8 @@ export default function Window({
         animationDelay: !hasAnimated ? `${bootDelay}s` : undefined,
       }}
       onMouseDown={handleMouseDown}
-      onMouseEnter={handleMouseDown}
+      onMouseEnter={handleMouseEnter}
+      onMouseLeave={handleMouseLeave}
     >
       <div className="window-header">
         <div className="window-controls">

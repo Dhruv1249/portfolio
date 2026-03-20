@@ -49,6 +49,7 @@ export default function Tutorial({ show, onClose }: TutorialProps) {
   const [workspaceSwitched, setWorkspaceSwitched] = useState(false);
 
   const { windows, activeWorkspace, closeWindow } = useWindowManager();
+  const baselineBrowserCountRef = useRef(0);
 
   useEffect(() => {
     if (show) {
@@ -202,8 +203,9 @@ export default function Tutorial({ show, onClose }: TutorialProps) {
         instruction: 'Launch the Browser',
         hint: 'Press  Alt + Space , type "Browser", and hit Enter',
         checkFn: (wins, baseline, execCmds, appLauncherOpened) => {
-          // They must open the launcher, AND then open the browser
-          return !!appLauncherOpened && wins.some(w => w.appType === 'browser') && wins.filter(w => w.appType === 'browser').length > 0;
+          // They must open the launcher and create a new browser window during this step.
+          const currentBrowserCount = wins.filter(w => w.appType === 'browser').length;
+          return !!appLauncherOpened && currentBrowserCount > baselineBrowserCountRef.current;
         },
       },
     },
@@ -343,6 +345,7 @@ export default function Tutorial({ show, onClose }: TutorialProps) {
 
   const startTryIt = () => {
     baselineRef.current = windows.length;
+    baselineBrowserCountRef.current = windows.filter(w => w.appType === 'browser').length;
     setMinimized(true);
   };
 

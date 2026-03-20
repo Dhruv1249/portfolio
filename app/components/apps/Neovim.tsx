@@ -143,11 +143,11 @@ function FileTreeItem({ file, depth, selected, onSelect }: {
           else onSelect(file);
         }}
       >
-        <span style={{ marginRight: '6px', display: 'flex', alignItems: 'center' }}><FileIcon name={file.name} type={file.type} expanded={expanded} size={14} /></span>
+        <span style={{ marginRight: '6px', display: 'flex', alignItems: 'center' }}><FileIcon name={file.name} type={file.type} isSubmodule={file.isSubmodule} expanded={expanded} size={14} /></span>
         <span style={{
           color: file.type === 'directory' ? 'var(--accent-primary)' : 'var(--text-primary)',
           fontWeight: file.type === 'directory' ? 600 : 400, fontSize: '13px',
-        }}>{file.name}</span>
+        }}>{file.name}{file.isSubmodule ? ' (submodule)' : ''}</span>
       </div>
       {file.type === 'directory' && expanded && file.children?.map(child => (
         <FileTreeItem key={child.path} file={child} depth={depth + 1} selected={selected} onSelect={onSelect} />

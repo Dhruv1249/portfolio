@@ -5,6 +5,7 @@ import { REPOS, fetchRepoTree, fetchFileContent, RepoFile } from './github';
 export interface FileNode {
   name: string;
   type: 'file' | 'directory';
+  isSubmodule?: boolean;
   content?: string;
   children?: FileNode[];
   repoOwner?: string;
@@ -16,8 +17,9 @@ function mapRepoToNode(files: RepoFile[], owner: string, repo: string): FileNode
   return files.map(f => ({
     name: f.name,
     type: f.type,
-    repoOwner: owner,
-    repoName: repo,
+    isSubmodule: f.isSubmodule,
+    repoOwner: f.isSubmodule && f.submoduleOwner ? f.submoduleOwner : owner,
+    repoName: f.isSubmodule && f.submoduleRepo ? f.submoduleRepo : repo,
     repoPath: f.path,
     children: f.children ? mapRepoToNode(f.children, owner, repo) : undefined
   }));

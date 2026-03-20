@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useRef, useEffect, KeyboardEvent } from 'react';
+import React, { useState, useRef, useEffect, KeyboardEvent, useCallback } from 'react';
 import { motion } from 'framer-motion';
 import { executeCommand, commandNames } from '../../lib/commands';
 import { listDirectory } from '../../lib/filesystem';
@@ -8,10 +8,11 @@ import { useWindowManager } from '../../contexts/WindowContext';
 import { useTheme } from '../../contexts/ThemeContext';
 
 interface HistoryEntry {
+  id: string;
   command: string;
   output: React.ReactNode;
   path: string;
-  id?: string;
+  executing?: boolean;
 }
 
 interface TerminalProps {
@@ -28,12 +29,48 @@ const Terminal = React.memo(function Terminal({ focused }: TerminalProps) {
   const [tabIndex, setTabIndex] = useState(-1);
   const [originalInput, setOriginalInput] = useState('');
   const [isExecuting, setIsExecuting] = useState(false);
+  const [pagerEntryId, setPagerEntryId] = useState<string | null>(null);
+  const [pagerAtEnd, setPagerAtEnd] = useState(false);
 
   const { openWindow, closeWindow, focusedWindowId } = useWindowManager();
   const { animations } = useTheme();
 
   const inputRef = useRef<HTMLInputElement>(null);
   const terminalRef = useRef<HTMLDivElement>(null);
+  const outputRefs = useRef<Record<string, HTMLDivElement | null>>({});
+
+  const getPagerHeight = useCallback(() => {
+    const terminalHeight = terminalRef.current?.clientHeight ?? 420;
+    return Math.max(140, Math.floor(terminalHeight * 0.6));
+  }, []);
+
+  const updatePagerEndState = useCallback((entryId: string) => {
+    const node = outputRefs.current[entryId];
+    if (!node) {
+      setPagerAtEnd(false);
+      return;
+    }
+    const atEnd = node.scrollTop + node.clientHeight >= node.scrollHeight - 2;
+    setPagerAtEnd(atEnd);
+  }, []);
+
+  const scrollPager = useCallback((direction: 1 | -1) => {
+    if (!pagerEntryId) return;
+    const node = outputRefs.current[pagerEntryId];
+    if (!node) {
+      setPagerEntryId(null);
+      setPagerAtEnd(false);
+      return;
+    }
+
+    const delta = Math.max(80, Math.floor(node.clientHeight * 0.7));
+    const target = direction === 1
+      ? Math.min(node.scrollHeight - node.clientHeight, node.scrollTop + delta)
+      : Math.max(0, node.scrollTop - delta);
+
+    node.scrollTop = target;
+    updatePagerEndState(pagerEntryId);
+  }, [pagerEntryId, updatePagerEndState]);
 
   // Auto-focus input on mount and after execution
   useEffect(() => {
@@ -53,15 +90,16 @@ const Terminal = React.memo(function Terminal({ focused }: TerminalProps) {
 
   // Scroll to bottom on new output
   useEffect(() => {
+    if (pagerEntryId) return;
     if (terminalRef.current) {
       terminalRef.current.scrollTop = terminalRef.current.scrollHeight;
     }
-  }, [history]);
+  }, [history, pagerEntryId]);
 
   // Run neofetch on mount
   useEffect(() => {
     executeCommand('neofetch', '~').then(result => {
-      setHistory([{ command: 'neofetch', output: result.output, path: '~' }]);
+      setHistory([{ id: `boot-${Date.now()}`, command: 'neofetch', output: result.output, path: '~' }]);
     });
   }, []);
 
@@ -75,6 +113,10 @@ const Terminal = React.memo(function Terminal({ focused }: TerminalProps) {
 
     const oldInput = input;
     const oldPath = currentPath;
+    const commandName = oldInput.trim().split(/\s+/)[0]?.toLowerCase() || '';
+
+    setPagerEntryId(null);
+    setPagerAtEnd(false);
     // Dispatch event for Tutorial tracking
     window.dispatchEvent(
       new CustomEvent('terminal-command-run', { detail: { command: oldInput.trim() } })
@@ -85,10 +127,11 @@ const Terminal = React.memo(function Terminal({ focused }: TerminalProps) {
     const executionId = Date.now().toString() + Math.random().toString();
     
     setHistory(prev => [...prev, {
+      id: executionId,
       command: oldInput,
       output: <span style={{ color: 'var(--text-muted)' }}>Running...</span>,
       path: oldPath,
-      id: executionId
+      executing: true,
     }]);
 
     // Add to command history for up/down navigation
@@ -130,10 +173,23 @@ const Terminal = React.memo(function Terminal({ focused }: TerminalProps) {
     // Update history
     setHistory(prev => prev.map(entry => {
       if (entry.id === executionId) {
-        return { ...entry, output: result.output, id: undefined };
+        return { ...entry, output: result.output, executing: false };
       }
       return entry;
     }));
+
+    if (commandName !== 'cat') {
+      requestAnimationFrame(() => {
+        const node = outputRefs.current[executionId];
+        if (!node) return;
+        const pagerHeight = getPagerHeight();
+        if (node.scrollHeight > pagerHeight + 12) {
+          node.scrollTop = 0;
+          setPagerEntryId(executionId);
+          setPagerAtEnd(false);
+        }
+      });
+    }
     
     setIsExecuting(false);
   };
@@ -169,6 +225,27 @@ const Terminal = React.memo(function Terminal({ focused }: TerminalProps) {
   };
 
   const handleKeyDown = async (e: KeyboardEvent<HTMLInputElement>) => {
+    if (pagerEntryId) {
+      if (e.key === 'ArrowDown' || e.key === 'PageDown') {
+        e.preventDefault();
+        scrollPager(1);
+        return;
+      }
+
+      if (e.key === 'ArrowUp' || e.key === 'PageUp') {
+        e.preventDefault();
+        scrollPager(-1);
+        return;
+      }
+
+      if (e.key.toLowerCase() === 'q') {
+        e.preventDefault();
+        setPagerEntryId(null);
+        setPagerAtEnd(false);
+        return;
+      }
+    }
+
     if (e.key === 'Enter') {
       await handleSubmit();
     } else if (e.key === 'ArrowUp') {
@@ -241,6 +318,7 @@ const Terminal = React.memo(function Terminal({ focused }: TerminalProps) {
       e.preventDefault();
       // Show the cancelled command in history
       setHistory(prev => [...prev, {
+        id: `interrupt-${Date.now()}`,
         command: input + '^C',
         output: '',
         path: currentPath,
@@ -268,8 +346,8 @@ const Terminal = React.memo(function Terminal({ focused }: TerminalProps) {
     <div className="terminal-container" style={{ position: 'relative', height: '100%', width: '100%', overflow: 'hidden' }}>
       <div className="terminal" ref={terminalRef} onClick={handleTerminalClick} style={{ height: '100%', overflowY: 'auto' }}>
         <div className="terminal-output">
-        {history.map((entry, i) => (
-          <div key={i} className="terminal-line" style={{ marginBottom: '8px' }}>
+        {history.map((entry) => (
+          <div key={entry.id} className="terminal-line" style={{ marginBottom: '8px' }}>
             <div className="terminal-prompt">
               <span className="terminal-user">user@portfolio</span>
               <span className="terminal-separator">:</span>
@@ -278,10 +356,26 @@ const Terminal = React.memo(function Terminal({ focused }: TerminalProps) {
               <span style={{ color: 'var(--text-primary)' }}>{entry.command}</span>
             </div>
             <motion.div
+              ref={(el) => {
+                outputRefs.current[entry.id] = el as HTMLDivElement | null;
+              }}
               initial={animations ? { clipPath: 'inset(0 100% 0 0)', opacity: 0 } : false}
               animate={animations ? { clipPath: 'inset(0 0% 0 0)', opacity: 1 } : false}
               transition={animations ? { duration: 0.3, ease: "linear" } : { duration: 0 }}
-              style={{ marginTop: '4px', paddingLeft: '0' }}
+              className={pagerEntryId === entry.id ? 'terminal-pager-active' : undefined}
+              style={{
+                marginTop: '4px',
+                paddingLeft: '0',
+                maxHeight: pagerEntryId === entry.id ? `${getPagerHeight()}px` : undefined,
+                overflowY: pagerEntryId === entry.id ? 'auto' : 'visible',
+                borderBottom: pagerEntryId === entry.id ? '1px solid var(--border-color)' : undefined,
+                paddingBottom: pagerEntryId === entry.id ? '8px' : undefined,
+              }}
+              onScroll={() => {
+                if (pagerEntryId === entry.id) {
+                  updatePagerEndState(entry.id);
+                }
+              }}
             >
               {entry.output}
             </motion.div>
@@ -299,13 +393,25 @@ const Terminal = React.memo(function Terminal({ focused }: TerminalProps) {
           type="text"
           className="terminal-input"
           value={input}
-          onChange={(e) => setInput(e.target.value)}
+          onChange={(e) => {
+            if (pagerEntryId) {
+              setPagerEntryId(null);
+              setPagerAtEnd(false);
+            }
+            setInput(e.target.value);
+          }}
           onKeyDown={handleKeyDown}
           spellCheck={false}
           autoComplete="off"
           disabled={isExecuting}
         />
       </div>
+
+      {pagerEntryId && (
+        <div className="terminal-pager-status">
+          {pagerAtEnd ? '(END) q to close' : '-- MORE -- Down/Up to scroll, q to close'}
+        </div>
+      )}
 
       {/* Tab completion suggestions */}
       {tabSuggestions.length > 1 && (
