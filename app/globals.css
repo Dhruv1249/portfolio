@@ -144,6 +144,37 @@ body {
   overflow: hidden;
 }
 
+.desktop-background-layer {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  isolation: isolate;
+  contain: paint;
+  transform: translateZ(0);
+  backface-visibility: hidden;
+}
+
+.desktop-background-interactive {
+  width: 100vw;
+  height: 100vh;
+  pointer-events: auto;
+}
+
+.desktop-background-canvas {
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  height: 100vh;
+  display: block;
+  pointer-events: none;
+  z-index: 0;
+  background: transparent;
+  transform: translateZ(0);
+  backface-visibility: hidden;
+  will-change: transform;
+}
+
 .desktop-content {
   position: absolute;
   top: var(--topbar-height);

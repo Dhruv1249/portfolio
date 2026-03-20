@@ -144,6 +144,8 @@ const Threads: React.FC<ThreadsProps> = ({
     gl.clearColor(0, 0, 0, 0);
     gl.enable(gl.BLEND);
     gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
+    gl.canvas.style.background = 'transparent';
+    gl.canvas.style.display = 'block';
     container.appendChild(gl.canvas);
 
     const geometry = new Triangle(gl);

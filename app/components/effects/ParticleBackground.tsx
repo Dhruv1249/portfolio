@@ -14,7 +14,11 @@ interface ParticleBackgroundProps {
 
 export default function ParticleBackground({ mode = 'none' }: ParticleBackgroundProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
-  const { activeProfile, animations } = useTheme();
+  const { activeProfile, animations, transparency } = useTheme();
+  const backgroundOpacity = transparency ? 0.95 : 0.8;
+  const rainOpacity = transparency ? 0.75 : 0.6;
+  const reactbitsOpacity = transparency ? 0.9 : 0.75;
+  const backgroundLayerStyle: React.CSSProperties = { opacity: reactbitsOpacity };
 
   useEffect(() => {
     if (mode === 'none') return;
@@ -408,8 +412,8 @@ export default function ParticleBackground({ mode = 'none' }: ParticleBackground
 
   if (mode === 'floatinglines') {
     return (
-      <div style={{ position: 'fixed', inset: 0, zIndex: 0, pointerEvents: 'none' }}>
-        <div style={{ pointerEvents: 'auto', width: '100vw', height: '100vh' }}>
+      <div className="desktop-background-layer" style={backgroundLayerStyle}>
+        <div className="desktop-background-interactive">
           <FloatingLines />
         </div>
       </div>
@@ -417,8 +421,8 @@ export default function ParticleBackground({ mode = 'none' }: ParticleBackground
   }
   if (mode === 'galaxy') {
     return (
-      <div style={{ position: 'fixed', inset: 0, zIndex: 0, pointerEvents: 'none' }}>
-        <div style={{ pointerEvents: 'auto', width: '100vw', height: '100vh' }}>
+      <div className="desktop-background-layer" style={backgroundLayerStyle}>
+        <div className="desktop-background-interactive">
           <Galaxy transparent={true} />
         </div>
       </div>
@@ -438,8 +442,8 @@ export default function ParticleBackground({ mode = 'none' }: ParticleBackground
       return [1, 1, 1];
     };
     return (
-      <div style={{ position: 'fixed', inset: 0, zIndex: 0, pointerEvents: 'none' }}>
-        <div style={{ pointerEvents: 'auto', width: '100vw', height: '100vh' }}>
+      <div className="desktop-background-layer" style={backgroundLayerStyle}>
+        <div className="desktop-background-interactive">
           <Threads color={getAccentColor()} amplitude={1} distance={0} />
         </div>
       </div>
@@ -452,8 +456,8 @@ export default function ParticleBackground({ mode = 'none' }: ParticleBackground
       return getComputedStyle(document.documentElement).getPropertyValue('--accent-primary').trim() || '#ffffff';
     };
     return (
-      <div style={{ position: 'fixed', inset: 0, zIndex: 0, pointerEvents: 'none' }}>
-        <div style={{ pointerEvents: 'auto', width: '100vw', height: '100vh' }}>
+      <div className="desktop-background-layer" style={backgroundLayerStyle}>
+        <div className="desktop-background-interactive">
           <LightRays raysColor={getAccentHex()} raysSpeed={1} lightSpread={0.5} rayLength={3} followMouse={true} mouseInfluence={0.1} />
         </div>
       </div>
@@ -465,16 +469,8 @@ export default function ParticleBackground({ mode = 'none' }: ParticleBackground
   return (
     <canvas
       ref={canvasRef}
-      style={{
-        position: 'absolute',
-        top: 0,
-        left: 0,
-        width: '100vw',
-        height: '100vh',
-        pointerEvents: 'none',
-        zIndex: 0, // Behind windows
-        opacity: mode === 'rain' ? 0.6 : 0.8, // Adjust rain opacity
-      }}
+      className="desktop-background-canvas"
+      style={{ opacity: mode === 'rain' ? rainOpacity : backgroundOpacity }}
     />
   );
 }

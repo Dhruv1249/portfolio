@@ -221,6 +221,8 @@ export default function Galaxy({
       premultipliedAlpha: false
     });
     const gl = renderer.gl;
+    gl.canvas.style.background = 'transparent';
+    gl.canvas.style.display = 'block';
 
     if (transparent) {
       gl.enable(gl.BLEND);

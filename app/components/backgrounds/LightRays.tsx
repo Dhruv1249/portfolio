@@ -151,6 +151,11 @@ const LightRays: React.FC<LightRaysProps> = ({
       rendererRef.current = renderer;
 
       const gl = renderer.gl;
+      gl.clearColor(0, 0, 0, 0);
+      gl.enable(gl.BLEND);
+      gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
+      gl.canvas.style.background = 'transparent';
+      gl.canvas.style.display = 'block';
       gl.canvas.style.width = '100%';
       gl.canvas.style.height = '100%';
 
