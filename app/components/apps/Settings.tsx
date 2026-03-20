@@ -201,8 +201,12 @@ export default function Settings() {
                       inputMode="numeric"
                       pattern="[0-9]*"
                       value={Math.round(windowOpacity * 100)}
-                      onChange={(e) => {
-                        const val = parseInt(e.target.value || `${OPACITY_MIN}`, 10);
+                      onChange={(e) => {                      const val = parseInt(e.target.value, 10);
+                      if (!Number.isNaN(val)) {
+                        setWindowOpacity(val / 100);
+                      }
+                    }}
+                    onBlur={(e) => {                        const val = parseInt(e.target.value || `${OPACITY_MIN}`, 10);
                         const clamped = Math.max(OPACITY_MIN, Math.min(OPACITY_MAX, Number.isNaN(val) ? OPACITY_MIN : val));
                         setWindowOpacity(clamped / 100);
                       }}
@@ -261,6 +265,12 @@ export default function Settings() {
                     step={1}
                     value={Math.round(pendingFontScale * 100)}
                     onChange={(e) => {
+                      const val = parseInt(e.target.value, 10);
+                      if (!Number.isNaN(val)) {
+                        setPendingFontScale(val / 100);
+                      }
+                    }}
+                    onBlur={(e) => {
                       const val = parseInt(e.target.value || `${FONT_MIN}`, 10);
                       const clamped = Math.max(FONT_MIN, Math.min(FONT_MAX, Number.isNaN(val) ? FONT_MIN : val));
                       setPendingFontScale(clamped / 100);
