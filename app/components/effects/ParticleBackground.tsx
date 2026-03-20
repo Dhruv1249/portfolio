@@ -444,7 +444,7 @@ export default function ParticleBackground({ mode = 'none' }: ParticleBackground
     return (
       <div className="desktop-background-layer" style={backgroundLayerStyle}>
         <div className="desktop-background-interactive">
-          <Threads color={getAccentColor()} amplitude={1} distance={0} />
+          <Threads color={getAccentColor()} amplitude={1} distance={0} enableMouseInteraction />
         </div>
       </div>
     );

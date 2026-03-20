@@ -1,8 +1,8 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useLayoutEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Menu, X, FileText } from "lucide-react";
+import { Menu, X, FileText, ChevronDown } from "lucide-react";
 
 const personalInfo = {
   name: 'Dhruv',
@@ -24,6 +24,22 @@ const navLinks = [
 export default function BrowserNavbar() {
   const [scrolled, setScrolled] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [moreOpen, setMoreOpen] = useState(false);
+  const [visibleItemCount, setVisibleItemCount] = useState(navLinks.length + 1);
+
+  const logoRef = useRef<HTMLAnchorElement>(null);
+  const moreRef = useRef<HTMLDivElement>(null);
+  const desktopNavRef = useRef<HTMLDivElement>(null);
+  const desktopControlsRef = useRef<HTMLDivElement>(null);
+  const measureRefs = useRef<Array<HTMLSpanElement | null>>([]);
+
+  const desktopItems = [
+    ...navLinks,
+    { label: "Resume", href: personalInfo.resume, download: "Dhruv_Resume.pdf" as const },
+  ];
+
+  const visibleDesktopItems = desktopItems.slice(0, visibleItemCount);
+  const overflowDesktopItems = desktopItems.slice(visibleItemCount);
 
   useEffect(() => {
     const container = document.querySelector('.browser-content');
@@ -36,6 +52,62 @@ export default function BrowserNavbar() {
       window.addEventListener("scroll", onScroll);
       return () => window.removeEventListener("scroll", onScroll);
     }
+  }, []);
+
+  useLayoutEffect(() => {
+    const recompute = () => {
+      if (!desktopNavRef.current || !desktopControlsRef.current) return;
+      const logoWidth = logoRef.current?.clientWidth ?? 0;
+
+      const available = desktopNavRef.current.clientWidth - logoWidth - desktopControlsRef.current.clientWidth - 44;
+      if (available <= 0) {
+        setVisibleItemCount(0);
+        return;
+      }
+
+      const widths = desktopItems.map((item, i) => {
+        const measured = measureRefs.current[i]?.offsetWidth ?? 84;
+        const iconAllowance = item.label === "Resume" ? 18 : 0;
+        return measured + iconAllowance + 20;
+      });
+
+      const total = widths.reduce((sum, w) => sum + w, 0);
+      if (total <= available) {
+        setVisibleItemCount(desktopItems.length);
+        return;
+      }
+
+      const moreReserve = 84;
+      let used = 0;
+      let count = 0;
+      for (const width of widths) {
+        if (used + width + moreReserve > available) break;
+        used += width;
+        count += 1;
+      }
+      setVisibleItemCount(Math.max(0, count));
+    };
+
+    recompute();
+    const ro = new ResizeObserver(recompute);
+    if (desktopNavRef.current) ro.observe(desktopNavRef.current);
+    if (desktopControlsRef.current) ro.observe(desktopControlsRef.current);
+    window.addEventListener("resize", recompute);
+
+    return () => {
+      ro.disconnect();
+      window.removeEventListener("resize", recompute);
+    };
+  }, [desktopItems.length]);
+
+  useEffect(() => {
+    const handler = (e: MouseEvent) => {
+      if (moreRef.current && !moreRef.current.contains(e.target as Node)) {
+        setMoreOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handler);
+    return () => document.removeEventListener("mousedown", handler);
   }, []);
 
   return (
@@ -51,38 +123,102 @@ export default function BrowserNavbar() {
         borderBottom: scrolled ? "1px solid var(--border-subtle)" : "1px solid transparent",
       }}
     >
-      <div style={{ maxWidth: '80rem', margin: '0 auto', padding: '0 1.5rem', display: 'flex', alignItems: 'center', justifyContent: 'space-between', height: '5rem', width: '100%' }}>
+      <div ref={desktopNavRef} style={{ maxWidth: '80rem', margin: '0 auto', padding: '0 1.5rem', display: 'flex', alignItems: 'center', justifyContent: 'space-between', height: '5rem', width: '100%', gap: '1rem' }}>
         {/* Logo */}
-        <a href="#" className="text-xl font-bold tracking-tight shrink-0" style={{ color: "var(--text-primary)", fontSize: '1.5rem' }}>
+        <a ref={logoRef} href="#" className="text-xl font-bold tracking-tight shrink-0" style={{ color: "var(--text-primary)", fontSize: '1.5rem', whiteSpace: 'nowrap' }}>
           Dhruv<span style={{ color: "var(--accent-primary, #2dd4bf)" }}>.</span>
         </a>
 
         {/* Desktop Nav */}
-        <div className="hidden md:flex items-center" style={{ gap: '1.5rem' }}>
-          {navLinks.map((link, i) => (
+        <div className="hidden lg:flex items-center" style={{ gap: '1rem', minWidth: 0, flex: 1, justifyContent: 'flex-end' }}>
+          <div style={{ position: 'absolute', visibility: 'hidden', pointerEvents: 'none', height: 0, overflow: 'hidden', whiteSpace: 'nowrap' }}>
+            {desktopItems.map((item, i) => (
+              <span
+                key={`measure-${item.href}`}
+                ref={(el) => { measureRefs.current[i] = el; }}
+                className="text-sm font-medium tracking-wide"
+                style={{ fontSize: '0.9rem' }}
+              >
+                {item.label}
+              </span>
+            ))}
+          </div>
+
+          {visibleDesktopItems.map((item, i) => (
             <motion.a
-              key={link.href}
-              href={link.href}
+              key={item.href}
+              href={item.href}
+              download={item.label === 'Resume' ? 'Dhruv_Resume.pdf' : undefined}
               initial={{ opacity: 0, y: -10 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.4 + i * 0.08 }}
-              className="text-sm font-medium tracking-wide transition-colors duration-300 hover:text-[var(--accent-primary, #2dd4bf)]"
-              style={{ color: "var(--text-muted)", fontSize: '0.9rem' }}
+                className="text-sm font-medium tracking-wide transition-colors duration-300 hover:text-[var(--accent-primary, #2dd4bf)] inline-flex items-center"
+                style={{ color: "var(--text-muted)", fontSize: '0.9rem', gap: item.label === 'Resume' ? '0.35rem' : 0, whiteSpace: 'nowrap', flexShrink: 0 }}
             >
-              {link.label}
+              {item.label === 'Resume' && <FileText size={14} />}
+              {item.label}
             </motion.a>
           ))}
-          <motion.a
-            href={personalInfo.resume}
-            download="Dhruv_Resume.pdf"
-            initial={{ opacity: 0, scale: 0.9 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ delay: 0.75 }}
-            className="text-sm font-medium tracking-wide inline-flex items-center gap-1.5 transition-colors duration-300 hover:text-[var(--accent-primary, #2dd4bf)]"
-            style={{ color: "var(--text-muted)", fontSize: '0.9rem' }}
-          >
-            <FileText size={15} /> Resume
-          </motion.a>
+
+          <div ref={desktopControlsRef} style={{ display: 'flex', alignItems: 'center', gap: '1rem', flexShrink: 0 }}>
+          {overflowDesktopItems.length > 0 && (
+          <div ref={moreRef} style={{ position: 'relative' }}>
+            <button
+              onClick={() => setMoreOpen((v) => !v)}
+              className="text-sm font-medium tracking-wide inline-flex items-center gap-1 transition-colors duration-300 hover:text-[var(--accent-primary, #2dd4bf)]"
+              style={{ color: "var(--text-muted)", fontSize: '0.9rem', background: 'none', border: 'none', cursor: 'pointer', whiteSpace: 'nowrap' }}
+            >
+              More <ChevronDown size={14} />
+            </button>
+
+            <AnimatePresence>
+              {moreOpen && (
+                <motion.div
+                  initial={{ opacity: 0, y: -8, scale: 0.98 }}
+                  animate={{ opacity: 1, y: 0, scale: 1 }}
+                  exit={{ opacity: 0, y: -8, scale: 0.98 }}
+                  transition={{ duration: 0.18 }}
+                  style={{
+                    position: 'absolute',
+                    top: 'calc(100% + 10px)',
+                    right: 0,
+                    width: '210px',
+                    background: 'var(--bg-secondary)',
+                    border: '1px solid var(--border-subtle)',
+                    borderRadius: '12px',
+                    padding: '8px',
+                    backdropFilter: 'blur(14px)',
+                    boxShadow: '0 20px 48px rgba(0,0,0,0.45)',
+                    zIndex: 120,
+                  }}
+                >
+                  {overflowDesktopItems.map((item) => (
+                    <a
+                      key={item.href}
+                      href={item.href}
+                      download={item.label === 'Resume' ? 'Dhruv_Resume.pdf' : undefined}
+                      onClick={() => setMoreOpen(false)}
+                      style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '8px',
+                        padding: '8px 10px',
+                        borderRadius: '8px',
+                        color: 'var(--text-secondary)',
+                        textDecoration: 'none',
+                        fontSize: '0.85rem',
+                        marginBottom: '2px'
+                      }}
+                    >
+                      {item.label === 'Resume' && <FileText size={14} />}
+                      {item.label}
+                    </a>
+                  ))}
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </div>
+          )}
 
           <motion.a
             href="#contact"
@@ -112,11 +248,12 @@ export default function BrowserNavbar() {
           >
             Get In Touch
           </motion.a>
+          </div>
         </div>
 
         {/* Mobile Toggle */}
         <button
-          className="md:hidden p-2"
+          className="lg:hidden p-2"
           onClick={() => setMobileOpen(!mobileOpen)}
           style={{ color: "var(--text-primary)" }}
           aria-label="Toggle menu"
@@ -133,7 +270,7 @@ export default function BrowserNavbar() {
             animate={{ opacity: 1, height: "auto" }}
             exit={{ opacity: 0, height: 0 }}
             transition={{ duration: 0.3 }}
-            className="md:hidden overflow-hidden"
+            className="lg:hidden overflow-hidden"
             style={{
               background: "rgba(5, 5, 5, 0.95)",
               backdropFilter: "blur(20px)",

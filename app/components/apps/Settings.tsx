@@ -19,6 +19,10 @@ const SECTIONS: SettingsSection[] = [
 ];
 
 export default function Settings() {
+  const FONT_MIN = 70;
+  const FONT_MAX = 160;
+  const OPACITY_MIN = 30;
+  const OPACITY_MAX = 100;
   const [activeSection, setActiveSection] = useState('about');
   const [photoVisible, setPhotoVisible] = useState(true);
   const [pendingFontScale, setPendingFontScale] = useState(1);
@@ -190,20 +194,39 @@ export default function Settings() {
                     <h3>Window Opacity</h3>
                     <p>Adjust window background transparency</p>
                   </div>
-                  <span style={{ 
-                    color: 'var(--accent-primary)', 
-                    fontWeight: 600, 
-                    fontSize: '0.875rem',
-                    fontFamily: 'monospace',
-                    minWidth: '42px',
-                    textAlign: 'right'
-                  }}>{Math.round(windowOpacity * 100)}%</span>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+                    <input
+                      className="font-scale-input"
+                      type="text"
+                      inputMode="numeric"
+                      pattern="[0-9]*"
+                      value={Math.round(windowOpacity * 100)}
+                      onChange={(e) => {
+                        const val = parseInt(e.target.value || `${OPACITY_MIN}`, 10);
+                        const clamped = Math.max(OPACITY_MIN, Math.min(OPACITY_MAX, Number.isNaN(val) ? OPACITY_MIN : val));
+                        setWindowOpacity(clamped / 100);
+                      }}
+                      style={{
+                        width: '58px',
+                        color: 'var(--accent-primary)',
+                        background: 'transparent',
+                        border: '1px solid var(--border-color)',
+                        borderRadius: '6px',
+                        fontWeight: 700,
+                        fontSize: '0.875rem',
+                        fontFamily: 'monospace',
+                        textAlign: 'right',
+                        padding: '4px 6px',
+                      }}
+                    />
+                    <span style={{ color: 'var(--accent-primary)', fontSize: '0.875rem', fontWeight: 700 }}>%</span>
+                  </div>
                 </div>
                 <div style={{ position: 'relative', padding: '4px 0' }}>
                   <input
                     type="range"
-                    min="30"
-                    max="100"
+                    min={OPACITY_MIN}
+                    max={OPACITY_MAX}
                     value={Math.round(windowOpacity * 100)}
                     onChange={(e) => setWindowOpacity(parseInt(e.target.value) / 100)}
                     style={{
@@ -227,21 +250,43 @@ export default function Settings() {
                   <h3>Global Font Size</h3>
                   <p>Adjust text scaling across all desktop apps</p>
                 </div>
-                <span style={{
-                  color: 'var(--accent-primary)',
-                  fontWeight: 600,
-                  fontSize: '0.875rem',
-                  fontFamily: 'monospace',
-                  minWidth: '58px',
-                  textAlign: 'right'
-                }}>{Math.round(pendingFontScale * 100)}%</span>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+                  <input
+                    className="font-scale-input"
+                    type="text"
+                    inputMode="numeric"
+                    pattern="[0-9]*"
+                    min={FONT_MIN}
+                    max={FONT_MAX}
+                    step={1}
+                    value={Math.round(pendingFontScale * 100)}
+                    onChange={(e) => {
+                      const val = parseInt(e.target.value || `${FONT_MIN}`, 10);
+                      const clamped = Math.max(FONT_MIN, Math.min(FONT_MAX, Number.isNaN(val) ? FONT_MIN : val));
+                      setPendingFontScale(clamped / 100);
+                    }}
+                    style={{
+                      width: '62px',
+                      color: 'var(--accent-primary)',
+                      background: 'transparent',
+                      border: '1px solid var(--border-color)',
+                      borderRadius: '6px',
+                      fontWeight: 700,
+                      fontSize: '0.875rem',
+                      fontFamily: 'monospace',
+                      textAlign: 'right',
+                      padding: '4px 6px',
+                    }}
+                  />
+                  <span style={{ color: 'var(--accent-primary)', fontSize: '0.875rem', fontWeight: 700 }}>%</span>
+                </div>
               </div>
 
               <div style={{ position: 'relative', padding: '4px 0' }}>
                 <input
                   type="range"
-                  min="70"
-                  max="160"
+                  min={FONT_MIN}
+                  max={FONT_MAX}
                   value={Math.round(pendingFontScale * 100)}
                   onChange={(e) => setPendingFontScale(parseInt(e.target.value, 10) / 100)}
                   style={{
@@ -259,23 +304,26 @@ export default function Settings() {
 
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                 <p style={{ margin: 0, color: 'var(--text-muted)', fontSize: '0.75rem' }}>Range: 70% to 160%</p>
-                <button
-                  onClick={() => applyFontScale(pendingFontScale)}
-                  disabled={Math.abs(pendingFontScale - fontScale) < 0.005}
-                  style={{
-                    background: Math.abs(pendingFontScale - fontScale) < 0.005 ? 'var(--bg-tertiary)' : 'var(--accent-primary)',
-                    color: Math.abs(pendingFontScale - fontScale) < 0.005 ? 'var(--text-muted)' : 'var(--bg-primary)',
-                    border: `1px solid ${Math.abs(pendingFontScale - fontScale) < 0.005 ? 'var(--border-color)' : 'var(--accent-primary)'}`,
-                    borderRadius: '8px',
-                    padding: '8px 14px',
-                    fontSize: '0.75rem',
-                    fontWeight: 600,
-                    cursor: Math.abs(pendingFontScale - fontScale) < 0.005 ? 'not-allowed' : 'pointer',
-                    transition: 'all 0.2s ease',
-                  }}
-                >
-                  Apply
-                </button>
+                <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+                  <button
+                    onClick={() => applyFontScale(pendingFontScale)}
+                    disabled={Math.abs(pendingFontScale - fontScale) < 0.005}
+                    style={{
+                      background: Math.abs(pendingFontScale - fontScale) < 0.005 ? 'rgba(255, 255, 255, 0.08)' : 'var(--accent-primary)',
+                      color: Math.abs(pendingFontScale - fontScale) < 0.005 ? 'var(--text-secondary)' : '#03110e',
+                      border: `1px solid ${Math.abs(pendingFontScale - fontScale) < 0.005 ? 'var(--border-color)' : 'var(--accent-primary)'}`,
+                      borderRadius: '8px',
+                      padding: '8px 14px',
+                      fontSize: '0.75rem',
+                      fontWeight: 700,
+                      cursor: Math.abs(pendingFontScale - fontScale) < 0.005 ? 'not-allowed' : 'pointer',
+                      transition: 'all 0.2s ease',
+                      textShadow: Math.abs(pendingFontScale - fontScale) < 0.005 ? 'none' : '0 1px 0 rgba(255,255,255,0.25)',
+                    }}
+                  >
+                    Apply
+                  </button>
+                </div>
               </div>
             </div>
 

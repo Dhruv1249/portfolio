@@ -81,6 +81,17 @@ body {
   overflow: hidden;
 }
 
+.font-scale-input {
+  appearance: textfield;
+  -moz-appearance: textfield;
+}
+
+.font-scale-input::-webkit-outer-spin-button,
+.font-scale-input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
 html {
   font-size: calc(100% * var(--font-scale));
 }
