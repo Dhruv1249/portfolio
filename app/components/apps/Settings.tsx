@@ -21,7 +21,8 @@ const SECTIONS: SettingsSection[] = [
 export default function Settings() {
   const [activeSection, setActiveSection] = useState('about');
   const [photoVisible, setPhotoVisible] = useState(true);
-  const { activeProfile, setProfile, animations, setAnimations, particleMode, setParticleMode, transparency, setTransparency, windowOpacity, setWindowOpacity } = useTheme();
+  const [pendingFontScale, setPendingFontScale] = useState(1);
+  const { activeProfile, setProfile, animations, setAnimations, particleMode, setParticleMode, transparency, setTransparency, windowOpacity, setWindowOpacity, fontScale, applyFontScale } = useTheme();
 
   useEffect(() => {
     fetch('/api/photo-toggle')
@@ -29,6 +30,10 @@ export default function Settings() {
       .then(d => setPhotoVisible(d.visible))
       .catch(() => {});
   }, []);
+
+  useEffect(() => {
+    setPendingFontScale(fontScale);
+  }, [fontScale]);
 
   const renderContent = () => {
     switch (activeSection) {
@@ -74,7 +79,7 @@ export default function Settings() {
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
-                  fontSize: '40px',
+                  fontSize: '2.5rem',
                   flexShrink: 0,
                 }}>
                   <Monitor size={32} style={{ color: 'var(--accent-primary)' }} />
@@ -188,7 +193,7 @@ export default function Settings() {
                   <span style={{ 
                     color: 'var(--accent-primary)', 
                     fontWeight: 600, 
-                    fontSize: '14px',
+                    fontSize: '0.875rem',
                     fontFamily: 'monospace',
                     minWidth: '42px',
                     textAlign: 'right'
@@ -216,9 +221,67 @@ export default function Settings() {
               </div>
             )}
 
+            <div className="settings-option" style={{ flexDirection: 'column', alignItems: 'stretch', gap: '12px' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <div className="settings-option-info">
+                  <h3>Global Font Size</h3>
+                  <p>Adjust text scaling across all desktop apps</p>
+                </div>
+                <span style={{
+                  color: 'var(--accent-primary)',
+                  fontWeight: 600,
+                  fontSize: '0.875rem',
+                  fontFamily: 'monospace',
+                  minWidth: '58px',
+                  textAlign: 'right'
+                }}>{Math.round(pendingFontScale * 100)}%</span>
+              </div>
+
+              <div style={{ position: 'relative', padding: '4px 0' }}>
+                <input
+                  type="range"
+                  min="70"
+                  max="160"
+                  value={Math.round(pendingFontScale * 100)}
+                  onChange={(e) => setPendingFontScale(parseInt(e.target.value, 10) / 100)}
+                  style={{
+                    width: '100%',
+                    height: '6px',
+                    WebkitAppearance: 'none',
+                    appearance: 'none',
+                    background: `linear-gradient(to right, var(--accent-primary) 0%, var(--accent-primary) ${((pendingFontScale - 0.7) / 0.9) * 100}%, var(--bg-tertiary) ${((pendingFontScale - 0.7) / 0.9) * 100}%, var(--bg-tertiary) 100%)`,
+                    borderRadius: '3px',
+                    outline: 'none',
+                    cursor: 'pointer',
+                  }}
+                />
+              </div>
+
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <p style={{ margin: 0, color: 'var(--text-muted)', fontSize: '0.75rem' }}>Range: 70% to 160%</p>
+                <button
+                  onClick={() => applyFontScale(pendingFontScale)}
+                  disabled={Math.abs(pendingFontScale - fontScale) < 0.005}
+                  style={{
+                    background: Math.abs(pendingFontScale - fontScale) < 0.005 ? 'var(--bg-tertiary)' : 'var(--accent-primary)',
+                    color: Math.abs(pendingFontScale - fontScale) < 0.005 ? 'var(--text-muted)' : 'var(--bg-primary)',
+                    border: `1px solid ${Math.abs(pendingFontScale - fontScale) < 0.005 ? 'var(--border-color)' : 'var(--accent-primary)'}`,
+                    borderRadius: '8px',
+                    padding: '8px 14px',
+                    fontSize: '0.75rem',
+                    fontWeight: 600,
+                    cursor: Math.abs(pendingFontScale - fontScale) < 0.005 ? 'not-allowed' : 'pointer',
+                    transition: 'all 0.2s ease',
+                  }}
+                >
+                  Apply
+                </button>
+              </div>
+            </div>
+
             {/* Particle Effects */}
             <div style={{ marginTop: '24px' }}>
-              <h3 style={{ color: 'var(--text-primary)', marginBottom: '16px', fontSize: '16px', fontWeight: 600 }}>Particle Effects</h3>
+              <h3 style={{ color: 'var(--text-primary)', marginBottom: '16px', fontSize: '1rem', fontWeight: 600 }}>Particle Effects</h3>
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '12px' }}>
                 {[
                   { id: 'none', name: 'None' },
@@ -245,7 +308,7 @@ export default function Settings() {
                         transition: 'all 0.2s ease',
                         textAlign: 'center',
                         color: isActive ? 'var(--accent-primary)' : 'var(--text-secondary)',
-                        fontSize: '13px',
+                        fontSize: '0.8125rem',
                         fontWeight: 500,
                       }}
                     >
@@ -258,7 +321,7 @@ export default function Settings() {
 
             {/* Color Profiles */}
             <div style={{ marginTop: '24px' }}>
-              <h3 style={{ color: 'var(--text-primary)', marginBottom: '16px', fontSize: '16px', fontWeight: 600 }}>Color Profile</h3>
+              <h3 style={{ color: 'var(--text-primary)', marginBottom: '16px', fontSize: '1rem', fontWeight: 600 }}>Color Profile</h3>
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '12px' }}>
                 {COLOR_PROFILES.map((profile) => {
                   const isActive = activeProfile.id === profile.id;
@@ -298,7 +361,7 @@ export default function Settings() {
                           />
                         ))}
                       </div>
-                      <span style={{ color: isActive ? 'var(--accent-primary)' : 'var(--text-secondary)', fontSize: '13px', fontWeight: 500 }}>
+                      <span style={{ color: isActive ? 'var(--accent-primary)' : 'var(--text-secondary)', fontSize: '0.8125rem', fontWeight: 500 }}>
                         {profile.name}
                       </span>
                     </div>
@@ -331,7 +394,7 @@ export default function Settings() {
               ].map(({ keys, action }) => (
                 <div key={action} className="settings-option" style={{ padding: '12px 16px' }}>
                   <div className="settings-option-info">
-                    <h3 style={{ fontSize: '13px' }}>{action}</h3>
+                    <h3 style={{ fontSize: '0.8125rem' }}>{action}</h3>
                   </div>
                   <div style={{ display: 'flex', gap: '4px' }}>
                     {keys.map((key) => (
@@ -342,7 +405,7 @@ export default function Settings() {
                           background: 'var(--bg-tertiary)',
                           border: '1px solid var(--border-color)',
                           borderRadius: '4px',
-                          fontSize: '12px',
+                          fontSize: '0.75rem',
                           color: 'var(--text-secondary)',
                           fontFamily: 'JetBrains Mono, monospace',
                         }}
@@ -355,7 +418,7 @@ export default function Settings() {
               ))}
             </div>
 
-            <p style={{ color: 'var(--text-muted)', marginTop: '16px', fontSize: '13px' }}>
+            <p style={{ color: 'var(--text-muted)', marginTop: '16px', fontSize: '0.8125rem' }}>
               <Lightbulb size={14} style={{ display: 'inline', verticalAlign: 'middle', marginRight: '4px' }} /> All shortcuts use Alt — no conflicts with browser shortcuts!
             </p>
           </div>

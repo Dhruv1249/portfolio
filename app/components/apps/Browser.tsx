@@ -267,7 +267,7 @@ function HomePage({ openTab }: { openTab: (url: string, title: string) => void }
 
             <motion.h1 initial={{ opacity: 0, y: 40 }} animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 1, delay: 0.2, ease: [0.25, 0.4, 0.25, 1] as [number, number, number, number] }}
-              style={{ fontSize: 'clamp(48px, 6vw, 80px)', fontWeight: 700, letterSpacing: '-0.04em', lineHeight: 0.9, marginTop: '32px' }}>
+              style={{ fontSize: 'clamp(3rem, 6vw, 5rem)', fontWeight: 700, letterSpacing: '-0.04em', lineHeight: 0.9, marginTop: '32px' }}>
               <span style={gradientText}>{personalInfo.name}</span>
               <span style={{ color: V.accent }}>.</span>
             </motion.h1>
@@ -286,7 +286,7 @@ function HomePage({ openTab }: { openTab: (url: string, title: string) => void }
               style={{ display: 'flex', gap: '12px', flexWrap: 'wrap', marginTop: '40px', justifyContent: photoVisible ? 'flex-start' : 'center' }}>
               <a href={personalInfo.resume} download="Dhruv_Resume.pdf" style={{
                 padding: '14px 28px', borderRadius: '12px', display: 'inline-flex', alignItems: 'center', gap: '8px',
-                background: V.accentDim, color: V.accent, fontWeight: 600, fontSize: '14px',
+                background: V.accentDim, color: V.accent, fontWeight: 600, fontSize: '0.875rem',
                 border: `1px solid ${V.accentGlow}`, textDecoration: 'none',
               }}><FileText size={16} /> Download CV</a>
               <a href={`mailto:${personalInfo.email}`} style={{
@@ -351,7 +351,7 @@ function HomePage({ openTab }: { openTab: (url: string, title: string) => void }
               <FileText size={32} />
             </div>
             <div>
-              <h3 style={{ fontSize: '24px', fontWeight: 700, color: V.textPrimary, marginBottom: '12px' }}>Standard View</h3>
+              <h3 style={{ fontSize: '1.5rem', fontWeight: 700, color: V.textPrimary, marginBottom: '12px' }}>Standard View</h3>
               <p style={{ color: V.textSecondary, maxWidth: '500px', margin: '0 auto', lineHeight: 1.6 }}>
                 Experience my streamlined, non-technical portfolio tailored for recruiters and HR professionals.
               </p>
@@ -370,7 +370,7 @@ function HomePage({ openTab }: { openTab: (url: string, title: string) => void }
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '80px', alignItems: 'center' }}>
           <div>
             <AnimateOnScroll>
-              <p style={{ ...sectionTitle, fontSize: 'clamp(32px, 5vw, 64px)' }}>About Me</p>
+              <p style={{ ...sectionTitle, fontSize: 'clamp(2rem, 5vw, 4rem)' }}>About Me</p>
             </AnimateOnScroll>
             <AnimateOnScroll delay={0.1}>
               <h2 style={{ ...sectionLabel, color: V.accent, fontSize: '1.1rem' }}>
@@ -392,7 +392,7 @@ function HomePage({ openTab }: { openTab: (url: string, title: string) => void }
                   </div>
                   <div>
                     <h3 style={{ color: V.textPrimary, fontWeight: 700, marginBottom: '6px' }}>{focus.title}</h3>
-                    <p style={{ color: V.textMuted, fontSize: '12px', fontFamily: 'monospace', lineHeight: 1.5, margin: 0 }}>{focus.short}</p>
+                    <p style={{ color: V.textMuted, fontSize: '0.75rem', fontFamily: 'monospace', lineHeight: 1.5, margin: 0 }}>{focus.short}</p>
                   </div>
                 </motion.div>
               </AnimateOnScroll>
@@ -406,7 +406,7 @@ function HomePage({ openTab }: { openTab: (url: string, title: string) => void }
       {/* ── PROJECTS ── */}
       <section id="projects" style={sectionPadding}>
         <AnimateOnScroll>
-          <p style={{ ...sectionTitle, fontSize: 'clamp(32px, 5vw, 64px)', marginBottom: '12px' }}>Projects</p>
+          <p style={{ ...sectionTitle, fontSize: 'clamp(2rem, 5vw, 4rem)', marginBottom: '12px' }}>Projects</p>
           <h2 style={{ ...sectionLabel, fontSize: '1.2rem', marginBottom: '40px' }}><span style={gradientText}>Featured Engineering Work</span></h2>
           <p style={{ color: V.textMuted, marginTop: '-24px', marginBottom: '64px' }}>
             A selection of projects I&apos;ve built — from climate forecasting to AI-powered marketplaces.
@@ -436,22 +436,22 @@ function HomePage({ openTab }: { openTab: (url: string, title: string) => void }
                       />
                     ) : (
                       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%', background: V.bgCard, borderRadius: '16px', border: `1px solid ${V.borderGlass}` }}>
-                        <span style={{ fontSize: '32px', color: V.accent, opacity: 0.4, fontWeight: 700 }}>{project.title}</span>
+                        <span style={{ fontSize: '2rem', color: V.accent, opacity: 0.4, fontWeight: 700 }}>{project.title}</span>
                       </div>
                     )}
                   </div>
                   {/* Text */}
                   <div style={{ order: isEven ? 2 : 1 }}>
                     {project.badge && <span style={{ ...badgeGlow, marginBottom: '16px' }}>{project.badge}</span>}
-                    <h3 style={{ color: V.textPrimary, fontSize: '24px', fontWeight: 700, marginBottom: '8px', marginTop: project.badge ? '16px' : 0 }}>
+                    <h3 style={{ color: V.textPrimary, fontSize: '1.5rem', fontWeight: 700, marginBottom: '8px', marginTop: project.badge ? '16px' : 0 }}>
                       {project.title} — {project.subtitle}
                     </h3>
                     {project.period && (
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '12px', fontFamily: 'monospace', color: V.accent, marginBottom: '16px' }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '0.75rem', fontFamily: 'monospace', color: V.accent, marginBottom: '16px' }}>
                         <Calendar size={14} /> {project.period}
                       </div>
                     )}
-                    <p style={{ color: V.textSecondary, fontSize: '14px', lineHeight: 1.6, marginBottom: '24px' }}>{project.description}</p>
+                    <p style={{ color: V.textSecondary, fontSize: '0.875rem', lineHeight: 1.6, marginBottom: '24px' }}>{project.description}</p>
                     <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px', marginBottom: '24px' }}>
                       {project.tech.map(t => <span key={t} style={techPill}>{t}</span>)}
                     </div>
@@ -460,13 +460,13 @@ function HomePage({ openTab }: { openTab: (url: string, title: string) => void }
                         <button onClick={() => openTab(project.live!, `${project.title} — Live`)} style={{
                           display: 'inline-flex', alignItems: 'center', gap: '8px', padding: '10px 20px',
                           borderRadius: '12px', background: V.accent, color: '#050505',
-                          fontWeight: 600, fontSize: '14px', border: 'none', cursor: 'pointer',
+                          fontWeight: 600, fontSize: '0.875rem', border: 'none', cursor: 'pointer',
                         }}><ExternalLink size={15} /> Live Demo</button>
                       )}
                       <a href={project.github} target="_blank" rel="noopener noreferrer" style={{
                         display: 'inline-flex', alignItems: 'center', gap: '8px', padding: '10px 20px',
                         borderRadius: '12px', border: `1px solid ${V.borderSubtle}`, color: V.textSecondary,
-                        background: 'rgba(255,255,255,0.03)', textDecoration: 'none', fontSize: '14px', fontWeight: 600,
+                        background: 'rgba(255,255,255,0.03)', textDecoration: 'none', fontSize: '0.875rem', fontWeight: 600,
                       }}><Github size={15} /> Source Code</a>
                     </div>
                   </div>
@@ -490,13 +490,13 @@ function HomePage({ openTab }: { openTab: (url: string, title: string) => void }
                 <motion.div whileHover={{ scale: 1.01 }} transition={{ type: 'spring', stiffness: 400, damping: 25 }}
                   style={{ ...glassCard, padding: '28px', height: '100%', display: 'flex', flexDirection: 'column', justifyContent: 'space-between', cursor: 'default' }}>
                   <div>
-                    <h4 style={{ color: V.textPrimary, fontSize: '18px', fontWeight: 700, marginBottom: '8px' }}>{proj.title}</h4>
+                    <h4 style={{ color: V.textPrimary, fontSize: '1.125rem', fontWeight: 700, marginBottom: '8px' }}>{proj.title}</h4>
                     {proj.period && (
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '12px', fontFamily: 'monospace', color: V.accent, marginBottom: '12px' }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '0.75rem', fontFamily: 'monospace', color: V.accent, marginBottom: '12px' }}>
                         <Calendar size={12} /> {proj.period}
                       </div>
                     )}
-                    <p style={{ color: V.textMuted, fontSize: '14px', marginBottom: '16px' }}>{proj.short}</p>
+                    <p style={{ color: V.textMuted, fontSize: '0.875rem', marginBottom: '16px' }}>{proj.short}</p>
                     <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px', marginBottom: '20px' }}>
                       {proj.tech.map(t => <span key={t} style={techPill}>{t}</span>)}
                     </div>
@@ -504,12 +504,12 @@ function HomePage({ openTab }: { openTab: (url: string, title: string) => void }
                   <div style={{ display: 'flex', gap: '12px' }}>
                     {proj.live && (
                       <button onClick={() => openTab(proj.live!, `${proj.title} — Live`)} style={{
-                        display: 'inline-flex', alignItems: 'center', gap: '6px', fontSize: '12px',
+                        display: 'inline-flex', alignItems: 'center', gap: '6px', fontSize: '0.75rem',
                         color: V.textMuted, background: 'none', border: 'none', cursor: 'pointer', fontFamily: 'inherit',
                       }}><ExternalLink size={13} /> Live</button>
                     )}
                     <a href={proj.github} target="_blank" rel="noopener noreferrer" style={{
-                      display: 'inline-flex', alignItems: 'center', gap: '6px', fontSize: '12px',
+                      display: 'inline-flex', alignItems: 'center', gap: '6px', fontSize: '0.75rem',
                       color: V.textMuted, textDecoration: 'none',
                     }}><Github size={13} /> GitHub</a>
                   </div>
@@ -527,11 +527,11 @@ function HomePage({ openTab }: { openTab: (url: string, title: string) => void }
         <div style={{ maxWidth: '1152px', margin: '0 auto' }}>
           <AnimateOnScroll>
             <div style={{ textAlign: 'center', marginBottom: '80px' }}>
-              <p style={{ ...sectionTitle, fontSize: 'clamp(32px, 5vw, 64px)', marginBottom: '12px' }}>Tech Stack</p>
+              <p style={{ ...sectionTitle, fontSize: 'clamp(2rem, 5vw, 4rem)', marginBottom: '12px' }}>Tech Stack</p>
               <h2 style={{ ...sectionLabel, fontSize: '1.2rem' }}>
                 <span style={gradientText}>Core Toolkit</span>
               </h2>
-              <p style={{ fontSize: '16px', color: V.textMuted, maxWidth: '600px', margin: '16px auto 0' }}>
+              <p style={{ fontSize: '1rem', color: V.textMuted, maxWidth: '600px', margin: '16px auto 0' }}>
                 Technologies I work with daily to build production-ready systems.
               </p>
             </div>
@@ -542,7 +542,7 @@ function HomePage({ openTab }: { openTab: (url: string, title: string) => void }
             {skillCategories.map((category, catIdx) => (
               <AnimateOnScroll key={category.title} delay={catIdx * 0.1}>
                 <div style={{ ...glassCard, padding: '32px', height: '100%' }}>
-                  <h3 style={{ fontSize: '14px', fontFamily: 'monospace', letterSpacing: '0.2em', marginBottom: '32px', textAlign: 'center', color: V.accent }}>
+                  <h3 style={{ fontSize: '0.875rem', fontFamily: 'monospace', letterSpacing: '0.2em', marginBottom: '32px', textAlign: 'center', color: V.accent }}>
                     {category.title}
                   </h3>
                   <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'center', gap: '16px' }}>
@@ -558,7 +558,7 @@ function HomePage({ openTab }: { openTab: (url: string, title: string) => void }
                         }}
                       >
                         <span style={{ color: skill.color, transition: 'all 0.3s' }}>{skill.icon}</span>
-                        <span style={{ fontSize: '11px', fontWeight: 500, textAlign: 'center', color: V.textMuted, lineHeight: 1.1 }}>
+                        <span style={{ fontSize: '0.6875rem', fontWeight: 500, textAlign: 'center', color: V.textMuted, lineHeight: 1.1 }}>
                           {skill.name}
                         </span>
                       </motion.div>
@@ -578,7 +578,7 @@ function HomePage({ openTab }: { openTab: (url: string, title: string) => void }
               {trailRow1.map((skill, i) => (
                 <div key={`r1-${skill.name}-${i}`} style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '12px 20px', borderRadius: '999px', background: 'rgba(255,255,255,0.02)', border: `1px solid ${V.borderSubtle}`, flexShrink: 0 }}>
                   <span style={{ color: skill.color, opacity: 0.7 }}>{skill.icon}</span>
-                  <span style={{ fontSize: '14px', fontWeight: 500, whiteSpace: 'nowrap', color: V.textMuted }}>{skill.name}</span>
+                  <span style={{ fontSize: '0.875rem', fontWeight: 500, whiteSpace: 'nowrap', color: V.textMuted }}>{skill.name}</span>
                 </div>
               ))}
             </motion.div>
@@ -589,7 +589,7 @@ function HomePage({ openTab }: { openTab: (url: string, title: string) => void }
               {trailRow2.map((skill, i) => (
                 <div key={`r2-${skill.name}-${i}`} style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '12px 20px', borderRadius: '999px', background: 'rgba(255,255,255,0.02)', border: `1px solid ${V.borderSubtle}`, flexShrink: 0 }}>
                   <span style={{ color: skill.color, opacity: 0.7 }}>{skill.icon}</span>
-                  <span style={{ fontSize: '14px', fontWeight: 500, whiteSpace: 'nowrap', color: V.textMuted }}>{skill.name}</span>
+                  <span style={{ fontSize: '0.875rem', fontWeight: 500, whiteSpace: 'nowrap', color: V.textMuted }}>{skill.name}</span>
                 </div>
               ))}
             </motion.div>
@@ -602,7 +602,7 @@ function HomePage({ openTab }: { openTab: (url: string, title: string) => void }
       {/* ── EXPERIENCE ── */}
       <section id="experience" style={sectionPadding}>
         <AnimateOnScroll>
-          <p style={{ ...sectionTitle, fontSize: 'clamp(32px, 5vw, 64px)', marginBottom: '12px' }}>Experience</p>
+          <p style={{ ...sectionTitle, fontSize: 'clamp(2rem, 5vw, 4rem)', marginBottom: '12px' }}>Experience</p>
           <h2 style={{ ...sectionLabel, fontSize: '1.2rem' }}><span style={gradientText}>Professional</span></h2>
         </AnimateOnScroll>
         <AnimateOnScroll delay={0.1}>
@@ -611,19 +611,19 @@ function HomePage({ openTab }: { openTab: (url: string, title: string) => void }
             <div style={{ padding: '12px', borderRadius: '12px', background: V.accentDim, color: V.accent, flexShrink: 0 }}><Briefcase size={22} /></div>
             <div>
               <div style={{ display: 'flex', flexDirection: 'column', gap: '4px', marginBottom: '20px' }}>
-                <h3 style={{ color: V.textPrimary, fontSize: '20px', fontWeight: 700 }}>{experience.role}</h3>
+                <h3 style={{ color: V.textPrimary, fontSize: '1.25rem', fontWeight: 700 }}>{experience.role}</h3>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                  <span style={{ display: 'flex', alignItems: 'center', gap: '6px', color: V.textMuted, fontSize: '12px' }}>
+                  <span style={{ display: 'flex', alignItems: 'center', gap: '6px', color: V.textMuted, fontSize: '0.75rem' }}>
                     <MapPin size={12} /> {experience.company}
                   </span>
-                  <span style={{ display: 'flex', alignItems: 'center', gap: '6px', color: V.accent, fontSize: '12px', fontFamily: 'monospace' }}>
+                  <span style={{ display: 'flex', alignItems: 'center', gap: '6px', color: V.accent, fontSize: '0.75rem', fontFamily: 'monospace' }}>
                     <Calendar size={12} /> {experience.period}
                   </span>
                 </div>
               </div>
               <ul style={{ padding: 0, margin: '0 0 20px 0', listStyle: 'none' }}>
                 {experience.bullets.map((bullet, i) => (
-                  <li key={i} style={{ display: 'flex', alignItems: 'flex-start', gap: '12px', color: V.textMuted, fontSize: '14px', lineHeight: 1.6, marginBottom: '8px' }}>
+                  <li key={i} style={{ display: 'flex', alignItems: 'flex-start', gap: '12px', color: V.textMuted, fontSize: '0.875rem', lineHeight: 1.6, marginBottom: '8px' }}>
                     <span style={{ marginTop: '8px', width: '6px', height: '6px', borderRadius: '50%', background: V.accent, flexShrink: 0 }} />
                     {bullet}
                   </li>
@@ -654,13 +654,13 @@ function HomePage({ openTab }: { openTab: (url: string, title: string) => void }
                 <div style={{ flex: 1 }}>
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '8px' }}>
                     <h3 style={{ color: V.textPrimary, fontWeight: 700, margin: 0 }}>{edu.institution}</h3>
-                    <span style={{ color: V.accent, fontSize: '12px', fontFamily: 'monospace' }}>{edu.period}</span>
+                    <span style={{ color: V.accent, fontSize: '0.75rem', fontFamily: 'monospace' }}>{edu.period}</span>
                   </div>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '4px', margin: '4px 0' }}>
                     <MapPin size={12} style={{ color: V.textMuted }} />
-                    <span style={{ color: V.textMuted, fontSize: '12px' }}>{edu.location}</span>
+                    <span style={{ color: V.textMuted, fontSize: '0.75rem' }}>{edu.location}</span>
                   </div>
-                  <p style={{ color: V.textSecondary, margin: 0, fontSize: '14px' }}>
+                  <p style={{ color: V.textSecondary, margin: 0, fontSize: '0.875rem' }}>
                     {edu.degree} · <span style={{ color: V.accent }}>{edu.score}</span>
                   </p>
                 </div>
@@ -688,13 +688,13 @@ function HomePage({ openTab }: { openTab: (url: string, title: string) => void }
                 </div>
                 <div style={{ flex: 1 }}>
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '4px' }}>
-                    <p style={{ color: V.accent, fontWeight: 700, fontSize: '14px', margin: 0 }}>{ach.award}</p>
+                    <p style={{ color: V.accent, fontWeight: 700, fontSize: '0.875rem', margin: 0 }}>{ach.award}</p>
                     {ach.period && (
-                      <span style={{ color: V.accent, fontSize: '12px', fontFamily: 'monospace' }}>{ach.period}</span>
+                      <span style={{ color: V.accent, fontSize: '0.75rem', fontFamily: 'monospace' }}>{ach.period}</span>
                     )}
                   </div>
-                  <h4 style={{ color: V.textPrimary, fontWeight: 700, fontSize: '18px', marginBottom: '8px' }}>{ach.title}</h4>
-                  <p style={{ color: V.textMuted, fontSize: '14px', margin: 0 }}>{ach.detail}</p>
+                  <h4 style={{ color: V.textPrimary, fontWeight: 700, fontSize: '1.125rem', marginBottom: '8px' }}>{ach.title}</h4>
+                  <p style={{ color: V.textMuted, fontSize: '0.875rem', margin: 0 }}>{ach.detail}</p>
                 </div>
               </motion.div>
             </AnimateOnScroll>
@@ -720,13 +720,13 @@ function HomePage({ openTab }: { openTab: (url: string, title: string) => void }
                 </div>
                 <div style={{ flex: 1 }}>
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '4px' }}>
-                    <p style={{ color: V.accent, fontWeight: 700, fontSize: '14px', margin: 0 }}>{cert.issuer}</p>
+                    <p style={{ color: V.accent, fontWeight: 700, fontSize: '0.875rem', margin: 0 }}>{cert.issuer}</p>
                     {cert.period && (
-                      <span style={{ color: V.accent, fontSize: '12px', fontFamily: 'monospace' }}>{cert.period}</span>
+                      <span style={{ color: V.accent, fontSize: '0.75rem', fontFamily: 'monospace' }}>{cert.period}</span>
                     )}
                   </div>
-                  <h4 style={{ color: V.textPrimary, fontWeight: 700, fontSize: '18px', marginBottom: '8px' }}>{cert.title}</h4>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '12px', color: V.textMuted, marginTop: '12px' }}>
+                  <h4 style={{ color: V.textPrimary, fontWeight: 700, fontSize: '1.125rem', marginBottom: '8px' }}>{cert.title}</h4>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '0.75rem', color: V.textMuted, marginTop: '12px' }}>
                     <span>View Certificate</span> <ExternalLink size={12} />
                   </div>
                 </div>
@@ -769,8 +769,8 @@ function HomePage({ openTab }: { openTab: (url: string, title: string) => void }
                   <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
                     <div style={{ padding: '12px', borderRadius: '12px', background: V.accentDim, color: V.accent }}>{link.icon}</div>
                     <div>
-                      <p style={{ color: V.textMuted, fontSize: '12px', fontFamily: 'monospace', textTransform: 'uppercase', letterSpacing: '0.1em', margin: '0 0 2px' }}>{link.label}</p>
-                      <p style={{ color: V.textPrimary, fontSize: '14px', fontWeight: 500, margin: 0 }}>{link.display}</p>
+                      <p style={{ color: V.textMuted, fontSize: '0.75rem', fontFamily: 'monospace', textTransform: 'uppercase', letterSpacing: '0.1em', margin: '0 0 2px' }}>{link.label}</p>
+                      <p style={{ color: V.textPrimary, fontSize: '0.875rem', fontWeight: 500, margin: 0 }}>{link.display}</p>
                     </div>
                   </div>
                   <ArrowUpRight size={18} style={{ color: V.accent, opacity: 0.5 }} />
@@ -785,7 +785,7 @@ function HomePage({ openTab }: { openTab: (url: string, title: string) => void }
 
       {/* ── FOOTER ── */}
       <div style={{ padding: '32px 24px', textAlign: 'center' }}>
-        <p style={{ color: V.textMuted, fontSize: '12px' }}>© 2026 Dhruv. Crafted with Next.js & Tailwind CSS.</p>
+        <p style={{ color: V.textMuted, fontSize: '0.75rem' }}>© 2026 Dhruv. Crafted with Next.js & Tailwind CSS.</p>
       </div>
     </div>
   );
@@ -860,7 +860,7 @@ export default function Browser() {
               padding: '4px 12px', borderRadius: '6px 6px 0 0', cursor: 'pointer',
               background: tab.id === activeTabId ? 'var(--bg-tertiary)' : 'transparent',
               color: tab.id === activeTabId ? 'var(--text-primary)' : 'var(--text-muted)',
-              fontSize: '11px', maxWidth: '180px', whiteSpace: 'nowrap',
+              fontSize: '0.6875rem', maxWidth: '180px', whiteSpace: 'nowrap',
               overflow: 'hidden', textOverflow: 'ellipsis', flexShrink: 0,
               borderTop: tab.id === activeTabId ? '2px solid var(--accent-primary)' : '2px solid transparent',
               transition: 'all 0.15s ease',
@@ -893,7 +893,7 @@ export default function Browser() {
             {activeTab.type === 'iframe' ? <Globe size={12} /> : <Lock size={12} />}
           </span>
           <input type="text" className="browser-url-input" value={urlInput} readOnly
-            style={{ background: 'transparent', border: 'none', color: 'var(--text-secondary)', fontFamily: 'var(--font-mono)', fontSize: '12px', flex: 1, outline: 'none' }} />
+            style={{ background: 'transparent', border: 'none', color: 'var(--text-secondary)', fontFamily: 'var(--font-mono)', fontSize: '0.75rem', flex: 1, outline: 'none' }} />
         </div>
       </div>
 

@@ -195,7 +195,7 @@ export default function FileManager() {
         <div className="file-grid">
           {selectedRepo === null ? (
             <div style={{ gridColumn: '1 / -1', padding: '24px' }}>
-              <div style={{ color: 'var(--text-muted)', marginBottom: '16px', fontSize: '13px' }}>
+              <div style={{ color: 'var(--text-muted)', marginBottom: '16px', fontSize: '0.8125rem' }}>
                 Select a project from the sidebar or click below:
               </div>
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(160px, 1fr))', gap: '12px' }}>
@@ -203,7 +203,7 @@ export default function FileManager() {
                   <div key={repo.repo} className="file-item" onClick={() => setSelectedRepo(i)} style={{ cursor: 'pointer' }}>
                     <div className="file-icon"><RepoIcon icon={repo.icon} size={28} /></div>
                     <div className="file-name" style={{ fontWeight: 600 }}>{repo.label}</div>
-                    <div style={{ fontSize: '10px', color: 'var(--text-muted)', marginTop: '2px' }}>
+                    <div style={{ fontSize: '0.625rem', color: 'var(--text-muted)', marginTop: '2px' }}>
                       {repo.owner}/{repo.repo}
                     </div>
                   </div>

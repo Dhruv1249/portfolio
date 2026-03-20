@@ -152,7 +152,7 @@ export default function KernelPanic() {
                   : l.startsWith('[')
                     ? '#cccccc'
                     : '#888888',
-            fontSize: '13px',
+            fontSize: '0.8125rem',
             lineHeight: '1.6',
             whiteSpace: 'pre',
           }}>
@@ -165,7 +165,7 @@ export default function KernelPanic() {
           <div style={{
             marginTop: '20px',
             color: '#44ff44',
-            fontSize: '14px',
+            fontSize: '0.875rem',
             fontWeight: 600,
             animation: 'crash-blink 1s infinite',
           }}>

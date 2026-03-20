@@ -90,7 +90,7 @@ function ProjectSelector({ onSelect, onClose }: {
       <div className="neovim-project-modal" onClick={e => e.stopPropagation()}>
         <div className="neovim-project-header">
           <span style={{ color: 'var(--accent-primary)', fontWeight: 700 }}>Select Project</span>
-          <span style={{ color: 'var(--text-muted)', fontSize: '11px' }}>j/k · Enter · Esc</span>
+          <span style={{ color: 'var(--text-muted)', fontSize: '0.6875rem' }}>j/k · Enter · Esc</span>
         </div>
         <div className="neovim-project-list" ref={listRef}>
           {REPOS.map((repo, i) => (
@@ -103,10 +103,10 @@ function ProjectSelector({ onSelect, onClose }: {
             >
               <span style={{ marginRight: '12px', display: 'flex' }}><RepoIcon icon={repo.icon} size={22} /></span>
               <div style={{ flex: 1 }}>
-                <div style={{ color: 'var(--text-bright)', fontWeight: 600, fontSize: '14px' }}>
+                <div style={{ color: 'var(--text-bright)', fontWeight: 600, fontSize: '0.875rem' }}>
                   {repo.label}
                 </div>
-                <div style={{ color: 'var(--text-muted)', fontSize: '12px', marginTop: '2px' }}>
+                <div style={{ color: 'var(--text-muted)', fontSize: '0.75rem', marginTop: '2px' }}>
                   {repo.owner}/{repo.repo}
                 </div>
               </div>
@@ -117,7 +117,7 @@ function ProjectSelector({ onSelect, onClose }: {
           ))}
         </div>
         <div className="neovim-project-footer">
-          <span style={{ color: 'var(--text-muted)', fontSize: '11px' }}>
+          <span style={{ color: 'var(--text-muted)', fontSize: '0.6875rem' }}>
             {REPOS.length} repositories
           </span>
         </div>
@@ -146,7 +146,7 @@ function FileTreeItem({ file, depth, selected, onSelect }: {
         <span style={{ marginRight: '6px', display: 'flex', alignItems: 'center' }}><FileIcon name={file.name} type={file.type} isSubmodule={file.isSubmodule} expanded={expanded} size={14} /></span>
         <span style={{
           color: file.type === 'directory' ? 'var(--accent-primary)' : 'var(--text-primary)',
-          fontWeight: file.type === 'directory' ? 600 : 400, fontSize: '13px',
+          fontWeight: file.type === 'directory' ? 600 : 400, fontSize: '0.8125rem',
         }}>{file.name}{file.isSubmodule ? ' (submodule)' : ''}</span>
       </div>
       {file.type === 'directory' && expanded && file.children?.map(child => (
@@ -659,7 +659,7 @@ export default function Neovim({ initialFile, openRepo }: {
               onClick={() => setShowProjectSelector(true)}
               style={{
                 marginLeft: 'auto', background: 'var(--bg-tertiary)', border: '1px solid var(--border-color)',
-                color: 'var(--accent-cyan)', padding: '4px 10px', borderRadius: '4px', fontSize: '11px',
+                color: 'var(--accent-cyan)', padding: '4px 10px', borderRadius: '4px', fontSize: '0.6875rem',
                 cursor: 'pointer', fontFamily: 'var(--font-mono)',
               }}
             >
@@ -673,7 +673,7 @@ export default function Neovim({ initialFile, openRepo }: {
         {isGithub && (
           <div className="neovim-sidebar">
             {loading ? (
-              <div style={{ padding: '16px', color: 'var(--text-muted)', fontSize: '12px' }}>Loading repo...</div>
+              <div style={{ padding: '16px', color: 'var(--text-muted)', fontSize: '0.75rem' }}>Loading repo...</div>
             ) : (
               <div style={{ overflowY: 'auto', flex: 1 }}>
                 {fileTree.map(file => (
@@ -691,7 +691,7 @@ export default function Neovim({ initialFile, openRepo }: {
                 <Loader2 size={24} className="spin" style={{ marginBottom: '8px' }} />Loading file...
               </div>
             ) : error && !isGithub ? (
-              <div style={{ padding: '16px', color: 'var(--accent-warning)', fontSize: '13px' }}>⚠ {error}</div>
+              <div style={{ padding: '16px', color: 'var(--accent-warning)', fontSize: '0.8125rem' }}>⚠ {error}</div>
             ) : sourceImageUrl ? (
               <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '32px', backgroundColor: '#00000040' }}>
                 <img src={sourceImageUrl} alt={displayName} style={{ maxWidth: '100%', maxHeight: '100%', objectFit: 'contain', borderRadius: '8px' }} />
@@ -768,17 +768,17 @@ export default function Neovim({ initialFile, openRepo }: {
               <span className={`neovim-mode ${vimMode !== 'NORMAL' ? 'insert' : ''}`}>{vimMode}</span>
               <span>{displayName}</span>
               {isGithub && selectedRepo !== null && (
-                <span style={{ color: 'var(--text-muted)', fontSize: '11px' }}>
+                <span style={{ color: 'var(--text-muted)', fontSize: '0.6875rem' }}>
                   {REPOS[selectedRepo].owner}/{REPOS[selectedRepo].repo}
                 </span>
               )}
               {searchQuery && searchMatches.length > 0 && (
-                <span style={{ color: 'var(--accent-warning)', fontSize: '11px' }}>
+                <span style={{ color: 'var(--accent-warning)', fontSize: '0.6875rem' }}>
                   [{searchMatchIndex + 1}/{searchMatches.length}] &quot;{searchQuery}&quot;
                 </span>
               )}
               {pendingKey && (
-                <span style={{ color: 'var(--accent-warning)', fontSize: '11px' }}>{pendingKey}_</span>
+                <span style={{ color: 'var(--accent-warning)', fontSize: '0.6875rem' }}>{pendingKey}_</span>
               )}
             </div>
             <div style={{ display: 'flex', gap: '16px' }}>

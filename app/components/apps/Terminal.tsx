@@ -421,7 +421,7 @@ const Terminal = React.memo(function Terminal({ focused }: TerminalProps) {
           gap: '12px',
           padding: '8px 0',
           color: 'var(--text-muted)',
-          fontSize: '13px',
+          fontSize: '0.8125rem',
         }}>
           {tabSuggestions.map((s, i) => (
             <span key={s} style={{

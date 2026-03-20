@@ -25,7 +25,7 @@ export default function PDFViewer() {
         <div style={{ display: 'flex', alignItems: 'center', gap: '8px', minWidth: 0 }}>
           <FileText size={14} style={{ color: 'var(--accent-primary)', flexShrink: 0 }} />
           <span style={{
-            fontSize: '13px',
+            fontSize: '0.8125rem',
             color: 'var(--text-primary)',
             fontWeight: 500,
             overflow: 'hidden',
@@ -34,7 +34,7 @@ export default function PDFViewer() {
           }}>
             resume.pdf
           </span>
-          <span style={{ fontSize: '11px', color: 'var(--text-muted)' }}>— Dhruv&apos;s CV</span>
+          <span style={{ fontSize: '0.6875rem', color: 'var(--text-muted)' }}>— Dhruv&apos;s CV</span>
         </div>
 
         <div style={{ display: 'flex', alignItems: 'center', gap: '6px', flexShrink: 0 }}>
@@ -47,7 +47,7 @@ export default function PDFViewer() {
               alignItems: 'center',
               gap: '6px',
               padding: '5px 10px',
-              fontSize: '12px',
+              fontSize: '0.75rem',
               fontWeight: 500,
               color: 'var(--text-secondary)',
               background: 'var(--bg-tertiary)',
@@ -77,7 +77,7 @@ export default function PDFViewer() {
               alignItems: 'center',
               gap: '6px',
               padding: '5px 10px',
-              fontSize: '12px',
+              fontSize: '0.75rem',
               fontWeight: 500,
               color: 'var(--bg-primary)',
               background: 'var(--accent-primary)',

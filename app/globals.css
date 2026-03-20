@@ -3,6 +3,7 @@
 @import "tailwindcss";
 
 :root {
+  --font-scale: 1;
   /* Dark Theme Colors */
   --bg-primary: #050505;
   --bg-secondary: #0a0a0a;
@@ -78,6 +79,13 @@ body {
   height: 100%;
   width: 100%;
   overflow: hidden;
+}
+
+html {
+  font-size: calc(100% * var(--font-scale));
+}
+
+body {
   font-family:
     var(--font-geist),
     -apple-system,
@@ -85,7 +93,7 @@ body {
     sans-serif;
   background: var(--bg-primary);
   color: var(--text-primary);
-  font-size: 18px;
+  font-size: 1.125rem;
   line-height: 1.6;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
@@ -211,7 +219,7 @@ body {
 }
 
 .pc-only-kicker {
-  font-size: 12px;
+  font-size: 0.75rem;
   text-transform: uppercase;
   letter-spacing: 0.12em;
   color: var(--accent-primary);
@@ -219,14 +227,14 @@ body {
 }
 
 .pc-only-card h1 {
-  font-size: 24px;
+  font-size: 1.5rem;
   line-height: 1.25;
   margin-bottom: 12px;
   color: var(--text-bright);
 }
 
 .pc-only-card p {
-  font-size: 14px;
+  font-size: 0.875rem;
   line-height: 1.7;
   color: var(--text-secondary);
 }
@@ -267,7 +275,7 @@ body {
 }
 
 .topbar-time {
-  font-size: 13px;
+  font-size: 0.8125rem;
   font-weight: 500;
   color: var(--text-primary);
   display: flex;
@@ -457,7 +465,7 @@ body {
 
 .window-title {
   flex: 1;
-  font-size: 13px;
+  font-size: 0.8125rem;
   font-weight: 500;
   color: var(--text-secondary);
   text-align: center;
@@ -511,7 +519,7 @@ body {
   height: 100%;
   background: var(--bg-primary);
   font-family: var(--font-mono), monospace;
-  font-size: 13px;
+  font-size: 0.8125rem;
   line-height: 1.6;
   padding: 12px;
   overflow-y: auto;
@@ -533,7 +541,7 @@ body {
   border: 1px solid var(--border-color);
   border-radius: 6px;
   color: var(--accent-warning);
-  font-size: 11px;
+  font-size: 0.6875rem;
   font-family: var(--font-mono), monospace;
   background: rgba(0, 0, 0, 0.25);
 }
@@ -604,7 +612,7 @@ body {
 .neofetch-ascii {
   color: var(--accent-primary);
   white-space: pre;
-  font-size: 11px;
+  font-size: 0.6875rem;
   line-height: 1.2;
 }
 
@@ -714,7 +722,7 @@ body {
 .browser-url-text {
   flex: 1;
   color: var(--text-secondary);
-  font-size: 13px;
+  font-size: 0.8125rem;
 }
 
 .browser-url-text span {
@@ -748,7 +756,7 @@ body {
   border: 1px solid rgba(115, 218, 202, 0.3);
   border-radius: 20px;
   color: var(--accent-green);
-  font-size: 12px;
+  font-size: 0.75rem;
   font-weight: 500;
   text-transform: uppercase;
   letter-spacing: 0.5px;
@@ -756,7 +764,7 @@ body {
 }
 
 .portfolio-title {
-  font-size: 48px;
+  font-size: 3rem;
   font-weight: 700;
   line-height: 1.1;
   margin-bottom: 24px;
@@ -775,7 +783,7 @@ body {
 }
 
 .portfolio-subtitle {
-  font-size: 18px;
+  font-size: 1.125rem;
   color: var(--text-secondary);
   line-height: 1.6;
   margin-bottom: 32px;
@@ -794,7 +802,7 @@ body {
   gap: 8px;
   padding: 12px 24px;
   border-radius: 8px;
-  font-size: 14px;
+  font-size: 0.875rem;
   font-weight: 500;
   cursor: pointer;
   transition: all var(--transition-fast);
@@ -834,7 +842,7 @@ body {
 }
 
 .portfolio-section-title {
-  font-size: 24px;
+  font-size: 1.5rem;
   font-weight: 600;
   color: var(--text-bright);
 }
@@ -844,7 +852,7 @@ body {
   align-items: center;
   gap: 4px;
   color: var(--accent-primary);
-  font-size: 14px;
+  font-size: 0.875rem;
   text-decoration: none;
   transition: color var(--transition-fast);
 }
@@ -900,7 +908,7 @@ body {
 }
 
 .project-desc {
-  font-size: 13px;
+  font-size: 0.8125rem;
   color: var(--text-muted);
 }
 
@@ -923,7 +931,7 @@ body {
 }
 
 .file-sidebar-title {
-  font-size: 11px;
+  font-size: 0.6875rem;
   font-weight: 600;
   color: var(--text-muted);
   text-transform: uppercase;
@@ -941,7 +949,7 @@ body {
   color: var(--text-secondary);
   cursor: pointer;
   transition: all var(--transition-fast);
-  font-size: 13px;
+  font-size: 0.8125rem;
 }
 
 .file-sidebar-item:hover {
@@ -977,7 +985,7 @@ body {
   align-items: center;
   gap: 4px;
   color: var(--text-secondary);
-  font-size: 13px;
+  font-size: 0.8125rem;
 }
 
 .file-path-segment {
@@ -1027,11 +1035,11 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 32px;
+  font-size: 2rem;
 }
 
 .file-name {
-  font-size: 12px;
+  font-size: 0.75rem;
   color: var(--text-secondary);
   text-align: center;
   word-break: break-word;
@@ -1061,7 +1069,7 @@ body {
   align-items: center;
   gap: 8px;
   padding: 8px 16px;
-  font-size: 12px;
+  font-size: 0.75rem;
   color: var(--text-muted);
   border-right: 1px solid var(--border-color);
   cursor: pointer;
@@ -1094,7 +1102,7 @@ body {
   text-align: right;
   background: var(--bg-secondary);
   border-right: 1px solid var(--border-color);
-  font-size: 12px;
+  font-size: 0.75rem;
   color: var(--text-muted);
   user-select: none;
 }
@@ -1111,7 +1119,7 @@ body {
 .neovim-editor {
   flex: 1;
   padding: 12px;
-  font-size: 13px;
+  font-size: 0.8125rem;
   line-height: 20px;
   overflow: auto;
 }
@@ -1134,7 +1142,7 @@ body {
   padding: 4px 12px;
   background: var(--accent-primary);
   color: var(--bg-primary);
-  font-size: 12px;
+  font-size: 0.75rem;
   font-weight: 500;
 }
 
@@ -1249,7 +1257,7 @@ body {
   border: 1px solid var(--border-color);
   border-radius: 8px;
   color: var(--text-primary);
-  font-size: 16px;
+  font-size: 1rem;
   outline: none;
   margin-bottom: 20px;
   transition: border-color var(--transition-fast);
@@ -1287,13 +1295,13 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 28px;
+  font-size: 1.75rem;
   background: var(--bg-elevated);
   border-radius: 12px;
 }
 
 .app-launcher-name {
-  font-size: 12px;
+  font-size: 0.75rem;
   color: var(--text-secondary);
 }
 
@@ -1323,7 +1331,7 @@ body {
   color: var(--text-secondary);
   cursor: pointer;
   transition: all var(--transition-fast);
-  font-size: 14px;
+  font-size: 0.875rem;
 }
 
 .settings-nav-item:hover {
@@ -1347,7 +1355,7 @@ body {
 }
 
 .settings-title {
-  font-size: 24px;
+  font-size: 1.5rem;
   font-weight: 600;
   color: var(--text-bright);
   margin-bottom: 8px;
@@ -1370,14 +1378,14 @@ body {
 }
 
 .settings-option-info h3 {
-  font-size: 14px;
+  font-size: 0.875rem;
   font-weight: 500;
   color: var(--text-primary);
   margin-bottom: 4px;
 }
 
 .settings-option-info p {
-  font-size: 13px;
+  font-size: 0.8125rem;
   color: var(--text-muted);
 }
 
@@ -1672,11 +1680,11 @@ input[type="range"]::-moz-range-thumb {
 }
 
 .tutorial-step-icon {
-  font-size: 22px;
+  font-size: 1.375rem;
 }
 
 .tutorial-step-number {
-  font-size: 12px;
+  font-size: 0.75rem;
   color: var(--text-muted);
   font-weight: 500;
   background: var(--bg-tertiary);
@@ -1691,7 +1699,7 @@ input[type="range"]::-moz-range-thumb {
   background: transparent;
   border: 1px solid var(--border-color);
   color: var(--text-muted);
-  font-size: 12px;
+  font-size: 0.75rem;
   padding: 6px 12px;
   border-radius: 6px;
   cursor: pointer;
@@ -1730,7 +1738,7 @@ input[type="range"]::-moz-range-thumb {
 }
 
 .tutorial-title {
-  font-size: 26px;
+  font-size: 1.625rem;
   font-weight: 700;
   color: var(--text-bright);
   margin-bottom: 16px;
@@ -1741,7 +1749,7 @@ input[type="range"]::-moz-range-thumb {
   color: var(--text-secondary);
   line-height: 1.7;
   margin-bottom: 14px;
-  font-size: 14px;
+  font-size: 0.875rem;
 }
 
 .tutorial-step-content strong {
@@ -1757,7 +1765,7 @@ input[type="range"]::-moz-range-thumb {
   padding: 2px 6px;
   border-radius: 4px;
   font-family: var(--font-mono), monospace;
-  font-size: 12px;
+  font-size: 0.75rem;
   color: var(--accent-green);
 }
 
@@ -1767,14 +1775,14 @@ input[type="range"]::-moz-range-thumb {
   background: var(--bg-tertiary);
   border: 1px solid var(--border-color);
   border-radius: 4px;
-  font-size: 11px;
+  font-size: 0.6875rem;
   font-family: var(--font-mono), monospace;
   color: var(--text-primary);
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
 }
 
 .tutorial-highlight {
-  font-size: 16px !important;
+  font-size: 1rem !important;
   color: var(--text-primary) !important;
   line-height: 1.6 !important;
 }
@@ -1788,7 +1796,7 @@ input[type="range"]::-moz-range-thumb {
   border: 1px solid rgba(var(--accent-primary-rgb, 45, 212, 191), 0.2);
   border-radius: 10px;
   margin-top: 12px;
-  font-size: 13px;
+  font-size: 0.8125rem;
   color: var(--text-secondary);
 }
 
@@ -1798,7 +1806,7 @@ input[type="range"]::-moz-range-thumb {
 }
 
 .tutorial-callout-icon {
-  font-size: 16px;
+  font-size: 1rem;
   flex-shrink: 0;
 }
 
@@ -1821,16 +1829,16 @@ input[type="range"]::-moz-range-thumb {
 
 .tutorial-info-card p {
   margin: 0 !important;
-  font-size: 12px !important;
+  font-size: 0.75rem !important;
   color: var(--text-muted) !important;
 }
 
 .tutorial-info-card strong {
-  font-size: 13px;
+  font-size: 0.8125rem;
 }
 
 .tutorial-info-icon {
-  font-size: 22px;
+  font-size: 1.375rem;
   flex-shrink: 0;
 }
 
@@ -1856,7 +1864,7 @@ input[type="range"]::-moz-range-thumb {
 
 .tutorial-compare-header {
   font-weight: 600;
-  font-size: 13px;
+  font-size: 0.8125rem;
   color: var(--text-primary);
   margin-bottom: 10px;
   display: flex;
@@ -1871,7 +1879,7 @@ input[type="range"]::-moz-range-thumb {
 }
 
 .tutorial-compare-item li {
-  font-size: 12px;
+  font-size: 0.75rem;
   color: var(--text-secondary);
   padding: 3px 0;
   display: flex;
@@ -1911,12 +1919,12 @@ input[type="range"]::-moz-range-thumb {
   display: flex;
   align-items: center;
   gap: 4px;
-  font-size: 13px;
+  font-size: 0.8125rem;
   color: var(--text-secondary);
 }
 
 .tutorial-shortcut-desc {
-  font-size: 13px;
+  font-size: 0.8125rem;
   color: var(--text-muted);
 }
 
@@ -1939,19 +1947,19 @@ input[type="range"]::-moz-range-thumb {
 }
 
 .tutorial-app-icon {
-  font-size: 26px;
+  font-size: 1.625rem;
   flex-shrink: 0;
 }
 
 .tutorial-app-item strong {
-  font-size: 14px;
+  font-size: 0.875rem;
   display: block;
   margin-bottom: 2px;
 }
 
 .tutorial-app-item p {
   margin: 0 !important;
-  font-size: 12px !important;
+  font-size: 0.75rem !important;
   color: var(--text-muted) !important;
 }
 
@@ -1981,7 +1989,7 @@ input[type="range"]::-moz-range-thumb {
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 14px;
+  font-size: 0.875rem;
   font-weight: 600;
   color: var(--text-muted);
 }
@@ -1994,7 +2002,7 @@ input[type="range"]::-moz-range-thumb {
 }
 
 .tutorial-ws-hint {
-  font-size: 13px !important;
+  font-size: 0.8125rem !important;
   color: var(--text-muted) !important;
   margin-bottom: 0 !important;
 }
@@ -2022,13 +2030,13 @@ input[type="range"]::-moz-range-thumb {
 .tutorial-try-it strong {
   display: block;
   color: var(--text-bright);
-  font-size: 14px;
+  font-size: 0.875rem;
   margin-bottom: 4px;
 }
 
 .tutorial-try-it p {
   margin: 0 !important;
-  font-size: 12px !important;
+  font-size: 0.75rem !important;
   color: var(--text-muted) !important;
 }
 
@@ -2067,13 +2075,13 @@ input[type="range"]::-moz-range-thumb {
 
 .tutorial-try-it-btn strong {
   display: block;
-  font-size: 14px;
+  font-size: 0.875rem;
   margin-bottom: 2px;
 }
 
 .tutorial-try-it-btn p {
   margin: 0;
-  font-size: 12px;
+  font-size: 0.75rem;
   color: var(--text-muted);
 }
 
@@ -2132,12 +2140,12 @@ input[type="range"]::-moz-range-thumb {
 .tutorial-floating-text strong {
   display: block;
   color: var(--text-bright);
-  font-size: 13px;
+  font-size: 0.8125rem;
   margin-bottom: 2px;
 }
 
 .tutorial-floating-text span {
-  font-size: 11px;
+  font-size: 0.6875rem;
   color: var(--accent-primary);
 }
 
@@ -2147,7 +2155,7 @@ input[type="range"]::-moz-range-thumb {
   gap: 6px;
   color: var(--accent-green);
   font-weight: 600;
-  font-size: 14px;
+  font-size: 0.875rem;
   animation: checkPop 0.3s ease;
 }
 
@@ -2176,7 +2184,7 @@ input[type="range"]::-moz-range-thumb {
   border-radius: 8px;
   color: var(--accent-green);
   font-weight: 600;
-  font-size: 12px;
+  font-size: 0.75rem;
   cursor: pointer;
   white-space: nowrap;
   transition: all 0.2s;
@@ -2198,7 +2206,7 @@ input[type="range"]::-moz-range-thumb {
   border-radius: 8px;
   color: var(--bg-primary);
   font-weight: 600;
-  font-size: 12px;
+  font-size: 0.75rem;
   cursor: pointer;
   white-space: nowrap;
   transition: all 0.2s;
@@ -2243,7 +2251,7 @@ input[type="range"]::-moz-range-thumb {
   gap: 6px;
   padding: 8px 18px;
   border-radius: 8px;
-  font-size: 13px;
+  font-size: 0.8125rem;
   font-weight: 500;
   cursor: pointer;
   transition: all var(--transition-fast);
@@ -2336,7 +2344,7 @@ input[type="range"]::-moz-range-thumb {
   border: 1px solid rgba(var(--accent-primary-rgb, 45, 212, 191), 0.3);
   border-radius: 6px;
   color: var(--accent-primary);
-  font-size: 12px;
+  font-size: 0.75rem;
   font-weight: 500;
   cursor: pointer;
   transition: all var(--transition-fast);
@@ -2403,7 +2411,7 @@ input[type="range"]::-moz-range-thumb {
   border-left: 3px solid var(--accent-primary);
   border-radius: 8px;
   color: var(--text-primary);
-  font-size: 13px;
+  font-size: 0.8125rem;
   display: flex;
   align-items: center;
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
@@ -2446,7 +2454,7 @@ input[type="range"]::-moz-range-thumb {
   border: none;
   color: var(--text-secondary);
   font-family: var(--font-mono), monospace;
-  font-size: 12px;
+  font-size: 0.75rem;
   outline: none;
   padding: 0;
 }
@@ -2495,7 +2503,7 @@ input[type="range"]::-moz-range-thumb {
   justify-content: space-between;
   padding: 14px 16px;
   border-bottom: 1px solid var(--border-color);
-  font-size: 13px;
+  font-size: 0.8125rem;
 }
 
 .neovim-project-list {
@@ -2562,7 +2570,7 @@ input[type="range"]::-moz-range-thumb {
   background: var(--bg-primary);
   border-top: 1px solid var(--border-color);
   font-family: var(--font-mono), monospace;
-  font-size: 13px;
+  font-size: 0.8125rem;
   flex-shrink: 0;
 }
 
@@ -2573,7 +2581,7 @@ input[type="range"]::-moz-range-thumb {
   outline: none;
   color: var(--text-primary);
   font-family: var(--font-mono), monospace;
-  font-size: 13px;
+  font-size: 0.8125rem;
   caret-color: var(--accent-primary);
 }
 
@@ -2592,7 +2600,7 @@ input[type="range"]::-moz-range-thumb {
   top: 0;
   pointer-events: none;
   font-family: var(--font-mono), monospace;
-  font-size: 13px;
+  font-size: 0.8125rem;
   line-height: 1.6;
   z-index: 2;
 }

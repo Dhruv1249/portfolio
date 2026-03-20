@@ -219,6 +219,8 @@ interface ThemeContextType {
   setTransparency: (val: boolean) => void;
   windowOpacity: number;
   setWindowOpacity: (val: number) => void;
+  fontScale: number;
+  applyFontScale: (val: number) => void;
 }
 
 const ThemeContext = createContext<ThemeContextType>({
@@ -232,6 +234,8 @@ const ThemeContext = createContext<ThemeContextType>({
   setTransparency: () => {},
   windowOpacity: 0.85,
   setWindowOpacity: () => {},
+  fontScale: 1,
+  applyFontScale: () => {},
 });
 
 export function ThemeProvider({ children }: { children: React.ReactNode }) {
@@ -240,6 +244,7 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
   const [particleMode, setParticleModeState] = useState<string>('nodes');
   const [transparency, setTransparencyState] = useState(false);
   const [windowOpacity, setWindowOpacityState] = useState(0.85);
+  const [fontScale, setFontScaleState] = useState(1);
 
   // Load from localStorage on mount
   useEffect(() => {
@@ -273,6 +278,14 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
     if (savedOpacity !== null) {
       setWindowOpacityState(parseFloat(savedOpacity));
     }
+
+    const savedFontScale = localStorage.getItem('portfolio-font-scale');
+    if (savedFontScale !== null) {
+      const parsed = parseFloat(savedFontScale);
+      const clamped = Math.max(0.7, Math.min(1.6, parsed));
+      setFontScaleState(clamped);
+      document.documentElement.style.setProperty('--font-scale', clamped.toString());
+    }
   }, []);
 
   const setAnimations = useCallback((val: boolean) => {
@@ -295,6 +308,13 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
     const clamped = Math.max(0.3, Math.min(1, val));
     setWindowOpacityState(clamped);
     localStorage.setItem('portfolio-window-opacity', clamped.toString());
+  }, []);
+
+  const applyFontScale = useCallback((val: number) => {
+    const clamped = Math.max(0.7, Math.min(1.6, val));
+    setFontScaleState(clamped);
+    localStorage.setItem('portfolio-font-scale', clamped.toString());
+    document.documentElement.style.setProperty('--font-scale', clamped.toString());
   }, []);
 
   const applyTheme = useCallback((profile: ColorProfile) => {
@@ -320,7 +340,7 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
   }, [applyTheme]);
 
   return (
-    <ThemeContext.Provider value={{ activeProfile, setProfile, animations, setAnimations, particleMode, setParticleMode, transparency, setTransparency, windowOpacity, setWindowOpacity }}>
+    <ThemeContext.Provider value={{ activeProfile, setProfile, animations, setAnimations, particleMode, setParticleMode, transparency, setTransparency, windowOpacity, setWindowOpacity, fontScale, applyFontScale }}>
       {children}
     </ThemeContext.Provider>
   );
