@@ -6,9 +6,11 @@ import { KeyboardProvider } from './contexts/KeyboardContext';
 import { NotificationProvider } from './contexts/NotificationContext';
 import { ThemeProvider } from './contexts/ThemeContext';
 import Desktop from './components/desktop/Desktop';
+import appConfig from './lib/editor-config.json';
 
 export default function Home() {
   const [isPhone, setIsPhone] = useState(false);
+  const nonTechUrl = process.env.NEXT_PUBLIC_NON_TECH_PORTFOLIO_URL || appConfig.nonTechPortfolioUrl;
 
   useEffect(() => {
     if (typeof window === 'undefined') return;
@@ -28,15 +30,22 @@ export default function Home() {
     };
   }, []);
 
+  useEffect(() => {
+    if (!isPhone || typeof window === 'undefined') return;
+    window.location.replace(nonTechUrl);
+  }, [isPhone, nonTechUrl]);
+
   if (isPhone) {
     return (
       <main className="pc-only-screen">
         <div className="pc-only-card">
-          <p className="pc-only-kicker">Tech Portfolio</p>
-          <h1>This experience is built for desktop</h1>
+          <p className="pc-only-kicker">Redirecting</p>
+          <h1>Taking you to the mobile-friendly portfolio</h1>
           <p>
-            This version simulates a keyboard-first Linux desktop and currently works best on a PC or laptop.
-            Please open it on a larger screen with a physical keyboard.
+            This desktop environment works best on a larger screen. You are being redirected to the standard portfolio.
+          </p>
+          <p>
+            If redirect does not happen, <a href={nonTechUrl} style={{ color: 'var(--accent-primary)' }}>tap here</a>.
           </p>
         </div>
       </main>

@@ -45,10 +45,12 @@ export function KeyboardProvider({ children }: { children: ReactNode }) {
     const handleKeyDown = (e: KeyboardEvent) => {
       const altPressed = e.altKey;
       const shiftPressed = e.shiftKey;
+      const rawKey = typeof e.key === 'string' ? e.key : '';
+      const normalizedKey = rawKey.toLowerCase();
       
       // Create key identifier for custom shortcuts
       const modPressed = isMac ? e.metaKey : e.ctrlKey;
-      const keyId = `${modPressed ? 'mod+' : ''}${altPressed ? 'alt+' : ''}${shiftPressed ? 'shift+' : ''}${e.key.toLowerCase()}`;
+      const keyId = `${modPressed ? 'mod+' : ''}${altPressed ? 'alt+' : ''}${shiftPressed ? 'shift+' : ''}${normalizedKey}`;
       
       // Check custom shortcuts first
       if (customShortcuts[keyId]) {
@@ -60,10 +62,10 @@ export function KeyboardProvider({ children }: { children: ReactNode }) {
       // All shortcuts use Alt to avoid conflicting with browser shortcuts
       if (!altPressed) return;
 
-      const key = e.key.toLowerCase();
+      const key = normalizedKey;
 
       // Escape: Close app launcher (works without Alt too)
-      if (e.key === 'Escape') {
+      if (rawKey === 'Escape') {
         if (windowManager.showAppLauncher) {
           e.preventDefault();
           windowManager.closeAppLauncher();
@@ -72,7 +74,7 @@ export function KeyboardProvider({ children }: { children: ReactNode }) {
       }
 
       // Alt + Enter: Open terminal
-      if (e.key === 'Enter') {
+      if (rawKey === 'Enter') {
         e.preventDefault();
         windowManager.openWindow('terminal');
         return;
@@ -88,7 +90,7 @@ export function KeyboardProvider({ children }: { children: ReactNode }) {
       }
 
       // Alt + Space: Toggle app launcher
-      if (e.key === ' ') {
+      if (rawKey === ' ') {
         e.preventDefault();
         windowManager.toggleAppLauncher();
         return;
@@ -112,6 +114,13 @@ export function KeyboardProvider({ children }: { children: ReactNode }) {
       if (key === 'n') {
         e.preventDefault();
         windowManager.openWindow('neovim');
+        return;
+      }
+
+      // Alt + E: Open email app
+      if (key === 'e') {
+        e.preventDefault();
+        windowManager.openWindow('email');
         return;
       }
 
@@ -156,9 +165,9 @@ export function KeyboardProvider({ children }: { children: ReactNode }) {
       }
 
       // Alt + 1-4: Switch workspace
-      if (['1', '2', '3', '4'].includes(e.key)) {
+      if (['1', '2', '3', '4'].includes(rawKey)) {
         e.preventDefault();
-        windowManager.setActiveWorkspace(parseInt(e.key));
+        windowManager.setActiveWorkspace(parseInt(rawKey, 10));
         return;
       }
     };

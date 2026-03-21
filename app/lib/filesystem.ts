@@ -1,6 +1,7 @@
 // app/lib/filesystem.ts
 
 import { REPOS, fetchRepoTree, fetchFileContent, RepoFile } from './github';
+import appConfig from './editor-config.json';
 
 export interface FileNode {
   name: string;
@@ -58,7 +59,8 @@ export const fileSystem: FileNode = {
           name: 'nvim',
           type: 'directory',
           children: [
-             { name: 'init.lua', type: 'file', content: `-- This is a simulation! \n-- To see the real engineered config, check the repo:\n-- https://github.com/Dhruv1249/my-customized-nvim-config` },
+               { name: 'init.lua', type: 'file', content: `-- This is a simulation! \n-- To see the real engineered config, check the repo:\n-- https://github.com/Dhruv1249/my-customized-nvim-config` },
+               { name: 'settings.json', type: 'file', content: JSON.stringify(appConfig, null, 2) },
           ]
         }
       ]

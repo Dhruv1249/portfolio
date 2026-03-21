@@ -1,0 +1,15 @@
+{
+  "nonTechPortfolioUrl": "https://dhruv-personal-porfolio.vercel.app/",
+  "apps": {
+    "codeEditorName": "Code Editor",
+    "emailName": "Email"
+  },
+  "terminal": {
+    "editorAliases": ["vim", "nvim", "neovim"],
+    "preferredEditor": "nvim"
+  },
+  "email": {
+    "to": "dhruv1249.lm@gmail.com",
+    "notice": "You are emailing Dhruv directly from the Tech Portfolio."
+  }
+}

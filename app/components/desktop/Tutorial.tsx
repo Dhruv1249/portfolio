@@ -277,19 +277,19 @@ export default function Tutorial({ show, onClose }: TutorialProps) {
       content: (
         <div className="tutorial-step-content">
           <p>
-            Once you see files in the File Manager, you can view them using <strong>Neovim</strong>.
+            Once you see files in the File Manager, you can view them using the <strong>Code Editor</strong>.
           </p>
           <p>
-            Neovim is a famous code editor beloved by developers because you never have to take your hands off the keyboard. I included it so you can read my project code natively!
+            This editor is Neovim-powered and keyboard-first, so you can read real project code in a native-feeling workflow.
           </p>
           <div className="tutorial-callout">
             <Lightbulb size={16} />
-            <span>Click <strong>Try Now</strong>, then Double-Click any file in the File Manager to open it in Neovim!</span>
+            <span>Click <strong>Try Now</strong>, then Double-Click any file in the File Manager to open it in the Code Editor!</span>
           </div>
         </div>
       ),
       tryIt: {
-        instruction: 'Open a file in Neovim',
+        instruction: 'Open a file in the Code Editor',
         hint: 'Double click a file in the File Manager sidebar',
         checkFn: (wins, baseline) => wins.some(w => w.appType === 'neovim') && wins.filter(w => w.appType === 'neovim').length > 0,
       },

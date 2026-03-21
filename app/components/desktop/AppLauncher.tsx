@@ -2,13 +2,15 @@
 
 import React, { useState, useEffect } from 'react';
 import { useWindowManager, AppType } from '../../contexts/WindowContext';
-import { Terminal, Globe, FolderOpen, Code, Settings, FileText, AppWindow } from 'lucide-react';
+import { Terminal, Globe, FolderOpen, Code, Settings, FileText, AppWindow, Mail } from 'lucide-react';
+import appConfig from '../../lib/editor-config.json';
 
 const APPS: { id: AppType; name: string; icon: React.ReactNode }[] = [
   { id: 'terminal', name: 'Terminal', icon: <Terminal size={28} /> },
   { id: 'browser', name: 'Browser', icon: <Globe size={28} /> },
   { id: 'filemanager', name: 'Files', icon: <FolderOpen size={28} /> },
-  { id: 'neovim', name: 'Neovim', icon: <Code size={28} /> },
+  { id: 'neovim', name: appConfig.apps.codeEditorName, icon: <Code size={28} /> },
+  { id: 'email', name: appConfig.apps.emailName, icon: <Mail size={28} /> },
   { id: 'pdfviewer', name: 'Resume', icon: <FileText size={28} /> },
   { id: 'settings', name: 'Settings', icon: <Settings size={28} /> },
   { id: 'standard' as any, name: 'Standard View', icon: <AppWindow size={28} /> },
@@ -32,7 +34,7 @@ const APPS: { id: AppType; name: string; icon: React.ReactNode }[] = [
 
   const handleAppClick = (appType: AppType | string) => {
     if (appType === 'standard') {
-      window.open('https://dhruv-portfolio-nontech.vercel.app', '_blank');
+      window.open(appConfig.nonTechPortfolioUrl, '_blank');
       closeAppLauncher();
       setSearch('');
       return;

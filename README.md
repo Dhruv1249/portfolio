@@ -1,36 +1,65 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Tech Portfolio (Desktop OS Experience)
+
+Interactive portfolio built as a keyboard-first Linux desktop simulation.
+
+## Features
+
+- Tiling window manager style workspace with multiple apps
+- Theme profiles, particle backgrounds, and glass transparency effects
+- Terminal with custom command system and app launch integration
+- Code Editor app (Neovim powered UI)
+- File Manager connected to GitHub project trees
+- Email app with Contact API route for direct outreach
+- Automatic mobile redirect to non-tech portfolio
+
+## Stack
+
+- Next.js 16 (App Router)
+- React 19 + TypeScript
+- Framer Motion
+- MongoDB (feature flags/settings)
+- EmailJS Node SDK (`@emailjs/nodejs`)
 
 ## Getting Started
 
-First, run the development server:
-
 ```bash
+npm install
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open http://localhost:3000.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Environment Variables
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+Create/update `.env` with:
 
-## Learn More
+```env
+MONGO_DB_CONNECTION_URI=...
+NEXT_PUBLIC_NON_TECH_PORTFOLIO_URL=...
+EMAILJS_SERVICE_ID=...
+EMAILJS_TEMPLATE_ID=...
+EMAILJS_PUBLIC_KEY=...
+EMAILJS_PRIVATE_KEY=...
+```
 
-To learn more about Next.js, take a look at the following resources:
+## Keyboard Shortcuts
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+- `Alt + Enter`: Terminal
+- `Alt + B`: Browser
+- `Alt + F`: File Manager
+- `Alt + N`: Code Editor
+- `Alt + E`: Email
+- `Alt + S`: Settings
+- `Alt + Space`: App Launcher
+- `Alt + W`: Close focused window
+- `Alt + 1-4`: Switch workspace
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## Terminal Editor Commands
 
-## Deploy on Vercel
+- `vim`, `nvim`, `neovim` -> opens Code Editor app
+- `nano` -> suggests using `nvim`
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## Notes
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- App-wide config values live in `app/lib/editor-config.json`.
+- Mobile users are redirected to the non-tech portfolio URL.

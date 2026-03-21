@@ -1,16 +1,34 @@
 'use client';
 
 import React, { useState, useEffect, useMemo, useCallback, useRef } from 'react';
+import dynamic from 'next/dynamic';
 import { useWindowManager, AppType } from '../../contexts/WindowContext';
 import { useTheme } from '../../contexts/ThemeContext';
 
-// Import apps
-import Terminal from '../apps/Terminal';
-import Browser from '../apps/Browser';
-import FileManager from '../apps/FileManager';
-import Neovim from '../apps/Neovim';
-import Settings from '../apps/Settings';
-import PDFViewer from '../apps/PDFViewer';
+function AppLoading() {
+  return (
+    <div style={{
+      width: '100%',
+      height: '100%',
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      color: 'var(--text-muted)',
+      fontSize: '0.875rem',
+      background: 'transparent',
+    }}>
+      Loading app...
+    </div>
+  );
+}
+
+const Terminal = dynamic(() => import('../apps/Terminal'), { ssr: false, loading: AppLoading });
+const Browser = dynamic(() => import('../apps/Browser'), { ssr: false, loading: AppLoading });
+const FileManager = dynamic(() => import('../apps/FileManager'), { ssr: false, loading: AppLoading });
+const CodeEditor = dynamic(() => import('../apps/Neovim'), { ssr: false, loading: AppLoading });
+const Settings = dynamic(() => import('../apps/Settings'), { ssr: false, loading: AppLoading });
+const PDFViewer = dynamic(() => import('../apps/PDFViewer'), { ssr: false, loading: AppLoading });
+const Email = dynamic(() => import('../apps/Email'), { ssr: false, loading: AppLoading });
 
 interface WindowProps {
   id: string;
@@ -111,11 +129,13 @@ export default function Window({
         const openRepo = appData?.repoIndex !== undefined
           ? { repoIndex: appData.repoIndex as number, filePath: appData.filePath as string }
           : undefined;
-        return <Neovim initialFile={initialFile} openRepo={openRepo} />;
+        return <CodeEditor initialFile={initialFile} openRepo={openRepo} />;
       case 'settings':
         return <Settings />;
       case 'pdfviewer':
         return <PDFViewer />;
+      case 'email':
+        return <Email />;
       default:
         return null;
     }

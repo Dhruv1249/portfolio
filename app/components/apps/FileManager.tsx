@@ -114,7 +114,7 @@ export default function FileManager() {
     if (item.type === 'directory') { handleItemClick(item); return; }
     if (selectedRepo === null) return;
 
-    openWindow('neovim', `Neovim — ${item.name}`, {
+    openWindow('neovim', `Code Editor — ${item.name}`, {
       repoIndex: selectedRepo,
       filePath: item.path,
       fileName: item.name,

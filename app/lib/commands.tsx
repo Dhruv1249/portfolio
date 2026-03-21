@@ -2,6 +2,7 @@
 
 import React from 'react';
 import { listDirectory, getNode, FileNode } from './filesystem';
+import appConfig from './editor-config.json';
 
 export interface CommandResult {
   output: React.ReactNode;
@@ -107,6 +108,39 @@ const FORTUNES = [
 // Track page load time for uptime command
 const PAGE_LOAD_TIME = typeof window !== 'undefined' ? Date.now() : Date.now();
 
+function openCodeEditorResult(invokedBy: string): CommandResult {
+  return {
+    output: (
+      <div style={{ fontFamily: 'var(--font-mono)' }}>
+        <div style={{ color: 'var(--accent-primary)' }}>
+          Opening {appConfig.apps.codeEditorName}...
+        </div>
+        <div style={{ color: 'var(--text-muted)' }}>
+          Invoked via <span style={{ color: 'var(--accent-cyan)' }}>{invokedBy}</span>. Powered by Neovim.
+        </div>
+      </div>
+    ),
+    openApp: {
+      appType: 'neovim',
+      title: appConfig.apps.codeEditorName,
+    },
+  };
+}
+
+function openAppResult(appType: string, title: string, message: string): CommandResult {
+  return {
+    output: (
+      <div style={{ fontFamily: 'var(--font-mono)' }}>
+        <div style={{ color: 'var(--accent-primary)' }}>{message}</div>
+      </div>
+    ),
+    openApp: {
+      appType,
+      title,
+    },
+  };
+}
+
 // Helper to build a directory tree view
 function buildTree(node: FileNode, prefix: string = '', isLast: boolean = true): string {
   let result = '';
@@ -199,6 +233,11 @@ const MAN_PAGES: Record<string, { synopsis: string; description: string }> = {
   sudo: { synopsis: 'sudo <command>', description: 'Execute a command as superuser. (Just kidding.)' },
   rm: { synopsis: 'rm [options] <file>', description: 'Remove files or directories.' },
   resume: { synopsis: 'resume', description: 'Open the interactive PDF viewer to see Dhruv\'s resume.' },
+  browser: { synopsis: 'browser', description: 'Open the Browser app.' },
+  files: { synopsis: 'files', description: 'Open the File Manager app.' },
+  settings: { synopsis: 'settings', description: 'Open the Settings app.' },
+  code: { synopsis: 'code', description: 'Open the Code Editor app.' },
+  terminal: { synopsis: 'terminal', description: 'Open a new Terminal app window.' },
   head: { synopsis: 'head [-n lines] <file>', description: 'Output the first part of files.' },
   tail: { synopsis: 'tail [-n lines] <file>', description: 'Output the last part of files.' },
   ll: { synopsis: 'll [path]', description: 'List directory contents in long format.' },
@@ -208,6 +247,10 @@ const MAN_PAGES: Record<string, { synopsis: string; description: string }> = {
   htop: { synopsis: 'htop', description: 'Interactive process viewer showing CPU, memory, and processes.' },
   screenfetch: { synopsis: 'screenfetch', description: 'Display system info with ASCII art (alternative to neofetch).' },
   vim: { synopsis: 'vim', description: 'The inescapable text editor. Good luck getting out.' },
+  nvim: { synopsis: 'nvim', description: 'Open the Code Editor app (Neovim powered).' },
+  neovim: { synopsis: 'neovim', description: 'Open the Code Editor app (Neovim powered).' },
+  nano: { synopsis: 'nano', description: 'Friendly editor hint command.' },
+  email: { synopsis: 'email', description: 'Open the Email app to contact Dhruv directly.' },
   apt: { synopsis: 'apt install <pkg>', description: 'Debian package manager. Wrong distro though.' },
   pacman: { synopsis: 'pacman -S <pkg> | -Syu', description: 'Arch Linux package manager.' },
   ping: { synopsis: 'ping <host>', description: 'Send ICMP ECHO_REQUEST to network hosts.' },
@@ -257,6 +300,11 @@ export const commands: Record<string, CommandHandler> = {
         <div><span style={{ color: 'var(--accent-tertiary)' }}>contact</span> — Connect with me</div>
         <div><span style={{ color: 'var(--accent-tertiary)' }}>about</span> — About me</div>
         <div><span style={{ color: 'var(--accent-tertiary)' }}>resume</span> — Open PDF Resume</div>
+        <div><span style={{ color: 'var(--accent-tertiary)' }}>browser</span> — Open Browser app</div>
+        <div><span style={{ color: 'var(--accent-tertiary)' }}>files</span> — Open File Manager app</div>
+        <div><span style={{ color: 'var(--accent-tertiary)' }}>settings</span> — Open Settings app</div>
+        <div><span style={{ color: 'var(--accent-tertiary)' }}>code</span> — Open Code Editor app</div>
+        <div><span style={{ color: 'var(--accent-tertiary)' }}>terminal</span> — Open another Terminal</div>
         <div><span style={{ color: 'var(--accent-tertiary)' }}>portfolio</span> — Go to non-tech portfolio version</div>
 
         <div style={{ marginTop: '12px', color: 'var(--accent-warning)', fontWeight: 600 }}>
@@ -271,6 +319,10 @@ export const commands: Record<string, CommandHandler> = {
         <div><span style={{ color: 'var(--accent-warning)' }}>htop</span> — System process viewer</div>
         <div><span style={{ color: 'var(--accent-warning)' }}>screenfetch</span> — Alt system info</div>
         <div><span style={{ color: 'var(--accent-warning)' }}>vim</span> — You dare?</div>
+        <div><span style={{ color: 'var(--accent-warning)' }}>nvim</span> — Open Code Editor</div>
+        <div><span style={{ color: 'var(--accent-warning)' }}>neovim</span> — Open Code Editor</div>
+        <div><span style={{ color: 'var(--accent-warning)' }}>nano</span> — Suggests nvim</div>
+        <div><span style={{ color: 'var(--accent-warning)' }}>email</span> — Open Email app</div>
         <div><span style={{ color: 'var(--accent-warning)' }}>pacman</span> — Package manager</div>
         <div><span style={{ color: 'var(--accent-warning)' }}>ping</span> — Network ping</div>
         <div><span style={{ color: 'var(--accent-warning)' }}>exit</span> — Close terminal</div>
@@ -645,17 +697,24 @@ export const commands: Record<string, CommandHandler> = {
     output: (
       <div style={{ lineHeight: 1.8 }}>
         <div style={{ color: 'var(--accent-primary)', fontWeight: 600, marginBottom: '12px' }}>
-          📬 Let&apos;s Build Something:
+          Let&apos;s Build Something:
         </div>
         <div><span style={{ color: 'var(--text-muted)' }}>Email:</span> dhruv1249.lm@gmail.com</div>
         <div><span style={{ color: 'var(--text-muted)' }}>Phone:</span> +91 7876503573</div>
         <div><span style={{ color: 'var(--text-muted)' }}>GitHub:</span> <a href="https://github.com/Dhruv1249" target="_blank" style={{ color: 'var(--accent-cyan)' }}>github.com/Dhruv1249</a></div>
         <div><span style={{ color: 'var(--text-muted)' }}>LinkedIn:</span> <a href="https://linkedin.com/in/dhruv124" target="_blank" style={{ color: 'var(--accent-cyan)' }}>linkedin.com/in/dhruv124</a></div>
+        <div style={{ marginTop: '10px', color: 'var(--accent-cyan)' }}>
+          Opening Email app. You are emailing Dhruv directly.
+        </div>
         <div style={{ marginTop: '12px', color: 'var(--accent-warning)', fontStyle: 'italic' }}>
           &quot;Available for immediate joining.&quot;
         </div>
       </div>
     ),
+    openApp: {
+      appType: 'email',
+      title: 'Email Dhruv',
+    },
   }),
 
   // === New commands ===
@@ -854,6 +913,16 @@ export const commands: Record<string, CommandHandler> = {
       }
     };
   },
+
+  browser: () => openAppResult('browser', 'Browser — Portfolio', 'Opening Browser app...'),
+
+  files: () => openAppResult('filemanager', 'Files', 'Opening File Manager app...'),
+
+  settings: () => openAppResult('settings', 'Settings', 'Opening Settings app...'),
+
+  code: () => openCodeEditorResult('code'),
+
+  terminal: () => openAppResult('terminal', 'zsh — 80x24', 'Opening Terminal app...'),
 
   clear: () => ({ output: '__CLEAR__' }),
   pwd: (_args, currentPath) => ({ output: currentPath.replace('~', '/home/dhruv'), rawText: currentPath.replace('~', '/home/dhruv') }),
@@ -1098,27 +1167,36 @@ ${cow}`}
     };
   },
 
-  vim: () => ({
+  vim: () => openCodeEditorResult('vim'),
+
+  nvim: () => openCodeEditorResult('nvim'),
+
+  neovim: () => openCodeEditorResult('neovim'),
+
+  nano: () => ({
     output: (
       <div style={{ fontFamily: 'var(--font-mono)' }}>
-        <pre style={{ color: 'var(--accent-primary)', margin: 0 }}>{`
-  ╔══════════════════════════════════════╗
-  ║                                      ║
-  ║   You're now trapped in Vim!          ║
-  ║                                      ║
-  ║   Just kidding. This is a terminal   ║
-  ║   emulator, not actual Vim.          ║
-  ║                                      ║
-  ║   But if you want the REAL thing,    ║
-  ║   check out my Neovim config:        ║
-  ║                                      ║
-  ║   Type: cat .config/nvim/init.lua    ║
-  ║                                      ║
-  ║   Hint: :q won't work here. ;)      ║
-  ║                                      ║
-  ╚══════════════════════════════════════╝`}</pre>
+        <div style={{ color: 'var(--accent-warning)' }}>
+          nano is not available in this environment.
+        </div>
+        <div style={{ color: 'var(--text-secondary)' }}>
+          Use <span style={{ color: 'var(--accent-primary)' }}>{appConfig.terminal.preferredEditor}</span> to open the {appConfig.apps.codeEditorName} app.
+        </div>
       </div>
     ),
+  }),
+
+  email: () => ({
+    output: (
+      <div style={{ fontFamily: 'var(--font-mono)' }}>
+        <div style={{ color: 'var(--accent-primary)' }}>Opening Email app...</div>
+        <div style={{ color: 'var(--text-muted)' }}>{appConfig.email.notice}</div>
+      </div>
+    ),
+    openApp: {
+      appType: 'email',
+      title: 'Email Dhruv',
+    },
   }),
 
   apt: (args) => {
@@ -1223,7 +1301,7 @@ ${cow}`}
   portfolio: () => {
     if (typeof window !== 'undefined') {
       setTimeout(() => {
-        window.open(process.env.NEXT_PUBLIC_NON_TECH_PORTFOLIO_URL || 'https://dhruv-portfolio.vercel.app', '_self');
+        window.open(process.env.NEXT_PUBLIC_NON_TECH_PORTFOLIO_URL || appConfig.nonTechPortfolioUrl, '_self');
       }, 1000);
     }
     return {
