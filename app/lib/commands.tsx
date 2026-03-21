@@ -108,6 +108,59 @@ const FORTUNES = [
 // Track page load time for uptime command
 const PAGE_LOAD_TIME = typeof window !== 'undefined' ? Date.now() : Date.now();
 
+interface RemotePortfolioData {
+  personalInfo?: {
+    name?: string;
+    roles?: string[];
+    tagline?: string;
+    email?: string;
+    phone?: string;
+    github?: string;
+    linkedin?: string;
+  };
+  aboutText?: string;
+  featuredProjects?: Array<{
+    title?: string;
+    subtitle?: string;
+    description?: string;
+    tech?: string[];
+    github?: string;
+    live?: string;
+  }>;
+  additionalProjects?: Array<{
+    title?: string;
+    short?: string;
+    tech?: string[];
+    github?: string;
+    live?: string;
+  }>;
+  experience?: {
+    role?: string;
+    company?: string;
+    period?: string;
+    bullets?: string[];
+    tech?: string[];
+  };
+  skills?: {
+    languages?: string[];
+    frontend?: string[];
+    backend?: string[];
+    ml?: string[];
+    cloud?: string[];
+  };
+}
+
+async function getRemotePortfolioData(): Promise<RemotePortfolioData | null> {
+  try {
+    const response = await fetch('/api/portfolio-data', { cache: 'no-store' });
+    if (!response.ok) return null;
+    const payload = await response.json();
+    return (payload?.data as RemotePortfolioData) || null;
+  } catch {
+    return null;
+  }
+}
+
 function openCodeEditorResult(invokedBy: string): CommandResult {
   return {
     output: (
@@ -616,73 +669,123 @@ export const commands: Record<string, CommandHandler> = {
     };
   },
 
-  about: () => ({
-    output: (
-      <div style={{ lineHeight: 1.8 }}>
-        <div style={{ color: 'var(--accent-primary)', fontSize: '18px', fontWeight: 700, marginBottom: '12px' }}>
-          Hey, I&apos;m Dhruv!
-        </div>
-        <div style={{ marginBottom: '12px' }}>
-          <span style={{ color: 'var(--accent-tertiary)' }}>Full-Stack Developer</span> •{' '}
-          <span style={{ color: 'var(--accent-tertiary)' }}>DevOps Enthusiast</span> •{' '}
-          <span style={{ color: 'var(--accent-tertiary)' }}>Machine Learning Engineer</span>
-        </div>
-        <div style={{ marginBottom: '12px', color: 'var(--text-secondary)' }}>
-          I build intelligent, scalable systems by combining modern web technologies,
-          machine learning models, and cloud infrastructure. My work spans full-stack platforms,
-          data pipelines, and AI-driven applications deployed using containerized environments.
-        </div>
-        <div style={{ marginBottom: '12px' }}>
-          Currently completing B.Tech at <span style={{ color: 'var(--accent-cyan)' }}>LPU</span> (8.66 CGPA).
-        </div>
-        <div style={{ marginBottom: '12px', padding: '12px', background: 'var(--bg-tertiary)', borderRadius: '8px', borderLeft: '3px solid var(--accent-warning)' }}>
-          [*] <span style={{ color: 'var(--accent-warning)' }}>NASA Space Apps 2025 — Global Honorable Mention</span>
-          <br />
-          <span style={{ color: 'var(--text-muted)', fontSize: '13px' }}>Recognized among top teams worldwide from 11,500+ submissions for CALYX</span>
-        </div>
-        <div style={{ padding: '12px', background: 'var(--bg-tertiary)', borderRadius: '8px', borderLeft: '3px solid var(--accent-cyan)' }}>
-          [*] <span style={{ color: 'var(--accent-cyan)' }}>Innov-a-thon — National Top 100</span>
-          <br />
-          <span style={{ color: 'var(--text-muted)', fontSize: '13px' }}>NIT Rourkela national competition</span>
-        </div>
-        <div style={{ marginTop: '12px', padding: '12px', background: 'var(--bg-tertiary)', borderRadius: '8px', borderLeft: '3px solid var(--accent-primary)' }}>
-          <span style={{ color: 'var(--accent-primary)' }}>See the traditional portfolio:</span>{' '}
-          <a href={process.env.NEXT_PUBLIC_NON_TECH_PORTFOLIO_URL || 'https://dhruv-portfolio.vercel.app'}
-             target="_blank" rel="noopener noreferrer"
-             style={{ color: 'var(--accent-cyan)', textDecoration: 'underline' }}>
-            dhruv-portfolio.vercel.app
-          </a>
-        </div>
-      </div>
-    ),
-  }),
+  about: async () => {
+    const remote = await getRemotePortfolioData();
+    const info = remote?.personalInfo;
+    const name = info?.name || 'Dhruv';
+    const roles = info?.roles?.length ? info.roles : ['Full-Stack Developer', 'DevOps Enthusiast', 'Machine Learning Engineer'];
+    const aboutText = remote?.aboutText || 'I build intelligent, scalable systems by combining modern web technologies, machine learning models, and cloud infrastructure. My work spans full-stack platforms, data pipelines, and AI-driven applications deployed using containerized environments.';
 
-  projects: () => ({
-    output: (
-      <div>
-        <div style={{ color: 'var(--accent-primary)', fontWeight: 600, marginBottom: '16px' }}>
-          Featured Projects:
-        </div>
-        {PROJECTS.map((project, i) => (
-          <div key={i} style={{ marginBottom: '24px', paddingLeft: '16px', borderLeft: '2px solid var(--border-color)' }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
-              <span style={{ color: 'var(--accent-cyan)', fontWeight: 700, fontSize: '15px' }}>{project.name}</span>
-              <span style={{ color: 'var(--text-muted)', fontSize: '12px' }}>— {project.tech}</span>
-            </div>
-            <div style={{ color: 'var(--text-primary)', marginTop: '4px', fontStyle: 'italic' }}>{project.desc}</div>
-            <div style={{ color: 'var(--text-secondary)', marginTop: '4px', fontSize: '13px', lineHeight: 1.6 }}>{project.details}</div>
-            <div style={{ marginTop: '8px', display: 'flex', gap: '16px' }}>
-              <a href={project.link} target="_blank" style={{ color: 'var(--accent-primary)', fontSize: '12px', textDecoration: 'underline' }}>Live →</a>
-              <a href={project.github} target="_blank" style={{ color: 'var(--accent-secondary)', fontSize: '12px', textDecoration: 'underline' }}>GitHub →</a>
-            </div>
+    return {
+      output: (
+        <div style={{ lineHeight: 1.8 }}>
+          <div style={{ color: 'var(--accent-primary)', fontSize: '18px', fontWeight: 700, marginBottom: '12px' }}>
+            Hey, I&apos;m {name}!
           </div>
-        ))}
-      </div>
-    ),
-  }),
+          <div style={{ marginBottom: '12px' }}>
+            {roles.map((role, index) => (
+              <span key={role}>
+                <span style={{ color: 'var(--accent-tertiary)' }}>{role}</span>
+                {index < roles.length - 1 ? ' • ' : ''}
+              </span>
+            ))}
+          </div>
+          <div style={{ marginBottom: '12px', color: 'var(--text-secondary)' }}>
+            {aboutText}
+          </div>
+          <div style={{ marginBottom: '12px' }}>
+            Currently completing B.Tech at <span style={{ color: 'var(--accent-cyan)' }}>LPU</span> (8.66 CGPA).
+          </div>
+          <div style={{ marginBottom: '12px', padding: '12px', background: 'var(--bg-tertiary)', borderRadius: '8px', borderLeft: '3px solid var(--accent-warning)' }}>
+            [*] <span style={{ color: 'var(--accent-warning)' }}>NASA Space Apps 2025 — Global Honorable Mention</span>
+            <br />
+            <span style={{ color: 'var(--text-muted)', fontSize: '13px' }}>Recognized among top teams worldwide from 11,500+ submissions for CALYX</span>
+          </div>
+          <div style={{ padding: '12px', background: 'var(--bg-tertiary)', borderRadius: '8px', borderLeft: '3px solid var(--accent-cyan)' }}>
+            [*] <span style={{ color: 'var(--accent-cyan)' }}>Innov-a-thon — National Top 100</span>
+            <br />
+            <span style={{ color: 'var(--text-muted)', fontSize: '13px' }}>NIT Rourkela national competition</span>
+          </div>
+          <div style={{ marginTop: '12px', padding: '12px', background: 'var(--bg-tertiary)', borderRadius: '8px', borderLeft: '3px solid var(--accent-primary)' }}>
+            <span style={{ color: 'var(--accent-primary)' }}>See the traditional portfolio:</span>{' '}
+            <a href={process.env.NEXT_PUBLIC_NON_TECH_PORTFOLIO_URL || 'https://dhruv-portfolio.vercel.app'}
+               target="_blank" rel="noopener noreferrer"
+               style={{ color: 'var(--accent-cyan)', textDecoration: 'underline' }}>
+              dhruv-portfolio.vercel.app
+            </a>
+          </div>
+        </div>
+      ),
+    };
+  },
 
-  experience: () => ({
-    output: (
+  projects: async () => {
+    const remote = await getRemotePortfolioData();
+    const remoteProjects = [
+      ...(remote?.featuredProjects || []).map((project) => ({
+        name: project.title || 'Untitled Project',
+        desc: project.subtitle || 'Project showcase',
+        details: project.description || 'No description provided.',
+        tech: (project.tech || []).join(', '),
+        link: project.live || project.github || '#',
+        github: project.github || '#',
+      })),
+      ...(remote?.additionalProjects || []).map((project) => ({
+        name: project.title || 'Untitled Project',
+        desc: project.short || 'Project showcase',
+        details: project.short || 'No description provided.',
+        tech: (project.tech || []).join(', '),
+        link: project.live || project.github || '#',
+        github: project.github || '#',
+      })),
+    ];
+
+    const projectsToRender = remoteProjects.length ? remoteProjects : PROJECTS;
+
+    return {
+      output: (
+        <div>
+          <div style={{ color: 'var(--accent-primary)', fontWeight: 600, marginBottom: '16px' }}>
+            Featured Projects:
+          </div>
+          {projectsToRender.map((project, i) => (
+            <div key={i} style={{ marginBottom: '24px', paddingLeft: '16px', borderLeft: '2px solid var(--border-color)' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
+                <span style={{ color: 'var(--accent-cyan)', fontWeight: 700, fontSize: '15px' }}>{project.name}</span>
+                <span style={{ color: 'var(--text-muted)', fontSize: '12px' }}>— {project.tech}</span>
+              </div>
+              <div style={{ color: 'var(--text-primary)', marginTop: '4px', fontStyle: 'italic' }}>{project.desc}</div>
+              <div style={{ color: 'var(--text-secondary)', marginTop: '4px', fontSize: '13px', lineHeight: 1.6 }}>{project.details}</div>
+              <div style={{ marginTop: '8px', display: 'flex', gap: '16px' }}>
+                <a href={project.link} target="_blank" style={{ color: 'var(--accent-primary)', fontSize: '12px', textDecoration: 'underline' }}>Live →</a>
+                <a href={project.github} target="_blank" style={{ color: 'var(--accent-secondary)', fontSize: '12px', textDecoration: 'underline' }}>GitHub →</a>
+              </div>
+            </div>
+          ))}
+        </div>
+      ),
+    };
+  },
+
+  experience: async () => {
+    const remote = await getRemotePortfolioData();
+    const experience = remote?.experience;
+    const role = experience?.role || 'Freelance Full-Stack Developer';
+    const company = experience?.company || 'Remote';
+    const period = experience?.period || 'Nov 2025 – Present';
+    const bullets = experience?.bullets?.length
+      ? experience.bullets
+      : [
+          'Developed responsive client websites focusing on UI/UX, mobile-first layouts, and performance optimization.',
+          'Built front-end systems using Next.js, Tailwind CSS, and semantic HTML/CSS with clean component architecture.',
+          'Automated enquiry workflows using NodeMailer and integrated Firebase with Google Sheets API for centralized lead management.',
+          'Implemented structured JSON-LD schemas and semantic HTML5, driving 40% increase in organic traffic.',
+          'Managed end-to-end delivery from requirement gathering through deployment, using Git-based workflows and CI/CD pipelines.',
+        ];
+    const tech = experience?.tech?.length ? experience.tech : ['Next.js', 'Tailwind CSS', 'Firebase', 'NodeMailer', 'Google Sheets API', 'SEO'];
+
+    return {
+      output: (
       <div>
         <div style={{ color: 'var(--accent-primary)', fontWeight: 600, marginBottom: '12px' }}>
           Professional History:
@@ -691,36 +794,38 @@ export const commands: Record<string, CommandHandler> = {
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '8px', flexWrap: 'wrap', gap: '8px' }}>
             <div>
               <div style={{ color: 'var(--text-bright)', fontWeight: 600, fontSize: '16px' }}>
-                Freelance Full-Stack Developer
+                {role}
               </div>
-              <div style={{ color: 'var(--accent-cyan)' }}>Remote</div>
+              <div style={{ color: 'var(--accent-cyan)' }}>{company}</div>
             </div>
-            <span style={{ color: 'var(--text-muted)', fontSize: '13px' }}>Nov 2025 – Present</span>
+            <span style={{ color: 'var(--text-muted)', fontSize: '13px' }}>{period}</span>
           </div>
           <ul style={{ color: 'var(--text-secondary)', margin: 0, paddingLeft: '20px', lineHeight: 1.8 }}>
-            <li>
-              <strong style={{ color: 'var(--text-primary)' }}>UI/UX Development:</strong> Developed responsive client websites focusing on UI/UX, mobile-first layouts, and performance optimization.
-            </li>
-            <li>
-              <strong style={{ color: 'var(--text-primary)' }}>Frontend Architecture:</strong> Built front-end systems using Next.js, Tailwind CSS, and semantic HTML/CSS with clean component architecture.
-            </li>
-            <li>
-              <strong style={{ color: 'var(--text-primary)' }}>Backend Automation:</strong> Automated enquiry workflows using NodeMailer and integrated Firebase with Google Sheets API for centralized lead management.
-            </li>
-            <li>
-              <strong style={{ color: 'var(--text-primary)' }}>SEO Strategy:</strong> Implemented structured JSON-LD schemas and semantic HTML5, driving 40% increase in organic traffic.
-            </li>
-            <li>
-              <strong style={{ color: 'var(--text-primary)' }}>Project Delivery:</strong> Managed end-to-end delivery from requirement gathering through deployment, using Git-based workflows and CI/CD pipelines.
-            </li>
+            {bullets.map((bullet, index) => (
+              <li key={index}>{bullet}</li>
+            ))}
           </ul>
+          <div style={{ marginTop: '10px', color: 'var(--text-muted)', fontSize: '12px' }}>
+            Tech: {tech.join(', ')}
+          </div>
         </div>
       </div>
     ),
-  }),
+    };
+  },
 
-  skills: () => ({
-    output: (
+  skills: async () => {
+    const remote = await getRemotePortfolioData();
+    const skills = remote?.skills;
+
+    const languages = skills?.languages?.length ? skills.languages.join(', ') : 'Python, TypeScript, JavaScript, C, C++, HTML, CSS';
+    const frontend = skills?.frontend?.length ? skills.frontend.join(', ') : 'React, Next.js, Tailwind CSS';
+    const backend = skills?.backend?.length ? skills.backend.join(', ') : 'Node.js, FastAPI, REST APIs';
+    const ml = skills?.ml?.length ? skills.ml.join(', ') : 'Regression Models, Time-Series, Pandas, XGBoost';
+    const cloud = skills?.cloud?.length ? skills.cloud.join(', ') : 'Docker, Google Cloud Platform, Firebase, Git';
+
+    return {
+      output: (
       <div>
         <div style={{ color: 'var(--accent-primary)', fontWeight: 600, marginBottom: '12px' }}>
           Technical Stack:
@@ -728,23 +833,23 @@ export const commands: Record<string, CommandHandler> = {
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px' }}>
           <div>
             <div style={{ color: 'var(--accent-cyan)', marginBottom: '8px', fontSize: '13px' }}>LANGUAGES</div>
-            <div style={{ color: 'var(--text-secondary)' }}>Python, TypeScript, JavaScript, C, C++, HTML, CSS</div>
+            <div style={{ color: 'var(--text-secondary)' }}>{languages}</div>
           </div>
           <div>
             <div style={{ color: 'var(--accent-cyan)', marginBottom: '8px', fontSize: '13px' }}>FRONTEND</div>
-            <div style={{ color: 'var(--text-secondary)' }}>React, Next.js, Tailwind CSS</div>
+            <div style={{ color: 'var(--text-secondary)' }}>{frontend}</div>
           </div>
           <div>
             <div style={{ color: 'var(--accent-cyan)', marginBottom: '8px', fontSize: '13px' }}>BACKEND</div>
-            <div style={{ color: 'var(--text-secondary)' }}>Node.js, FastAPI, REST APIs</div>
+            <div style={{ color: 'var(--text-secondary)' }}>{backend}</div>
           </div>
           <div>
             <div style={{ color: 'var(--accent-cyan)', marginBottom: '8px', fontSize: '13px' }}>DATA & ML</div>
-            <div style={{ color: 'var(--text-secondary)' }}>Regression Models, Time-Series, Pandas, XGBoost</div>
+            <div style={{ color: 'var(--text-secondary)' }}>{ml}</div>
           </div>
           <div>
             <div style={{ color: 'var(--accent-cyan)', marginBottom: '8px', fontSize: '13px' }}>CLOUD & DEVOPS</div>
-            <div style={{ color: 'var(--text-secondary)' }}>Docker, Google Cloud Platform, Firebase, Git</div>
+            <div style={{ color: 'var(--text-secondary)' }}>{cloud}</div>
           </div>
           <div>
             <div style={{ color: 'var(--accent-cyan)', marginBottom: '8px', fontSize: '13px' }}>AI & TOOLS</div>
@@ -753,18 +858,27 @@ export const commands: Record<string, CommandHandler> = {
         </div>
       </div>
     ),
-  }),
+    };
+  },
 
-  contact: () => ({
-    output: (
+  contact: async () => {
+    const remote = await getRemotePortfolioData();
+    const info = remote?.personalInfo;
+    const email = info?.email || 'dhruv1249.lm@gmail.com';
+    const phone = info?.phone || '+91 7876503573';
+    const github = info?.github || 'https://github.com/Dhruv1249';
+    const linkedin = info?.linkedin || 'https://linkedin.com/in/dhruv124';
+
+    return {
+      output: (
       <div style={{ lineHeight: 1.8 }}>
         <div style={{ color: 'var(--accent-primary)', fontWeight: 600, marginBottom: '12px' }}>
           Let&apos;s Build Something:
         </div>
-        <div><span style={{ color: 'var(--text-muted)' }}>Email:</span> dhruv1249.lm@gmail.com</div>
-        <div><span style={{ color: 'var(--text-muted)' }}>Phone:</span> +91 7876503573</div>
-        <div><span style={{ color: 'var(--text-muted)' }}>GitHub:</span> <a href="https://github.com/Dhruv1249" target="_blank" style={{ color: 'var(--accent-cyan)' }}>github.com/Dhruv1249</a></div>
-        <div><span style={{ color: 'var(--text-muted)' }}>LinkedIn:</span> <a href="https://linkedin.com/in/dhruv124" target="_blank" style={{ color: 'var(--accent-cyan)' }}>linkedin.com/in/dhruv124</a></div>
+        <div><span style={{ color: 'var(--text-muted)' }}>Email:</span> {email}</div>
+        <div><span style={{ color: 'var(--text-muted)' }}>Phone:</span> {phone}</div>
+        <div><span style={{ color: 'var(--text-muted)' }}>GitHub:</span> <a href={github} target="_blank" style={{ color: 'var(--accent-cyan)' }}>{github.replace('https://', '')}</a></div>
+        <div><span style={{ color: 'var(--text-muted)' }}>LinkedIn:</span> <a href={linkedin} target="_blank" style={{ color: 'var(--accent-cyan)' }}>{linkedin.replace('https://', '')}</a></div>
         <div style={{ marginTop: '10px', color: 'var(--accent-cyan)' }}>
           Tip: Use <span style={{ color: 'var(--accent-primary)', fontWeight: 700 }}>email</span> to send mail directly to Dhruv.
         </div>
@@ -780,7 +894,8 @@ export const commands: Record<string, CommandHandler> = {
       appType: 'email',
       title: 'Email Dhruv',
     },
-  }),
+    };
+  },
 
   // === New commands ===
 

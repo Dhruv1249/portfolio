@@ -166,6 +166,21 @@ const allSkills = skillCategories.flatMap((c) => c.skills);
 const trailRow1 = [...allSkills.slice(0, 12), ...allSkills.slice(0, 12)];
 const trailRow2 = [...allSkills.slice(12), ...allSkills.slice(12)];
 
+const FALLBACK_PORTFOLIO_DATA = {
+  personalInfo,
+  aboutText,
+  engineeringFocus,
+  featuredProjects,
+  additionalProjects,
+  experience,
+  education,
+  achievements,
+  certifications,
+  skillCategories,
+  trailRow1,
+  trailRow2,
+};
+
 /* ═══════════════ Non-tech CSS Variables (inline) ═══════════════ */
 
 const V = {
@@ -234,9 +249,59 @@ function AnimateOnScroll({ children, delay = 0, direction = 'up', style }: {
 
 function HomePage({ openTab }: { openTab: (url: string, title: string) => void }) {
   const [photoVisible, setPhotoVisible] = useState(true);
+  const [portfolioData, setPortfolioData] = useState(FALLBACK_PORTFOLIO_DATA);
+
+  const {
+    personalInfo,
+    aboutText,
+    engineeringFocus,
+    featuredProjects,
+    additionalProjects,
+    experience,
+    education,
+    achievements,
+    certifications,
+    skillCategories,
+    trailRow1,
+    trailRow2,
+  } = portfolioData;
 
   useEffect(() => {
     fetch('/api/photo-toggle').then(r => r.json()).then(d => setPhotoVisible(d.visible)).catch(() => {});
+  }, []);
+
+  useEffect(() => {
+    let cancelled = false;
+
+    const loadPortfolioData = async () => {
+      try {
+        const response = await fetch('/api/portfolio-data', { cache: 'no-store' });
+        if (!response.ok) return;
+        const payload = await response.json();
+        const data = payload?.data;
+        if (!data || cancelled) return;
+
+        setPortfolioData(prev => ({
+          ...prev,
+          personalInfo: data.personalInfo || prev.personalInfo,
+          aboutText: data.aboutText || prev.aboutText,
+          engineeringFocus: data.engineeringFocus || prev.engineeringFocus,
+          featuredProjects: data.featuredProjects || prev.featuredProjects,
+          additionalProjects: data.additionalProjects || prev.additionalProjects,
+          experience: data.experience || prev.experience,
+          education: data.education || prev.education,
+          achievements: data.achievements || prev.achievements,
+          certifications: data.certifications || prev.certifications,
+        }));
+      } catch {
+        // Keep fallback data when API is unavailable.
+      }
+    };
+
+    loadPortfolioData();
+    return () => {
+      cancelled = true;
+    };
   }, []);
 
   return (
