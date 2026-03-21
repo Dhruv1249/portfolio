@@ -116,13 +116,75 @@ function openCodeEditorResult(invokedBy: string): CommandResult {
           Opening {appConfig.apps.codeEditorName}...
         </div>
         <div style={{ color: 'var(--text-muted)' }}>
-          Invoked via <span style={{ color: 'var(--accent-cyan)' }}>{invokedBy}</span>. Powered by Neovim.
+          Invoked via <span style={{ color: 'var(--accent-cyan)' }}>{invokedBy}</span>. Opening project selector.
         </div>
       </div>
     ),
     openApp: {
       appType: 'neovim',
       title: appConfig.apps.codeEditorName,
+    },
+  };
+}
+
+function resolveEditorPath(arg: string, currentPath: string): string {
+  if (arg.startsWith('~')) return arg;
+  if (arg === '/') return '~';
+  if (arg.startsWith('/home/dhruv/')) {
+    const rel = arg.replace('/home/dhruv/', '');
+    return rel ? `~/${rel}` : '~';
+  }
+  if (arg.startsWith('/')) return `~${arg}`;
+  return currentPath === '~' ? `~/${arg}` : `${currentPath}/${arg}`;
+}
+
+async function openEditorWithOptionalFile(args: string[], currentPath: string, invokedBy: string): Promise<CommandResult> {
+  const target = args[0];
+  if (!target) {
+    return openCodeEditorResult(invokedBy);
+  }
+
+  const resolvedPath = resolveEditorPath(target, currentPath);
+  const node = await getNode(resolvedPath);
+
+  if (!node) {
+    return {
+      output: (
+        <span style={{ color: 'var(--accent-error)' }}>
+          {invokedBy}: cannot open '{target}': No such file. Try <span style={{ color: 'var(--accent-cyan)' }}>ls</span> first.
+        </span>
+      ),
+    };
+  }
+
+  if (node.type !== 'file') {
+    return {
+      output: (
+        <span style={{ color: 'var(--accent-warning)' }}>
+          {invokedBy}: '{target}' is a directory. Provide a file path.
+        </span>
+      ),
+    };
+  }
+
+  return {
+    output: (
+      <div style={{ fontFamily: 'var(--font-mono)' }}>
+        <div style={{ color: 'var(--accent-primary)' }}>
+          Opening {node.name} in {appConfig.apps.codeEditorName}...
+        </div>
+        <div style={{ color: 'var(--text-muted)' }}>
+          Source path: <span style={{ color: 'var(--accent-cyan)' }}>{resolvedPath}</span>
+        </div>
+      </div>
+    ),
+    openApp: {
+      appType: 'neovim',
+      title: `${appConfig.apps.codeEditorName} — ${node.name}`,
+      appData: {
+        fileName: node.name,
+        fileContent: node.content || '',
+      },
     },
   };
 }
@@ -246,9 +308,9 @@ const MAN_PAGES: Record<string, { synopsis: string; description: string }> = {
   figlet: { synopsis: 'figlet <text>', description: 'Display large characters made up of ordinary screen characters.' },
   htop: { synopsis: 'htop', description: 'Interactive process viewer showing CPU, memory, and processes.' },
   screenfetch: { synopsis: 'screenfetch', description: 'Display system info with ASCII art (alternative to neofetch).' },
-  vim: { synopsis: 'vim', description: 'The inescapable text editor. Good luck getting out.' },
-  nvim: { synopsis: 'nvim', description: 'Open the Code Editor app (Neovim powered).' },
-  neovim: { synopsis: 'neovim', description: 'Open the Code Editor app (Neovim powered).' },
+  vim: { synopsis: 'vim [file]', description: 'Open the Code Editor. Provide a file path to open it directly.' },
+  nvim: { synopsis: 'nvim [file]', description: 'Open the Code Editor. Provide a file path to open it directly.' },
+  neovim: { synopsis: 'neovim [file]', description: 'Open the Code Editor. Provide a file path to open it directly.' },
   nano: { synopsis: 'nano', description: 'Friendly editor hint command.' },
   email: { synopsis: 'email', description: 'Open the Email app to contact Dhruv directly.' },
   apt: { synopsis: 'apt install <pkg>', description: 'Debian package manager. Wrong distro though.' },
@@ -704,7 +766,10 @@ export const commands: Record<string, CommandHandler> = {
         <div><span style={{ color: 'var(--text-muted)' }}>GitHub:</span> <a href="https://github.com/Dhruv1249" target="_blank" style={{ color: 'var(--accent-cyan)' }}>github.com/Dhruv1249</a></div>
         <div><span style={{ color: 'var(--text-muted)' }}>LinkedIn:</span> <a href="https://linkedin.com/in/dhruv124" target="_blank" style={{ color: 'var(--accent-cyan)' }}>linkedin.com/in/dhruv124</a></div>
         <div style={{ marginTop: '10px', color: 'var(--accent-cyan)' }}>
-          Opening Email app. You are emailing Dhruv directly.
+          Tip: Use <span style={{ color: 'var(--accent-primary)', fontWeight: 700 }}>email</span> to send mail directly to Dhruv.
+        </div>
+        <div style={{ color: 'var(--text-muted)' }}>
+          Opening Email app now...
         </div>
         <div style={{ marginTop: '12px', color: 'var(--accent-warning)', fontStyle: 'italic' }}>
           &quot;Available for immediate joining.&quot;
@@ -1167,11 +1232,11 @@ ${cow}`}
     };
   },
 
-  vim: () => openCodeEditorResult('vim'),
+  vim: (args, currentPath) => openEditorWithOptionalFile(args, currentPath, 'vim'),
 
-  nvim: () => openCodeEditorResult('nvim'),
+  nvim: (args, currentPath) => openEditorWithOptionalFile(args, currentPath, 'nvim'),
 
-  neovim: () => openCodeEditorResult('neovim'),
+  neovim: (args, currentPath) => openEditorWithOptionalFile(args, currentPath, 'neovim'),
 
   nano: () => ({
     output: (

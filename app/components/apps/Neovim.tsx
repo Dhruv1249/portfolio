@@ -59,6 +59,7 @@ function ProjectSelector({ onSelect, onClose }: {
   const [selectedIndex, setSelectedIndex] = useState(0);
   const listRef = useRef<HTMLDivElement>(null);
   const itemRefs = useRef<(HTMLDivElement | null)[]>([]);
+  const mountedAtRef = useRef<number>(Date.now());
 
   useEffect(() => {
     const el = itemRefs.current[selectedIndex];
@@ -74,6 +75,7 @@ function ProjectSelector({ onSelect, onClose }: {
         e.preventDefault();
         setSelectedIndex(i => Math.max(i - 1, 0));
       } else if (e.key === 'Enter') {
+        if (Date.now() - mountedAtRef.current < 250) return;
         e.preventDefault();
         onSelect(selectedIndex);
       } else if (e.key === 'Escape') {

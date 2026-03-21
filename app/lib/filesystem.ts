@@ -55,12 +55,221 @@ export const fileSystem: FileNode = {
       name: '.config',
       type: 'directory',
       children: [
+        { name: 'settings.json', type: 'file', content: JSON.stringify(appConfig, null, 2) },
+        {
+          name: 'hypr',
+          type: 'directory',
+          children: [
+            {
+              name: 'hyprland.conf',
+              type: 'file',
+              content: `$hypr = ~/.config/hypr
+$hl = $hypr/hyprland
+$cConf = ~/.config/caelestia
+
+# Variables (colours + other vars)
+exec = cp -L --no-preserve=mode --update=none $hypr/scheme/default.conf $hypr/scheme/current.conf
+source = $hypr/scheme/current.conf
+source = $hypr/variables.conf
+
+# User variables
+exec = mkdir -p $cConf && touch -a $cConf/hypr-vars.conf
+source = $cConf/hypr-vars.conf
+
+# Default monitor conf
+monitor = eDP-1, 1920x1200@165, auto, 1
+monitor = , preferred, auto, 1
+
+# Configs
+source = $hl/env.conf
+source = $hl/general.conf
+source = $hl/input.conf
+source = $hl/misc.conf
+source = $hl/animations.conf
+source = $hl/decoration.conf
+source = $hl/group.conf
+source = $hl/execs.conf
+source = $hl/rules.conf
+source = $hl/gestures.conf
+source = $hl/keybinds.conf
+
+# User configs
+exec = mkdir -p $cConf && touch -a $cConf/hypr-user.conf
+source = $cConf/hypr-user.conf
+
+exec-once = /usr/lib/polkit-gnome/polkit-gnome-authentication-agent-1
+bind = SUPER SHIFT, N, exec, /home/dhruv/.local/bin/toggle-touchpad-cursor`
+            },
+          ],
+        },
+        {
+          name: 'niri',
+          type: 'directory',
+          children: [
+            {
+              name: 'config.kdl',
+              type: 'file',
+              content: `// This config is in the KDL format: https://kdl.dev
+spawn-at-startup "dms" "run"
+spawn-at-startup "playerctld" "daemon"
+
+window-rule {
+    match app-id="steam"
+    open-floating true
+}
+
+input {
+    keyboard {
+        xkb {
+        }
+        numlock
+    }
+
+    touchpad {
+        tap
+        dwt
+        natural-scroll
+    }
+
+    mouse {
+    }
+
+    trackpoint {
+    }
+
+    focus-follows-mouse
+}`
+            },
+          ],
+        },
+        {
+          name: 'ghostty',
+          type: 'directory',
+          children: [
+            {
+              name: 'config',
+              type: 'file',
+              content: `command = fish
+shell-integration = fish
+shell-integration-features = cursor,sudo,title
+
+font-family = "JetBrains Mono Nerd Font"
+font-size = 18.2
+adjust-cell-width = 0
+window-padding-x = 25
+window-padding-y = 25
+
+background-blur = true
+background-opacity = 0.78
+
+cursor-style = bar
+adjust-cursor-thickness = 1
+
+bold-is-bright = false
+scrollback-limit = 10000
+
+keybind = page_up=scroll_page_up
+keybind = page_down=scroll_page_down`
+            },
+          ],
+        },
+        {
+          name: 'fish',
+          type: 'directory',
+          children: [
+            {
+              name: 'config.fish',
+              type: 'file',
+              content: `if status is-interactive
+    command -v direnv &> /dev/null && direnv hook fish | source
+    command -v zoxide &> /dev/null && zoxide init fish --cmd cd | source
+
+    alias ls='eza --icons --group-directories-first -1'
+
+    abbr lg 'lazygit'
+    abbr gd 'git diff'
+    abbr ga 'git add .'
+    abbr gc 'git commit -am'
+    abbr gl 'git log'
+    abbr gs 'git status'
+    abbr gp 'git push'
+    abbr gpl 'git pull'
+
+    set -x JAVA_HOME /usr/lib/jvm/default
+    set -gx COLORTERM truecolor
+end`
+            },
+          ],
+        },
+        {
+          name: 'foot',
+          type: 'directory',
+          children: [
+            {
+              name: 'foot.ini',
+              type: 'file',
+              content: `shell=fish
+title=foot
+font=JetBrains Mono Nerd Font:size=18
+letter-spacing=0
+dpi-aware=no
+pad=25x25
+bold-text-in-bright=no
+gamma-correct-blending=no
+
+[scrollback]
+lines=10000
+
+[cursor]
+style=beam
+beam-thickness=1.5
+
+[colors]
+alpha=0.78`
+            },
+          ],
+        },
+        {
+          name: 'neofetch',
+          type: 'directory',
+          children: [
+            {
+              name: 'config.conf',
+              type: 'file',
+              content: `print_info() {
+    info title
+    info underline
+
+    info "OS" distro
+    info "Host" model
+    info "Kernel" kernel
+    info "Uptime" uptime
+    info "Packages" packages
+    info "Shell" shell
+    info "Resolution" resolution
+    info "DE" de
+    info "WM" wm
+    info "Theme" theme
+    info "Icons" icons
+    info "Terminal" term
+    info "CPU" cpu
+    info "GPU" gpu
+    info "Memory" memory
+
+    info cols
+}
+
+title_fqdn="off"
+kernel_shorthand="on"
+distro_shorthand="off"`
+            },
+          ],
+        },
         {
           name: 'nvim',
           type: 'directory',
           children: [
                { name: 'init.lua', type: 'file', content: `-- This is a simulation! \n-- To see the real engineered config, check the repo:\n-- https://github.com/Dhruv1249/my-customized-nvim-config` },
-               { name: 'settings.json', type: 'file', content: JSON.stringify(appConfig, null, 2) },
           ]
         }
       ]
