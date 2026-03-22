@@ -774,6 +774,12 @@ export default function Tutorial({ show, onClose }: TutorialProps) {
       animation: 'shortcuts',
       quickContent: (
         <div className="tutorial-step-content">
+          <p>
+            You can open this tutorial anytime using the <strong>Tutorial</strong> button in the top-right bar.
+          </p>
+          <p>
+            Beginner order: start with <kbd>Alt</kbd> + <kbd>Enter</kbd>, <kbd>Alt</kbd> + <kbd>K</kbd>, and <kbd>Alt</kbd> + <kbd>W</kbd> first.
+          </p>
           <p className="tutorial-highlight">
             These are the main shortcuts for fast navigation.
           </p>
@@ -789,10 +795,7 @@ export default function Tutorial({ show, onClose }: TutorialProps) {
       detailedContent: (
         <div className="tutorial-step-content">
           <p>
-            You can open this tutorial anytime using the <strong>Tutorial</strong> button in the top-right bar.
-          </p>
-          <p>
-            Beginner order: start with <kbd>Alt</kbd> + <kbd>Enter</kbd>, <kbd>Alt</kbd> + <kbd>K</kbd>, and <kbd>Alt</kbd> + <kbd>W</kbd> first.
+            These shortcuts are designed to reduce mouse dependency and make navigation faster once you memorize 2-3 core combos.
           </p>
         </div>
       ),
