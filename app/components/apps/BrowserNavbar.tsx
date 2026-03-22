@@ -5,10 +5,14 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Menu, X, FileText, ChevronDown } from "lucide-react";
 
 const navLinks = [
+  { label: "About", href: "#about" },
   { label: "Projects", href: "#projects" },
+  { label: "Skills", href: "#skills" },
   { label: "Experience", href: "#experience" },
+  { label: "Education", href: "#education" },
   { label: "Certificates", href: "#certificates" },
   { label: "Achievements", href: "#achievements" },
+  { label: "Contact", href: "#contact" },
 ];
 
 interface BrowserNavbarProps {
@@ -178,11 +182,12 @@ export default function BrowserNavbar({ name = "Portfolio", resumeUrl = "" }: Br
                     top: 'calc(100% + 10px)',
                     right: 0,
                     width: '210px',
-                    background: 'var(--bg-secondary)',
+                    background: 'rgb(var(--bg-primary-rgb, 5, 5, 5))',
                     border: '1px solid var(--border-subtle)',
                     borderRadius: '12px',
                     padding: '8px',
-                    backdropFilter: 'blur(14px)',
+                    backdropFilter: 'none',
+                    WebkitBackdropFilter: 'none',
                     boxShadow: '0 20px 48px rgba(0,0,0,0.45)',
                     zIndex: 120,
                   }}

@@ -1668,7 +1668,7 @@ ${cow}`}
   portfolio: () => {
     if (typeof window !== 'undefined') {
       setTimeout(() => {
-        window.open(process.env.NEXT_PUBLIC_NON_TECH_PORTFOLIO_URL || appConfig.nonTechPortfolioUrl, '_self');
+        window.open(process.env.NEXT_PUBLIC_NON_TECH_PORTFOLIO_URL || appConfig.nonTechPortfolioUrl, '_blank', 'noopener,noreferrer');
       }, 1000);
     }
     return {

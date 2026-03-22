@@ -708,7 +708,7 @@ function HomePage({ openTab }: { openTab: (url: string, title: string) => void }
       <div style={sectionDivider} />
 
       {/* ── EDUCATION ── */}
-      <section style={sectionPadding}>
+      <section id="education" style={sectionPadding}>
         <AnimateOnScroll>
           <p style={sectionLabel}>Education</p>
           <h2 style={sectionTitle}><span style={gradientText}>Background</span></h2>
