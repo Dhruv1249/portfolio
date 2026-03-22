@@ -148,6 +148,24 @@ interface RemotePortfolioData {
     ml?: string[];
     cloud?: string[];
   };
+  education?: Array<{
+    institution?: string;
+    degree?: string;
+    score?: string;
+    period?: string;
+  }>;
+  achievements?: Array<{
+    title?: string;
+    award?: string;
+    detail?: string;
+    period?: string;
+  }>;
+  certifications?: Array<{
+    title?: string;
+    issuer?: string;
+    period?: string;
+    link?: string;
+  }>;
 }
 
 async function getRemotePortfolioData(): Promise<RemotePortfolioData | null> {
@@ -328,6 +346,9 @@ const MAN_PAGES: Record<string, { synopsis: string; description: string }> = {
   help: { synopsis: 'help', description: 'Display available commands and their brief descriptions.' },
   projects: { synopsis: 'projects', description: 'Display detailed information about featured projects with tech stacks and links.' },
   experience: { synopsis: 'experience', description: 'Show professional work history and accomplishments.' },
+  achievement: { synopsis: 'achievement', description: 'Display key achievements from portfolio data.' },
+  achievements: { synopsis: 'achievements', description: 'Alias of achievement.' },
+  certificates: { synopsis: 'certificates', description: 'Display certifications and credential links.' },
   skills: { synopsis: 'skills', description: 'Display technical stack analysis organized by category.' },
   contact: { synopsis: 'contact', description: 'Show contact information and social links.' },
   about: { synopsis: 'about', description: 'Display personal introduction and background information.' },
@@ -411,6 +432,8 @@ export const commands: Record<string, CommandHandler> = {
         </div>
         <div><span style={{ color: 'var(--accent-tertiary)' }}>projects</span> — Detailed project breakdown</div>
         <div><span style={{ color: 'var(--accent-tertiary)' }}>experience</span> — Professional history</div>
+        <div><span style={{ color: 'var(--accent-tertiary)' }}>achievement</span> — Key achievements</div>
+        <div><span style={{ color: 'var(--accent-tertiary)' }}>certificates</span> — Certifications</div>
         <div><span style={{ color: 'var(--accent-tertiary)' }}>skills</span> — Technical stack</div>
         <div><span style={{ color: 'var(--accent-tertiary)' }}>contact</span> — Connect with me</div>
         <div><span style={{ color: 'var(--accent-tertiary)' }}>about</span> — About me</div>
@@ -475,7 +498,7 @@ export const commands: Record<string, CommandHandler> = {
           </div>
           <div className="neofetch-row">
             <span className="neofetch-label">Terminal</span>
-            <span className="neofetch-value">foot</span>
+            <span className="neofetch-value">ghostty</span>
           </div>
           <div className="neofetch-row">
             <span className="neofetch-label">Editor</span>
@@ -672,9 +695,11 @@ export const commands: Record<string, CommandHandler> = {
   about: async () => {
     const remote = await getRemotePortfolioData();
     const info = remote?.personalInfo;
-    const name = info?.name || 'Dhruv';
-    const roles = info?.roles?.length ? info.roles : ['Full-Stack Developer', 'DevOps Enthusiast', 'Machine Learning Engineer'];
-    const aboutText = remote?.aboutText || 'I build intelligent, scalable systems by combining modern web technologies, machine learning models, and cloud infrastructure. My work spans full-stack platforms, data pipelines, and AI-driven applications deployed using containerized environments.';
+    const name = info?.name || 'there';
+    const roles = info?.roles?.length ? info.roles : [];
+    const aboutText = remote?.aboutText?.trim() || 'Portfolio data is not available from MongoDB yet.';
+    const primaryEducation = remote?.education?.[0];
+    const achievements = (remote?.achievements || []).filter(a => a.title || a.award || a.detail).slice(0, 2);
 
     return {
       output: (
@@ -682,30 +707,61 @@ export const commands: Record<string, CommandHandler> = {
           <div style={{ color: 'var(--accent-primary)', fontSize: '18px', fontWeight: 700, marginBottom: '12px' }}>
             Hey, I&apos;m {name}!
           </div>
-          <div style={{ marginBottom: '12px' }}>
-            {roles.map((role, index) => (
-              <span key={role}>
-                <span style={{ color: 'var(--accent-tertiary)' }}>{role}</span>
-                {index < roles.length - 1 ? ' • ' : ''}
-              </span>
-            ))}
-          </div>
+          {roles.length > 0 ? (
+            <div style={{ marginBottom: '12px' }}>
+              {roles.map((role, index) => (
+                <span key={role}>
+                  <span style={{ color: 'var(--accent-tertiary)' }}>{role}</span>
+                  {index < roles.length - 1 ? ' • ' : ''}
+                </span>
+              ))}
+            </div>
+          ) : (
+            <div style={{ marginBottom: '12px', color: 'var(--text-muted)' }}>
+              Roles are not configured in portfolio data.
+            </div>
+          )}
           <div style={{ marginBottom: '12px', color: 'var(--text-secondary)' }}>
             {aboutText}
           </div>
-          <div style={{ marginBottom: '12px' }}>
-            Currently completing B.Tech at <span style={{ color: 'var(--accent-cyan)' }}>LPU</span> (8.66 CGPA).
-          </div>
-          <div style={{ marginBottom: '12px', padding: '12px', background: 'var(--bg-tertiary)', borderRadius: '8px', borderLeft: '3px solid var(--accent-warning)' }}>
-            [*] <span style={{ color: 'var(--accent-warning)' }}>NASA Space Apps 2025 — Global Honorable Mention</span>
-            <br />
-            <span style={{ color: 'var(--text-muted)', fontSize: '13px' }}>Recognized among top teams worldwide from 11,500+ submissions for CALYX</span>
-          </div>
-          <div style={{ padding: '12px', background: 'var(--bg-tertiary)', borderRadius: '8px', borderLeft: '3px solid var(--accent-cyan)' }}>
-            [*] <span style={{ color: 'var(--accent-cyan)' }}>Innov-a-thon — National Top 100</span>
-            <br />
-            <span style={{ color: 'var(--text-muted)', fontSize: '13px' }}>NIT Rourkela national competition</span>
-          </div>
+          {primaryEducation ? (
+            <div style={{ marginBottom: '12px' }}>
+              Education: <span style={{ color: 'var(--accent-cyan)' }}>{primaryEducation.degree || 'Not specified'}</span>
+              {primaryEducation.institution ? ` at ${primaryEducation.institution}` : ''}
+              {primaryEducation.score ? ` (${primaryEducation.score})` : ''}
+            </div>
+          ) : (
+            <div style={{ marginBottom: '12px', color: 'var(--text-muted)' }}>
+              Education details are not configured in portfolio data.
+            </div>
+          )}
+          {achievements.length > 0 ? achievements.map((achievement, idx) => (
+            <div
+              key={`${achievement.title || 'achievement'}-${idx}`}
+              style={{
+                marginBottom: idx === achievements.length - 1 ? '0' : '12px',
+                padding: '12px',
+                background: 'var(--bg-tertiary)',
+                borderRadius: '8px',
+                borderLeft: `3px solid ${idx % 2 === 0 ? 'var(--accent-warning)' : 'var(--accent-cyan)'}`,
+              }}
+            >
+              <span style={{ color: idx % 2 === 0 ? 'var(--accent-warning)' : 'var(--accent-cyan)' }}>
+                [*] {achievement.title || 'Achievement'}
+                {achievement.award ? ` — ${achievement.award}` : ''}
+              </span>
+              {achievement.detail && (
+                <>
+                  <br />
+                  <span style={{ color: 'var(--text-muted)', fontSize: '13px' }}>{achievement.detail}</span>
+                </>
+              )}
+            </div>
+          )) : (
+            <div style={{ padding: '12px', background: 'var(--bg-tertiary)', borderRadius: '8px', borderLeft: '3px solid var(--border-color)', color: 'var(--text-muted)' }}>
+              Achievements are not configured in portfolio data.
+            </div>
+          )}
           <div style={{ marginTop: '12px', padding: '12px', background: 'var(--bg-tertiary)', borderRadius: '8px', borderLeft: '3px solid var(--accent-primary)' }}>
             <span style={{ color: 'var(--accent-primary)' }}>See the traditional portfolio:</span>{' '}
             <a href={process.env.NEXT_PUBLIC_NON_TECH_PORTFOLIO_URL || 'https://dhruv-portfolio.vercel.app'}
@@ -770,19 +826,13 @@ export const commands: Record<string, CommandHandler> = {
   experience: async () => {
     const remote = await getRemotePortfolioData();
     const experience = remote?.experience;
-    const role = experience?.role || 'Freelance Full-Stack Developer';
-    const company = experience?.company || 'Remote';
-    const period = experience?.period || 'Nov 2025 – Present';
+    const role = experience?.role || 'Role is not configured in portfolio data';
+    const company = experience?.company || 'Company is not configured';
+    const period = experience?.period || 'Period is not configured';
     const bullets = experience?.bullets?.length
       ? experience.bullets
-      : [
-          'Developed responsive client websites focusing on UI/UX, mobile-first layouts, and performance optimization.',
-          'Built front-end systems using Next.js, Tailwind CSS, and semantic HTML/CSS with clean component architecture.',
-          'Automated enquiry workflows using NodeMailer and integrated Firebase with Google Sheets API for centralized lead management.',
-          'Implemented structured JSON-LD schemas and semantic HTML5, driving 40% increase in organic traffic.',
-          'Managed end-to-end delivery from requirement gathering through deployment, using Git-based workflows and CI/CD pipelines.',
-        ];
-    const tech = experience?.tech?.length ? experience.tech : ['Next.js', 'Tailwind CSS', 'Firebase', 'NodeMailer', 'Google Sheets API', 'SEO'];
+      : ['Experience bullets are not configured in portfolio data.'];
+    const tech = experience?.tech?.length ? experience.tech : [];
 
     return {
       output: (
@@ -805,12 +855,112 @@ export const commands: Record<string, CommandHandler> = {
               <li key={index}>{bullet}</li>
             ))}
           </ul>
-          <div style={{ marginTop: '10px', color: 'var(--text-muted)', fontSize: '12px' }}>
-            Tech: {tech.join(', ')}
-          </div>
+          {tech.length > 0 ? (
+            <div style={{ marginTop: '10px', color: 'var(--text-muted)', fontSize: '12px' }}>
+              Tech: {tech.join(', ')}
+            </div>
+          ) : (
+            <div style={{ marginTop: '10px', color: 'var(--text-muted)', fontSize: '12px' }}>
+              Tech stack is not configured in portfolio data.
+            </div>
+          )}
         </div>
       </div>
     ),
+    };
+  },
+
+  achievement: async () => {
+    const remote = await getRemotePortfolioData();
+    const achievements = (remote?.achievements || []).filter(a => a.title || a.award || a.detail);
+
+    if (achievements.length === 0) {
+      return {
+        output: (
+          <div style={{ color: 'var(--text-muted)' }}>
+            Achievements are not configured in portfolio data.
+          </div>
+        ),
+      };
+    }
+
+    return {
+      output: (
+        <div>
+          <div style={{ color: 'var(--accent-primary)', fontWeight: 600, marginBottom: '12px' }}>
+            Achievements:
+          </div>
+          {achievements.map((achievement, index) => (
+            <div key={`${achievement.title || 'achievement'}-${index}`} style={{ marginBottom: '12px', padding: '12px', background: 'var(--bg-tertiary)', borderRadius: '8px', borderLeft: '3px solid var(--accent-warning)' }}>
+              <div style={{ color: 'var(--accent-warning)', fontWeight: 600 }}>
+                {achievement.title || 'Achievement'}
+                {achievement.award ? ` — ${achievement.award}` : ''}
+              </div>
+              {achievement.detail && (
+                <div style={{ color: 'var(--text-secondary)', marginTop: '4px', lineHeight: 1.6 }}>
+                  {achievement.detail}
+                </div>
+              )}
+              {achievement.period && (
+                <div style={{ color: 'var(--text-muted)', marginTop: '6px', fontSize: '12px' }}>
+                  {achievement.period}
+                </div>
+              )}
+            </div>
+          ))}
+        </div>
+      ),
+    };
+  },
+
+  achievements: (args, currentPath, commandHistory, stdin) => {
+    return commands.achievement(args, currentPath, commandHistory, stdin);
+  },
+
+  certificates: async () => {
+    const remote = await getRemotePortfolioData();
+    const certifications = (remote?.certifications || []).filter(c => c.title || c.issuer || c.link);
+
+    if (certifications.length === 0) {
+      return {
+        output: (
+          <div style={{ color: 'var(--text-muted)' }}>
+            Certificates are not configured in portfolio data.
+          </div>
+        ),
+      };
+    }
+
+    return {
+      output: (
+        <div>
+          <div style={{ color: 'var(--accent-primary)', fontWeight: 600, marginBottom: '12px' }}>
+            Certificates:
+          </div>
+          {certifications.map((cert, index) => (
+            <div key={`${cert.title || 'certificate'}-${index}`} style={{ marginBottom: '12px', padding: '12px', background: 'var(--bg-tertiary)', borderRadius: '8px', borderLeft: '3px solid var(--accent-cyan)' }}>
+              <div style={{ color: 'var(--accent-cyan)', fontWeight: 600 }}>
+                {cert.title || 'Untitled Certificate'}
+              </div>
+              <div style={{ color: 'var(--text-secondary)', marginTop: '4px' }}>
+                {cert.issuer || 'Issuer not configured'}
+                {cert.period ? ` • ${cert.period}` : ''}
+              </div>
+              {cert.link ? (
+                <div style={{ marginTop: '6px' }}>
+                  <a href={cert.link} target="_blank" rel="noopener noreferrer" style={{ color: 'var(--accent-primary)', textDecoration: 'underline' }}>
+                    View credential →
+                  </a>
+                </div>
+              ) : (
+                <div style={{ marginTop: '6px', color: 'var(--text-muted)', fontSize: '12px' }}>
+                  Credential link not configured.
+                </div>
+              )}
+            </div>
+          ))}
+        </div>
+      ),
     };
   },
 
@@ -818,11 +968,11 @@ export const commands: Record<string, CommandHandler> = {
     const remote = await getRemotePortfolioData();
     const skills = remote?.skills;
 
-    const languages = skills?.languages?.length ? skills.languages.join(', ') : 'Python, TypeScript, JavaScript, C, C++, HTML, CSS';
-    const frontend = skills?.frontend?.length ? skills.frontend.join(', ') : 'React, Next.js, Tailwind CSS';
-    const backend = skills?.backend?.length ? skills.backend.join(', ') : 'Node.js, FastAPI, REST APIs';
-    const ml = skills?.ml?.length ? skills.ml.join(', ') : 'Regression Models, Time-Series, Pandas, XGBoost';
-    const cloud = skills?.cloud?.length ? skills.cloud.join(', ') : 'Docker, Google Cloud Platform, Firebase, Git';
+    const languages = skills?.languages?.length ? skills.languages.join(', ') : 'Not configured in portfolio data';
+    const frontend = skills?.frontend?.length ? skills.frontend.join(', ') : 'Not configured in portfolio data';
+    const backend = skills?.backend?.length ? skills.backend.join(', ') : 'Not configured in portfolio data';
+    const ml = skills?.ml?.length ? skills.ml.join(', ') : 'Not configured in portfolio data';
+    const cloud = skills?.cloud?.length ? skills.cloud.join(', ') : 'Not configured in portfolio data';
 
     return {
       output: (
@@ -853,7 +1003,7 @@ export const commands: Record<string, CommandHandler> = {
           </div>
           <div>
             <div style={{ color: 'var(--accent-cyan)', marginBottom: '8px', fontSize: '13px' }}>AI & TOOLS</div>
-            <div style={{ color: 'var(--text-secondary)' }}>LangChain, Google Gemini API, Pydantic</div>
+            <div style={{ color: 'var(--text-secondary)' }}>Not configured in portfolio data</div>
           </div>
         </div>
       </div>
@@ -864,10 +1014,10 @@ export const commands: Record<string, CommandHandler> = {
   contact: async () => {
     const remote = await getRemotePortfolioData();
     const info = remote?.personalInfo;
-    const email = info?.email || 'dhruv1249.lm@gmail.com';
-    const phone = info?.phone || '+91 7876503573';
-    const github = info?.github || 'https://github.com/Dhruv1249';
-    const linkedin = info?.linkedin || 'https://linkedin.com/in/dhruv124';
+    const email = info?.email || 'Not configured in portfolio data';
+    const phone = info?.phone || 'Not configured in portfolio data';
+    const github = info?.github || '';
+    const linkedin = info?.linkedin || '';
 
     return {
       output: (
@@ -877,10 +1027,24 @@ export const commands: Record<string, CommandHandler> = {
         </div>
         <div><span style={{ color: 'var(--text-muted)' }}>Email:</span> {email}</div>
         <div><span style={{ color: 'var(--text-muted)' }}>Phone:</span> {phone}</div>
-        <div><span style={{ color: 'var(--text-muted)' }}>GitHub:</span> <a href={github} target="_blank" style={{ color: 'var(--accent-cyan)' }}>{github.replace('https://', '')}</a></div>
-        <div><span style={{ color: 'var(--text-muted)' }}>LinkedIn:</span> <a href={linkedin} target="_blank" style={{ color: 'var(--accent-cyan)' }}>{linkedin.replace('https://', '')}</a></div>
+        <div>
+          <span style={{ color: 'var(--text-muted)' }}>GitHub:</span>{' '}
+          {github ? (
+            <a href={github} target="_blank" rel="noopener noreferrer" style={{ color: 'var(--accent-cyan)' }}>{github.replace('https://', '')}</a>
+          ) : (
+            <span style={{ color: 'var(--text-secondary)' }}>Not configured in portfolio data</span>
+          )}
+        </div>
+        <div>
+          <span style={{ color: 'var(--text-muted)' }}>LinkedIn:</span>{' '}
+          {linkedin ? (
+            <a href={linkedin} target="_blank" rel="noopener noreferrer" style={{ color: 'var(--accent-cyan)' }}>{linkedin.replace('https://', '')}</a>
+          ) : (
+            <span style={{ color: 'var(--text-secondary)' }}>Not configured in portfolio data</span>
+          )}
+        </div>
         <div style={{ marginTop: '10px', color: 'var(--accent-cyan)' }}>
-          Tip: Use <span style={{ color: 'var(--accent-primary)', fontWeight: 700 }}>email</span> to send mail directly to Dhruv.
+          Tip: Use <span style={{ color: 'var(--accent-primary)', fontWeight: 700 }}>email</span> to open the mail composer.
         </div>
         <div style={{ color: 'var(--text-muted)' }}>
           Opening Email app now...
@@ -963,18 +1127,11 @@ export const commands: Record<string, CommandHandler> = {
     };
   },
 
-  curl: (args) => {
+  curl: async (args) => {
     const url = args[0] || '';
     if (url.includes('dhruv.dev/api') || url.includes('dhruv.dev')) {
-      const jsonData = {
-        name: 'Dhruv',
-        role: 'Full-Stack Developer | DevOps | ML Engineer',
-        education: 'B.Tech CSE @ LPU (CGPA: 8.66)',
-        achievements: ['NASA Space Apps 2025 — Global Honorable Mention', 'Innov-a-thon NIT Rourkela — National Top 100'],
-        skills: { languages: ['Python', 'TypeScript', 'JavaScript', 'C++'], frameworks: ['React', 'Next.js', 'FastAPI', 'Node.js'], cloud: ['Docker', 'GCP', 'Firebase'] },
-        contact: { email: 'dhruv1249.lm@gmail.com', github: 'github.com/Dhruv1249' },
-        status: 'Available for hire',
-      };
+      const remote = await getRemotePortfolioData();
+      const jsonData = remote || { status: 'Portfolio data unavailable from MongoDB.' };
       return {
         output: (
           <div>
@@ -1235,18 +1392,48 @@ ${cow}`}
       'X': ['█   █',' █ █ ','  █  ',' █ █ ','█   █'],
       'Y': ['█   █',' █ █ ','  █  ','  █  ','  █  '],
       'Z': ['█████','   █ ','  █  ',' █   ','█████'],
+      '0': [' ███ ','█  ██','█ █ █','██  █',' ███ '],
+      '1': ['  █  ',' ██  ','  █  ','  █  ','█████'],
+      '2': ['████ ','    █',' ███ ','█    ','█████'],
+      '3': ['████ ','    █',' ███ ','    █','████ '],
+      '4': ['█   █','█   █','█████','    █','    █'],
+      '5': ['█████','█    ','████ ','    █','████ '],
+      '6': [' ███ ','█    ','████ ','█   █',' ███ '],
+      '7': ['█████','    █','   █ ','  █  ',' █   '],
+      '8': [' ███ ','█   █',' ███ ','█   █',' ███ '],
+      '9': [' ███ ','█   █',' ████','    █',' ███ '],
+      '.': ['     ','     ','     ','     ','  █  '],
+      ',': ['     ','     ','     ','  █  ',' █   '],
+      '-': ['     ','     ','█████','     ','     '],
+      '_': ['     ','     ','     ','     ','█████'],
+      ':': ['     ','  █  ','     ','  █  ','     '],
+      '?': ['████ ','    █','  ██ ','     ','  █  '],
+      '/': ['    █','   █ ','  █  ',' █   ','█    '],
       ' ': ['     ','     ','     ','     ','     '],
       '!': ['  █  ','  █  ','  █  ','     ','  █  '],
     };
+
+    const fallbackGlyph = (ch: string): string[] => [
+      '     ',
+      `  ${ch}  `,
+      '     ',
+      `  ${ch}  `,
+      '     ',
+    ];
+    const normalized = text.normalize('NFKD').replace(/[^\x20-\x7E]/g, '?').toUpperCase();
     
     const lines = [0,1,2,3,4].map(row => 
-      text.toUpperCase().split('').map(ch => (charMap[ch] || charMap[' '])[row]).join(' ')
+      normalized
+        .split('')
+        .map(ch => (charMap[ch] || fallbackGlyph(ch))[row])
+        .join(' ')
     ).join('\n');
+    const safeLines = lines.replace(/█/g, '#');
 
     return {
       output: (
         <pre style={{ margin: 0, color: 'var(--accent-primary)', fontFamily: 'var(--font-mono)', fontSize: '12px', lineHeight: 1.2 }}>
-          {lines}
+          {safeLines}
         </pre>
       ),
     };
@@ -1258,7 +1445,7 @@ ${cow}`}
       { pid: 420, user: 'dhruv', cpu: 12.4, mem: 4.2, cmd: 'hyprland' },
       { pid: 421, user: 'dhruv', cpu: 8.7, mem: 3.1, cmd: 'waybar' },
       { pid: 500, user: 'dhruv', cpu: 24.6, mem: 8.5, cmd: 'firefox' },
-      { pid: 501, user: 'dhruv', cpu: 6.3, mem: 2.8, cmd: 'foot' },
+      { pid: 501, user: 'dhruv', cpu: 6.3, mem: 2.8, cmd: 'ghostty' },
       { pid: 510, user: 'dhruv', cpu: 3.2, mem: 1.4, cmd: 'nvim' },
       { pid: 600, user: 'dhruv', cpu: 15.8, mem: 12.3, cmd: 'next-server (portfolio)' },
       { pid: 601, user: 'dhruv', cpu: 2.1, mem: 1.0, cmd: 'node (dev)' },
@@ -1331,7 +1518,7 @@ ${cow}`}
             <div className="neofetch-row"><span className="neofetch-label">Kernel</span><span className="neofetch-value">6.12.1-arch1-1</span></div>
             <div className="neofetch-row"><span className="neofetch-label">WM</span><span className="neofetch-value">Hyprland</span></div>
             <div className="neofetch-row"><span className="neofetch-label">Shell</span><span className="neofetch-value">zsh 5.9</span></div>
-            <div className="neofetch-row"><span className="neofetch-label">Terminal</span><span className="neofetch-value">foot</span></div>
+            <div className="neofetch-row"><span className="neofetch-label">Terminal</span><span className="neofetch-value">ghostty</span></div>
             <div className="neofetch-row"><span className="neofetch-label">Editor</span><span className="neofetch-value">Neovim 0.10</span></div>
             <div className="neofetch-row"><span className="neofetch-label">CPU</span><span className="neofetch-value">AMD Ryzen 7 (simulated)</span></div>
             <div className="neofetch-row"><span className="neofetch-label">GPU</span><span className="neofetch-value">NVIDIA RTX (simulated)</span></div>

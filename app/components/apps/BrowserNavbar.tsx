@@ -4,16 +4,6 @@ import { useState, useEffect, useLayoutEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Menu, X, FileText, ChevronDown } from "lucide-react";
 
-const personalInfo = {
-  name: 'Dhruv',
-  roles: ['Full-Stack Developer', 'DevOps Enthusiast', 'ML Engineer'],
-  tagline: 'I build intelligent, scalable systems — from data pipelines to cloud-deployed AI applications.',
-  email: 'dhruv1249.lm@gmail.com',
-  github: 'https://github.com/Dhruv1249',
-  linkedin: 'https://linkedin.com/in/dhruv124',
-  resume: 'https://drive.google.com/uc?export=download&id=1o-ec9gvMQjyXs09q_XlcKj9pg4hgCIqx',
-};
-
 const navLinks = [
   { label: "Projects", href: "#projects" },
   { label: "Experience", href: "#experience" },
@@ -21,7 +11,12 @@ const navLinks = [
   { label: "Achievements", href: "#achievements" },
 ];
 
-export default function BrowserNavbar() {
+interface BrowserNavbarProps {
+  name?: string;
+  resumeUrl?: string;
+}
+
+export default function BrowserNavbar({ name = "Portfolio", resumeUrl = "" }: BrowserNavbarProps) {
   const [scrolled, setScrolled] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
   const [moreOpen, setMoreOpen] = useState(false);
@@ -35,7 +30,7 @@ export default function BrowserNavbar() {
 
   const desktopItems = [
     ...navLinks,
-    { label: "Resume", href: personalInfo.resume, download: "Dhruv_Resume.pdf" as const },
+    ...(resumeUrl ? [{ label: "Resume", href: resumeUrl, download: `${name || "Portfolio"}_Resume.pdf` as const }] : []),
   ];
 
   const visibleDesktopItems = desktopItems.slice(0, visibleItemCount);
@@ -126,7 +121,7 @@ export default function BrowserNavbar() {
       <div ref={desktopNavRef} style={{ maxWidth: '80rem', margin: '0 auto', padding: '0 1.5rem', display: 'flex', alignItems: 'center', justifyContent: 'space-between', height: '5rem', width: '100%', gap: '1rem' }}>
         {/* Logo */}
         <a ref={logoRef} href="#" className="text-xl font-bold tracking-tight shrink-0" style={{ color: "var(--text-primary)", fontSize: '1.5rem', whiteSpace: 'nowrap' }}>
-          Dhruv<span style={{ color: "var(--accent-primary, #2dd4bf)" }}>.</span>
+          {name}<span style={{ color: "var(--accent-primary, #2dd4bf)" }}>.</span>
         </a>
 
         {/* Desktop Nav */}
@@ -148,7 +143,7 @@ export default function BrowserNavbar() {
             <motion.a
               key={item.href}
               href={item.href}
-              download={item.label === 'Resume' ? 'Dhruv_Resume.pdf' : undefined}
+              download={item.label === 'Resume' && 'download' in item ? item.download : undefined}
               initial={{ opacity: 0, y: -10 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.4 + i * 0.08 }}
@@ -196,7 +191,7 @@ export default function BrowserNavbar() {
                     <a
                       key={item.href}
                       href={item.href}
-                      download={item.label === 'Resume' ? 'Dhruv_Resume.pdf' : undefined}
+                      download={item.label === 'Resume' && 'download' in item ? item.download : undefined}
                       onClick={() => setMoreOpen(false)}
                       style={{
                         display: 'flex',
@@ -292,18 +287,20 @@ export default function BrowserNavbar() {
                   {link.label}
                 </motion.a>
               ))}
-              <motion.a
-                href={personalInfo.resume}
-                download="Dhruv_Resume.pdf"
-                onClick={() => setMobileOpen(false)}
-                initial={{ opacity: 0, x: -20 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ delay: navLinks.length * 0.06 }}
-                className="text-base font-medium tracking-wide py-2 inline-flex items-center gap-2 transition-colors hover:text-[var(--accent)]"
-                style={{ color: "var(--text-secondary)", fontSize: '1.1rem' }}
-              >
-                <FileText size={18} /> Resume
-              </motion.a>
+              {resumeUrl && (
+                <motion.a
+                  href={resumeUrl}
+                  download={`${name || "Portfolio"}_Resume.pdf`}
+                  onClick={() => setMobileOpen(false)}
+                  initial={{ opacity: 0, x: -20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: navLinks.length * 0.06 }}
+                  className="text-base font-medium tracking-wide py-2 inline-flex items-center gap-2 transition-colors hover:text-[var(--accent)]"
+                  style={{ color: "var(--text-secondary)", fontSize: '1.1rem' }}
+                >
+                  <FileText size={18} /> Resume
+                </motion.a>
+              )}
             </div>
           </motion.div>
         )}

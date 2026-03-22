@@ -21,25 +21,24 @@ import TiltedCard from '../ui/TiltedCard';
 import BrowserNavbar from './BrowserNavbar';
 import Image from 'next/image';
 
-/* ═══════════════ Exact Data from non-tech portfolio-data.ts ═══════════════ */
+/* ═══════════════ Mongo-first portfolio data with neutral fallbacks ═══════════════ */
 
 const personalInfo = {
-  name: 'Dhruv',
-  roles: ['Full-Stack Developer', 'DevOps Enthusiast', 'ML Engineer'],
-  tagline: 'Designing data-driven applications that combine machine learning, scalable backends, and modern cloud infrastructure.',
-  email: 'dhruv1249.lm@gmail.com',
-  github: 'https://github.com/Dhruv1249',
-  linkedin: 'https://linkedin.com/in/dhruv-ds',
-  resume: 'https://drive.google.com/uc?export=download&id=1o-ec9gvMQjyXs09q_XlcKj9pg4hgCIqx',
+  name: 'Portfolio',
+  roles: ['Profile not configured'],
+  tagline: 'Portfolio data is loading or not configured.',
+  email: '',
+  github: '',
+  linkedin: '',
+  resume: '',
 };
 
-const aboutText = `Computer Science undergraduate at Lovely Professional University with a focus on building end-to-end intelligent systems.\n
-I enjoy working across the stack — from data ingestion and ML pipelines to backend services and production deployment. My work focuses on turning raw data into scalable, real-world applications.`;
+const aboutText = 'Portfolio data is not configured yet.';
 
 const engineeringFocus = [
-  { title: 'Full-Stack Development', short: 'React • Next.js • Node.js • TypeScript • MongoDB' },
-  { title: 'DevOps & Cloud', short: 'Docker • GCP • Firebase • CI/CD • Git' },
-  { title: 'Machine Learning', short: 'Regression • Time-Series • Data Pipelines • Python' },
+  { title: 'Build Systems', short: 'Define your stack in MongoDB portfolio data' },
+  { title: 'Ship Products', short: 'Projects and experience are loaded from API' },
+  { title: 'Evolve Profile', short: 'Achievements and certificates are data-driven' },
 ];
 
 const focusIcons = [<Code2 key="c" size={22} />, <Cloud key="cl" size={22} />, <Brain key="b" size={22} />];
@@ -50,70 +49,63 @@ interface FeaturedProject {
   period?: string;
 }
 
-const featuredProjects: FeaturedProject[] = [
-  {
-    title: 'CALYX', subtitle: 'Global Phenology Forecasting',
-    description: 'Climate analytics platform forecasting phenological patterns using ML and NASA MERRA-2, ERA5, iNaturalist datasets. ~75% prediction accuracy. Docker + GCP deployment.',
-    tech: ['Python', 'Docker', 'GCP', 'ML', 'NASA APIs'],
-    badge: 'NASA Global Honorable Mention',
-    github: 'https://github.com/Dhruv1249/Plant-Phenology-State-Detector',
-    live: 'https://plant-phenology-state-detector.vercel.app/',
-    image: '/calyx.png',
-    period: "Oct '25 — Nov '25",
-  },
-  {
-    title: 'UrbanSwap', subtitle: 'AI Marketplace Listing Generator',
-    description: 'AI-powered platform converting product images into structured marketplace listings with titles, descriptions, and categories automatically.',
-    tech: ['Next.js', 'Firebase', 'Gen AI', 'TypeScript'],
-    github: 'https://github.com/Dhruv1249/ai-marketplace-assistant',
-    live: 'https://ai-marketplace-assistant-162648101104.asia-south1.run.app/',
-    image: '/urbanswap.png',
-    period: "Sep '25",
-  },
-  {
-    title: 'PR Tracker', subtitle: 'Developer Collaboration Monitor',
-    description: 'Centralized dashboard tracking pull request activity, review status, and merge progress across repositories using GitHub APIs.',
-    tech: ['React', 'Node.js', 'GitHub API', 'REST'],
-    github: 'https://github.com/Dhruv1249/Pr-Tracker',
-    live: 'https://pr-tracker-client.vercel.app/',
-    image: '/pr-tracker.png',
-    period: "Jan '26 — Feb '26",
-  },
-];
+interface AdditionalProject {
+  title: string;
+  short: string;
+  tech: string[];
+  github: string;
+  live?: string;
+  period?: string;
+}
 
-const additionalProjects = [
-  { title: 'Expense Tracker', short: 'MERN-stack financial management with interactive dashboards', tech: ['React', 'Node.js', 'MongoDB', 'REST'], github: 'https://github.com/Dhruv1249/expense-react-client', live: 'https://expense-react-client.vercel.app/', period: "Jan '26" },
-  { title: 'Neovim Config', short: 'Custom dev environment with LSP, plugins & keybindings', tech: ['Lua', 'Neovim', 'LSP'], github: 'https://github.com/Dhruv1249/my-customized-nvim-config', period: "Jan '26 — Present" },
-];
+interface ExperienceData {
+  role: string;
+  company: string;
+  period: string;
+  bullets: string[];
+  tech: string[];
+}
 
-const experience = {
-  role: 'Freelance Full-Stack Developer',
-  company: 'Remote',
-  period: "Nov '25 — Present",
-  bullets: [
-    "Developed responsive client websites focusing on UI/UX, mobile-first layouts, and performance optimization.",
-    "Built front-end systems using Next.js, Tailwind CSS, and HTML/CSS with a focus on accessibility and clean component architecture.",
-    "Automated enquiry workflows using NodeMailer and integrated Firebase with Google Sheets API for centralized lead management.",
-    "Managed end-to-end project delivery from requirement gathering through deployment, using Git-based workflows and CI/CD pipelines.",
-  ],
-  tech: ["Next.js", "Tailwind CSS", "Firebase", "NodeMailer", "Google Sheets API", "SEO"],
+interface EducationItem {
+  institution: string;
+  location: string;
+  degree: string;
+  score: string;
+  period?: string;
+}
+
+interface AchievementItem {
+  title: string;
+  award: string;
+  detail: string;
+  period?: string;
+}
+
+interface CertificationItem {
+  title: string;
+  issuer: string;
+  link: string;
+  period?: string;
+  image?: string;
+}
+
+const featuredProjects: FeaturedProject[] = [];
+
+const additionalProjects: AdditionalProject[] = [];
+
+const experience: ExperienceData = {
+  role: 'Experience not configured',
+  company: 'Company not configured',
+  period: '',
+  bullets: ['Add experience bullets in MongoDB portfolio data.'],
+  tech: [],
 };
 
-const education = [
-  { institution: 'Lovely Professional University', location: 'Punjab, India', degree: 'B.Tech in Computer Science & Engineering', score: 'CGPA: 8.66', period: "Aug '23 – Present" },
-  { institution: 'G.A.V Sr. Sec. School', location: 'Kangra, Himachal Pradesh', degree: 'Intermediate', score: 'Percentage: 83%', period: "Apr '22 – Mar '23" },
-  { institution: 'M.V.M Public High School', location: 'Kangra, Himachal Pradesh', degree: 'Matriculation', score: 'Percentage: 96%', period: "Apr '20 – Mar '21" },
-];
+const education: EducationItem[] = [];
 
-const achievements = [
-  { title: 'NASA Space Apps Challenge', award: 'Global Honorable Mention', detail: 'One of the top 23 teams worldwide out of 11,000+ submissions', period: "Nov '25" },
-  { title: 'Innov-a-thon (NIT Rourkela)', award: 'National Top 100', detail: 'Competitive hackathon — rapid prototyping & system design', period: "Oct '25" },
-];
+const achievements: AchievementItem[] = [];
 
-const certifications = [
-  { title: 'Cloud Computing', issuer: 'NPTEL', link: 'https://drive.google.com/file/d/1oC01o8KJWbJgoAvF1imNXfG5KLEQgu9r/view?usp=sharing', period: "Apr '25" },
-  { title: 'Introduction to Large Language Models', issuer: 'NPTEL', link: 'https://drive.google.com/file/d/1Ypk5IU8V_YzrDsZ1wsVm00OnfqWnwZol/view?usp=sharing', period: "Apr '25" },
-];
+const certifications: CertificationItem[] = [];
 
 interface SkillItem { name: string; icon: React.ReactNode; color: string; }
 interface SkillCategory { title: string; skills: SkillItem[]; }
@@ -266,6 +258,13 @@ function HomePage({ openTab }: { openTab: (url: string, title: string) => void }
     trailRow2,
   } = portfolioData;
 
+  const githubDisplay = personalInfo.github
+    ? personalInfo.github.replace(/^https?:\/\/(www\.)?/i, '')
+    : 'Not configured';
+  const linkedinDisplay = personalInfo.linkedin
+    ? personalInfo.linkedin.replace(/^https?:\/\/(www\.)?/i, '')
+    : 'Not configured';
+
   useEffect(() => {
     fetch('/api/photo-toggle').then(r => r.json()).then(d => setPhotoVisible(d.visible)).catch(() => {});
   }, []);
@@ -283,15 +282,15 @@ function HomePage({ openTab }: { openTab: (url: string, title: string) => void }
 
         setPortfolioData(prev => ({
           ...prev,
-          personalInfo: data.personalInfo || prev.personalInfo,
+          personalInfo: data.personalInfo ? { ...prev.personalInfo, ...data.personalInfo } : prev.personalInfo,
           aboutText: data.aboutText || prev.aboutText,
-          engineeringFocus: data.engineeringFocus || prev.engineeringFocus,
-          featuredProjects: data.featuredProjects || prev.featuredProjects,
-          additionalProjects: data.additionalProjects || prev.additionalProjects,
-          experience: data.experience || prev.experience,
-          education: data.education || prev.education,
-          achievements: data.achievements || prev.achievements,
-          certifications: data.certifications || prev.certifications,
+          engineeringFocus: Array.isArray(data.engineeringFocus) ? data.engineeringFocus : prev.engineeringFocus,
+          featuredProjects: Array.isArray(data.featuredProjects) ? data.featuredProjects : prev.featuredProjects,
+          additionalProjects: Array.isArray(data.additionalProjects) ? data.additionalProjects : prev.additionalProjects,
+          experience: data.experience ? { ...prev.experience, ...data.experience } : prev.experience,
+          education: Array.isArray(data.education) ? data.education : prev.education,
+          achievements: Array.isArray(data.achievements) ? data.achievements : prev.achievements,
+          certifications: Array.isArray(data.certifications) ? data.certifications : prev.certifications,
         }));
       } catch {
         // Keep fallback data when API is unavailable.
@@ -306,7 +305,7 @@ function HomePage({ openTab }: { openTab: (url: string, title: string) => void }
 
   return (
     <div style={{ position: 'relative' }}>
-      <BrowserNavbar />
+      <BrowserNavbar name={personalInfo.name || 'Portfolio'} resumeUrl={personalInfo.resume} />
       {/* ── HERO ── */}
       <section style={{ position: 'relative', minHeight: '80vh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', overflow: 'hidden', padding: '48px 24px' }}>
         {/* Ambient glows */}
@@ -349,30 +348,34 @@ function HomePage({ openTab }: { openTab: (url: string, title: string) => void }
 
             <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.9 }}
               style={{ display: 'flex', gap: '12px', flexWrap: 'wrap', marginTop: '40px', justifyContent: photoVisible ? 'flex-start' : 'center' }}>
-              <a href={personalInfo.resume} download="Dhruv_Resume.pdf" style={{
-                padding: '14px 28px', borderRadius: '12px', display: 'inline-flex', alignItems: 'center', gap: '8px',
-                background: V.accentDim, color: V.accent, fontWeight: 600, fontSize: '0.875rem',
-                border: `1px solid ${V.accentGlow}`, textDecoration: 'none',
-              }}><FileText size={16} /> Download CV</a>
-              <a href={`mailto:${personalInfo.email}`} style={{
-                padding: '1rem 2.25rem', borderRadius: '0.75rem', fontSize: '0.875rem', fontWeight: 600,
-                border: `1px solid ${V.borderSubtle}`, color: V.textSecondary,
-                background: 'rgba(255,255,255,0.03)', backdropFilter: 'blur(10px)',
-                textDecoration: 'none', transition: 'all 0.4s', cursor: 'pointer'
-              }}
-                 onMouseEnter={(e) => {
-                   e.currentTarget.style.borderColor = V.accent;
-                   e.currentTarget.style.color = '#050505';
-                   e.currentTarget.style.background = V.accent;
-                   e.currentTarget.style.transform = 'translateY(-2px)';
-                 }}
-                 onMouseLeave={(e) => {
-                   e.currentTarget.style.borderColor = V.borderSubtle;
-                   e.currentTarget.style.color = V.textSecondary;
-                   e.currentTarget.style.background = 'rgba(255,255,255,0.03)';
-                   e.currentTarget.style.transform = 'translateY(0)';
-                 }}
-              >Get in Touch</a>
+              {personalInfo.resume && (
+                <a href={personalInfo.resume} download={`${personalInfo.name || 'Portfolio'}_Resume.pdf`} style={{
+                  padding: '14px 28px', borderRadius: '12px', display: 'inline-flex', alignItems: 'center', gap: '8px',
+                  background: V.accentDim, color: V.accent, fontWeight: 600, fontSize: '0.875rem',
+                  border: `1px solid ${V.accentGlow}`, textDecoration: 'none',
+                }}><FileText size={16} /> Download CV</a>
+              )}
+              {personalInfo.email && (
+                <a href={`mailto:${personalInfo.email}`} style={{
+                  padding: '1rem 2.25rem', borderRadius: '0.75rem', fontSize: '0.875rem', fontWeight: 600,
+                  border: `1px solid ${V.borderSubtle}`, color: V.textSecondary,
+                  background: 'rgba(255,255,255,0.03)', backdropFilter: 'blur(10px)',
+                  textDecoration: 'none', transition: 'all 0.4s', cursor: 'pointer'
+                }}
+                   onMouseEnter={(e) => {
+                     e.currentTarget.style.borderColor = V.accent;
+                     e.currentTarget.style.color = '#050505';
+                     e.currentTarget.style.background = V.accent;
+                     e.currentTarget.style.transform = 'translateY(-2px)';
+                   }}
+                   onMouseLeave={(e) => {
+                     e.currentTarget.style.borderColor = V.borderSubtle;
+                     e.currentTarget.style.color = V.textSecondary;
+                     e.currentTarget.style.background = 'rgba(255,255,255,0.03)';
+                     e.currentTarget.style.transform = 'translateY(0)';
+                   }}
+                >Get in Touch</a>
+              )}
             </motion.div>
           </div>
 
@@ -386,7 +389,7 @@ function HomePage({ openTab }: { openTab: (url: string, title: string) => void }
                 border: `3px solid ${V.accent}`,
                 boxShadow: `0 0 60px ${V.accentGlow}, 0 0 120px ${V.accentDim}`,
               }}>
-                <Image src="/dhruv.png" alt="Dhruv" width={200} height={200}
+                <Image src="/dhruv.png" alt={personalInfo.name || 'Profile'} width={200} height={200}
                   style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
               </div>
             </motion.div>
@@ -779,20 +782,38 @@ function HomePage({ openTab }: { openTab: (url: string, title: string) => void }
           {certifications.map((cert, i) => (
             <AnimateOnScroll key={cert.title} delay={0.1 + i * 0.1}>
               <motion.a href={cert.link} target="_blank" rel="noopener noreferrer" whileHover={{ scale: 1.02, y: -4 }} transition={{ type: 'spring', stiffness: 400, damping: 25 }}
-                style={{ ...glassCard, padding: '28px', display: 'flex', alignItems: 'flex-start', gap: '16px', cursor: 'pointer', height: '100%', textDecoration: 'none' }}>
-                <div style={{ padding: '12px', borderRadius: '12px', background: V.accentDim, color: V.accent, flexShrink: 0 }}>
-                  <Award size={22} />
+                style={{ ...glassCard, padding: 0, display: 'flex', flexDirection: 'column', cursor: 'pointer', height: '100%', textDecoration: 'none', overflow: 'hidden' }}>
+                <div style={{ position: 'relative', width: '100%', height: '220px', borderBottom: `1px solid ${V.borderSubtle}` }}>
+                  {cert.image ? (
+                    <Image
+                      src={cert.image}
+                      alt={cert.title}
+                      fill
+                      sizes="(max-width: 768px) 100vw, 50vw"
+                      style={{ objectFit: 'cover' }}
+                    />
+                  ) : (
+                    <div style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', background: V.bgSecondary }}>
+                      <Award size={46} style={{ color: V.accent, opacity: 0.45 }} />
+                    </div>
+                  )}
                 </div>
-                <div style={{ flex: 1 }}>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '4px' }}>
-                    <p style={{ color: V.accent, fontWeight: 700, fontSize: '0.875rem', margin: 0 }}>{cert.issuer}</p>
-                    {cert.period && (
-                      <span style={{ color: V.accent, fontSize: '0.75rem', fontFamily: 'monospace' }}>{cert.period}</span>
-                    )}
+                <div style={{ padding: '24px', display: 'flex', gap: '14px', alignItems: 'flex-start', flexGrow: 1 }}>
+                  <div style={{ padding: '10px', borderRadius: '12px', background: V.accentDim, color: V.accent, flexShrink: 0 }}>
+                    <Award size={20} />
                   </div>
-                  <h4 style={{ color: V.textPrimary, fontWeight: 700, fontSize: '1.125rem', marginBottom: '8px' }}>{cert.title}</h4>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '0.75rem', color: V.textMuted, marginTop: '12px' }}>
-                    <span>View Certificate</span> <ExternalLink size={12} />
+                  <div style={{ flex: 1 }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: '8px', marginBottom: '4px' }}>
+                      <p style={{ color: V.accent, fontWeight: 700, fontSize: '0.875rem', margin: 0 }}>{cert.issuer}</p>
+                      {cert.period && (
+                        <span style={{ color: V.accent, fontSize: '0.75rem', fontFamily: 'monospace', whiteSpace: 'nowrap' }}>{cert.period}</span>
+                      )}
+                    </div>
+                    <h4 style={{ color: V.textPrimary, fontWeight: 700, fontSize: '1.125rem', marginBottom: '8px' }}>{cert.title}</h4>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '0.75rem', color: V.textMuted, marginTop: '12px' }}>
+                      <span>View Certificate</span>
+                      <ExternalLink size={12} />
+                    </div>
                   </div>
                 </div>
               </motion.a>
@@ -823,9 +844,9 @@ function HomePage({ openTab }: { openTab: (url: string, title: string) => void }
           <div style={{ display: 'flex', flexDirection: 'column', gap: '20px', maxWidth: '560px' }}>
             {[
               { icon: <Mail size={20} />, label: 'Email', href: `mailto:${personalInfo.email}`, display: personalInfo.email },
-              { icon: <Github size={20} />, label: 'GitHub', href: personalInfo.github, display: 'Dhruv1249' },
-              { icon: <Linkedin size={20} />, label: 'LinkedIn', href: personalInfo.linkedin, display: 'dhruv124' },
-            ].map(link => (
+              { icon: <Github size={20} />, label: 'GitHub', href: personalInfo.github, display: githubDisplay },
+              { icon: <Linkedin size={20} />, label: 'LinkedIn', href: personalInfo.linkedin, display: linkedinDisplay },
+            ].filter(link => link.href).map(link => (
               <AnimateOnScroll key={link.label} delay={0.1}>
                 <motion.a href={link.href} target={link.label !== 'Email' ? '_blank' : undefined}
                   rel={link.label !== 'Email' ? 'noopener noreferrer' : undefined}
@@ -850,7 +871,7 @@ function HomePage({ openTab }: { openTab: (url: string, title: string) => void }
 
       {/* ── FOOTER ── */}
       <div style={{ padding: '32px 24px', textAlign: 'center' }}>
-        <p style={{ color: V.textMuted, fontSize: '0.75rem' }}>© 2026 Dhruv. Crafted with Next.js & Tailwind CSS.</p>
+        <p style={{ color: V.textMuted, fontSize: '0.75rem' }}>© 2026 {personalInfo.name || 'Portfolio'}. Crafted with Next.js & Tailwind CSS.</p>
       </div>
     </div>
   );
@@ -869,10 +890,10 @@ interface BrowserTab {
 
 export default function Browser() {
   const [tabs, setTabs] = useState<BrowserTab[]>([
-    { id: 'main', url: 'dhruv.dev', title: 'Dhruv — Portfolio', type: 'portfolio' },
+    { id: 'main', url: 'portfolio.dev', title: 'Portfolio', type: 'portfolio' },
   ]);
   const [activeTabId, setActiveTabId] = useState('main');
-  const [urlInput, setUrlInput] = useState('dhruv.dev');
+  const [urlInput, setUrlInput] = useState('portfolio.dev');
 
   const activeTab = tabs.find(t => t.id === activeTabId) || tabs[0];
 
