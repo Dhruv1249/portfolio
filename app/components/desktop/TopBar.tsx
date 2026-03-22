@@ -43,7 +43,10 @@ export default function TopBar({ onShowTutorial }: TopBarProps) {
       <div className="topbar-left">
         <button
           className="topbar-launcher-btn"
-          onClick={toggleAppLauncher}
+          onClick={() => {
+            window.dispatchEvent(new CustomEvent('tutorial-launcher-open-menu'));
+            toggleAppLauncher();
+          }}
           title="Open App Launcher (Alt+K)"
           aria-label="Open app launcher"
         >
@@ -84,7 +87,7 @@ export default function TopBar({ onShowTutorial }: TopBarProps) {
             <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3" />
             <line x1="12" y1="17" x2="12.01" y2="17" />
           </svg>
-          Guide
+          Tutorial
         </button>
         <div className="topbar-icon" title="WiFi">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">

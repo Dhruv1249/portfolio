@@ -93,6 +93,7 @@ export function KeyboardProvider({ children }: { children: ReactNode }) {
       // Alt + Space remains as a fallback for users who are used to it.
       if (key === 'k' || rawKey === ' ') {
         e.preventDefault();
+        window.dispatchEvent(new CustomEvent('tutorial-launcher-open-shortcut'));
         windowManager.toggleAppLauncher();
         return;
       }

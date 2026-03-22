@@ -144,6 +144,8 @@ export default function Window({
   return (
     <div
       className={`window ${focused ? 'focused' : ''} ${animationClass} ${transparency ? 'window-glass' : ''}`}
+      data-app-type={appType}
+      data-window-id={id}
       style={{
         ...style,
         ...(transparency ? { '--window-opacity': windowOpacity } as React.CSSProperties : {}),

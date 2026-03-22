@@ -23,6 +23,8 @@ const APPS: { id: AppType; name: string; icon: React.ReactNode }[] = [
     useEffect(() => {
       if (showAppLauncher) {
         window.dispatchEvent(new CustomEvent('app-launcher-open'));
+      } else {
+        window.dispatchEvent(new CustomEvent('app-launcher-close'));
       }
     }, [showAppLauncher]);
   
