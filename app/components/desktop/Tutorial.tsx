@@ -195,13 +195,13 @@ export default function Tutorial({ show, onClose }: TutorialProps) {
           </p>
           <div className="tutorial-callout">
             <Lightbulb size={16} />
-            <span>Click <strong>Try Now</strong>, press <kbd>Alt</kbd> + <kbd>Space</kbd>, type &quot;Browser&quot; and press Enter.</span>
+            <span>Click <strong>Try Now</strong>, press <kbd>Alt</kbd> + <kbd>K</kbd> (or use the <strong>Menu</strong> button in the top bar), type &quot;Browser&quot; and press Enter.</span>
           </div>
         </div>
       ),
       tryIt: {
         instruction: 'Launch the Browser',
-        hint: 'Press  Alt + Space , type "Browser", and hit Enter',
+        hint: 'Press  Alt + K  (or click Menu), type "Browser", and hit Enter',
         checkFn: (wins, baseline, execCmds, appLauncherOpened) => {
           // They must open the launcher and create a new browser window during this step.
           const currentBrowserCount = wins.filter(w => w.appType === 'browser').length;

@@ -337,6 +337,27 @@ body {
   box-shadow: 0 0 8px var(--accent-primary);
 }
 
+.topbar-launcher-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  background: var(--bg-tertiary);
+  border: 1px solid var(--border-color);
+  border-radius: 6px;
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.topbar-launcher-btn:hover {
+  color: var(--text-primary);
+  border-color: var(--accent-primary);
+  background: rgba(var(--accent-primary-rgb, 45, 212, 191), 0.12);
+  box-shadow: 0 0 12px rgba(var(--accent-primary-rgb, 45, 212, 191), 0.2);
+}
+
 /* ============================================
    WINDOW STYLES
    ============================================ */

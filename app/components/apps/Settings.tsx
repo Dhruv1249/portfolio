@@ -444,7 +444,8 @@ export default function Settings() {
                 { keys: ['Alt', 'N'], action: 'Open Code Editor' },
                 { keys: ['Alt', 'E'], action: 'Open Email' },
                 { keys: ['Alt', 'S'], action: 'Open Settings' },
-                { keys: ['Alt', 'Space'], action: 'Open App Launcher' },
+                { keys: ['Alt', 'K'], action: 'Open App Launcher (Recommended)' },
+                { keys: ['Alt', 'Space'], action: 'Open App Launcher (Fallback)' },
                 { keys: ['Alt', 'W'], action: 'Close Window' },
                 { keys: ['Alt', 'M'], action: 'Maximize Window' },
                 { keys: ['Alt', 'J/K'], action: 'Focus Next/Prev Window' },
@@ -478,7 +479,7 @@ export default function Settings() {
             </div>
 
             <p style={{ color: 'var(--text-muted)', marginTop: '16px', fontSize: '0.8125rem' }}>
-              <Lightbulb size={14} style={{ display: 'inline', verticalAlign: 'middle', marginRight: '4px' }} /> All shortcuts use Alt — no conflicts with browser shortcuts!
+              <Lightbulb size={14} style={{ display: 'inline', verticalAlign: 'middle', marginRight: '4px' }} /> Most shortcuts use Alt. Use Alt + K for Launcher when Alt + Space is captured by browser/system.
             </p>
           </div>
         );

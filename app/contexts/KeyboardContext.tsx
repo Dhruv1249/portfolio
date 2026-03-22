@@ -89,8 +89,9 @@ export function KeyboardProvider({ children }: { children: ReactNode }) {
         return;
       }
 
-      // Alt + Space: Toggle app launcher
-      if (rawKey === ' ') {
+      // Alt + K: Toggle app launcher (recommended, avoids Alt+Space browser/system capture)
+      // Alt + Space remains as a fallback for users who are used to it.
+      if (key === 'k' || rawKey === ' ') {
         e.preventDefault();
         windowManager.toggleAppLauncher();
         return;

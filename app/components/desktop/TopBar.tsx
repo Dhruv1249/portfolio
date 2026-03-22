@@ -8,7 +8,7 @@ interface TopBarProps {
 }
 
 export default function TopBar({ onShowTutorial }: TopBarProps) {
-  const { activeWorkspace, setActiveWorkspace, windows } = useWindowManager();
+  const { activeWorkspace, setActiveWorkspace, windows, toggleAppLauncher } = useWindowManager();
   const [time, setTime] = useState('');
   const [date, setDate] = useState('');
 
@@ -41,6 +41,19 @@ export default function TopBar({ onShowTutorial }: TopBarProps) {
   return (
     <header className="topbar">
       <div className="topbar-left">
+        <button
+          className="topbar-launcher-btn"
+          onClick={toggleAppLauncher}
+          title="Open App Launcher (Alt+K)"
+          aria-label="Open app launcher"
+        >
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+            <rect x="4" y="4" width="6" height="6" rx="1" />
+            <rect x="14" y="4" width="6" height="6" rx="1" />
+            <rect x="4" y="14" width="6" height="6" rx="1" />
+            <rect x="14" y="14" width="6" height="6" rx="1" />
+          </svg>
+        </button>
         <div className="workspace-switcher">
           {workspaces.map((ws, index) => (
             <button
