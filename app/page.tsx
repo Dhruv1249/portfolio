@@ -30,22 +30,17 @@ export default function Home() {
     };
   }, []);
 
-  useEffect(() => {
-    if (!isPhone || typeof window === 'undefined') return;
-    window.location.replace(nonTechUrl);
-  }, [isPhone, nonTechUrl]);
-
   if (isPhone) {
     return (
       <main className="pc-only-screen">
         <div className="pc-only-card">
-          <p className="pc-only-kicker">Redirecting</p>
-          <h1>Taking you to the mobile-friendly portfolio</h1>
+          <p className="pc-only-kicker">Mobile Notice</p>
+          <h1>This portfolio is not available on phone</h1>
           <p>
-            This desktop environment works best on a larger screen. You are being redirected to the standard portfolio.
+            For the best experience, please use a desktop or laptop with a keyboard. Please open the non-tech portfolio for the mobile-friendly experience.
           </p>
           <p>
-            If redirect does not happen, <a href={nonTechUrl} style={{ color: 'var(--accent-primary)' }}>tap here</a>.
+            Continue here: <a href={nonTechUrl} style={{ color: 'var(--accent-primary)' }}>open non-tech portfolio</a>.
           </p>
         </div>
       </main>
