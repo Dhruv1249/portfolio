@@ -2,7 +2,7 @@
 
 import React, { createContext, useContext, useState, useCallback, useRef, ReactNode } from 'react';
 
-export type AppType = 'terminal' | 'browser' | 'filemanager' | 'neovim' | 'settings' | 'pdfviewer' | 'email';
+export type AppType = 'terminal' | 'browser' | 'filemanager' | 'neovim' | 'settings' | 'pdfviewer' | 'email' | 'doom';
 
 export interface Window {
   id: string;
@@ -52,6 +52,7 @@ const DEFAULT_TITLES: Record<AppType, string> = {
   settings: 'Settings',
   pdfviewer: 'PDF Viewer',
   email: 'Email Dhruv',
+  doom: 'DOOM',
 };
 
 export function WindowProvider({ children }: { children: ReactNode }) {

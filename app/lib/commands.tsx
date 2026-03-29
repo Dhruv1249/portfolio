@@ -370,6 +370,7 @@ const MAN_PAGES: Record<string, { synopsis: string; description: string }> = {
   sudo: { synopsis: 'sudo <command>', description: 'Execute a command as superuser. (Just kidding.)' },
   rm: { synopsis: 'rm [options] <file>', description: 'Remove files or directories.' },
   resume: { synopsis: 'resume', description: 'Open the interactive PDF viewer to see Dhruv\'s resume.' },
+  doom: { synopsis: 'doom', description: 'Launch the DOOM app in a new window.' },
   browser: { synopsis: 'browser', description: 'Open the Browser app.' },
   files: { synopsis: 'files', description: 'Open the File Manager app.' },
   settings: { synopsis: 'settings', description: 'Open the Settings app.' },
@@ -439,6 +440,7 @@ export const commands: Record<string, CommandHandler> = {
         <div><span style={{ color: 'var(--accent-tertiary)' }}>contact</span> — Connect with me</div>
         <div><span style={{ color: 'var(--accent-tertiary)' }}>about</span> — About me</div>
         <div><span style={{ color: 'var(--accent-tertiary)' }}>resume</span> — Open PDF Resume</div>
+        <div><span style={{ color: 'var(--accent-tertiary)' }}>doom</span> — Launch DOOM app</div>
         <div><span style={{ color: 'var(--accent-tertiary)' }}>browser</span> — Open Browser app</div>
         <div><span style={{ color: 'var(--accent-tertiary)' }}>files</span> — Open File Manager app</div>
         <div><span style={{ color: 'var(--accent-tertiary)' }}>settings</span> — Open Settings app</div>
@@ -1258,6 +1260,16 @@ export const commands: Record<string, CommandHandler> = {
       openApp: {
         appType: 'pdfviewer',
         title: 'resume.pdf'
+      }
+    };
+  },
+
+  doom: () => {
+    return {
+      output: <span style={{ color: 'var(--accent-warning)' }}>Rip and tear... Launching DOOM.</span>,
+      openApp: {
+        appType: 'doom',
+        title: 'DOOM'
       }
     };
   },

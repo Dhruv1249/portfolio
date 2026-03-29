@@ -29,6 +29,7 @@ const CodeEditor = dynamic(() => import('../apps/Neovim'), { ssr: false, loading
 const Settings = dynamic(() => import('../apps/Settings'), { ssr: false, loading: AppLoading });
 const PDFViewer = dynamic(() => import('../apps/PDFViewer'), { ssr: false, loading: AppLoading });
 const Email = dynamic(() => import('../apps/Email'), { ssr: false, loading: AppLoading });
+const Doom = dynamic(() => import('../apps/Doom'), { ssr: false, loading: AppLoading });
 
 interface WindowProps {
   id: string;
@@ -136,6 +137,8 @@ export default function Window({
         return <PDFViewer />;
       case 'email':
         return <Email />;
+      case 'doom':
+        return <Doom />;
       default:
         return null;
     }

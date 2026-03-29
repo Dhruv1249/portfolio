@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { useWindowManager, AppType } from '../../contexts/WindowContext';
-import { Terminal, Globe, FolderOpen, Code, Settings, FileText, AppWindow, Mail } from 'lucide-react';
+import { Terminal, Globe, FolderOpen, Code, Settings, FileText, AppWindow, Mail, Skull } from 'lucide-react';
 import appConfig from '../../lib/editor-config.json';
 
 const APPS: { id: AppType; name: string; icon: React.ReactNode }[] = [
@@ -12,6 +12,7 @@ const APPS: { id: AppType; name: string; icon: React.ReactNode }[] = [
   { id: 'neovim', name: appConfig.apps.codeEditorName, icon: <Code size={28} /> },
   { id: 'email', name: appConfig.apps.emailName, icon: <Mail size={28} /> },
   { id: 'pdfviewer', name: 'Resume', icon: <FileText size={28} /> },
+  { id: 'doom', name: 'DOOM', icon: <Skull size={28} /> },
   { id: 'settings', name: 'Settings', icon: <Settings size={28} /> },
   { id: 'standard' as any, name: 'Standard View', icon: <AppWindow size={28} /> },
 ];
