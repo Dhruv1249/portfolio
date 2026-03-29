@@ -180,7 +180,7 @@ export default function BrowserNavbar({ name = "Portfolio", resumeUrl = "", onOp
             <button
               onClick={() => setMoreOpen((v) => !v)}
               className="text-sm font-medium tracking-wide inline-flex items-center gap-1 transition-colors duration-300 hover:text-[var(--accent-primary, #2dd4bf)]"
-              style={{ color: "var(--text-muted)", fontSize: '0.9rem', background: 'none', border: 'none', cursor: 'pointer', whiteSpace: 'nowrap' }}
+              style={{ color: "var(--text-muted)", fontSize: '0.9rem', background: 'none', border: 'none', cursor: 'pointer', whiteSpace: 'nowrap', transform: 'translateY(-0.16rem)' }}
             >
               More <ChevronDown size={14} />
             </button>

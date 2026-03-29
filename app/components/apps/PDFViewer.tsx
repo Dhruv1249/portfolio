@@ -79,19 +79,19 @@ export default function PDFViewer() {
               padding: '5px 10px',
               fontSize: '0.75rem',
               fontWeight: 500,
-              color: 'var(--bg-primary)',
+              color: '#06110f',
               background: 'var(--accent-primary)',
               border: '1px solid var(--accent-primary)',
               borderRadius: '6px',
               textDecoration: 'none',
               cursor: 'pointer',
-              transition: 'all 0.2s',
+              transition: 'filter 0.2s ease',
             }}
             onMouseEnter={(e) => {
-              e.currentTarget.style.opacity = '0.85';
+              e.currentTarget.style.filter = 'brightness(0.92)';
             }}
             onMouseLeave={(e) => {
-              e.currentTarget.style.opacity = '1';
+              e.currentTarget.style.filter = 'none';
             }}
           >
             <Download size={12} />
