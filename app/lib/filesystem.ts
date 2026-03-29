@@ -269,7 +269,7 @@ distro_shorthand="off"`
           name: 'nvim',
           type: 'directory',
           children: [
-               { name: 'init.lua', type: 'file', content: `-- This is a simulation! \n-- To see the real engineered config, check the repo:\n-- https://github.com/Dhruv1249/my-customized-nvim-config` },
+               { name: 'init.lua', type: 'file', content: `-- This is a simulation! \n-- To see the real engineered config, check the repo:\n-- https://github.com/Dhruv1249/linux-dotfiles` },
           ]
         }
       ]

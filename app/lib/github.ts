@@ -25,7 +25,7 @@ export const REPOS: RepoInfo[] = [
   { owner: 'Dhruv1249', repo: 'Pr-Tracker', label: 'PR Tracker', icon: 'git-branch' },
   { owner: 'Dhruv1249', repo: 'expense-react-client', label: 'Expense Tracker', icon: 'wallet' },
   { owner: 'Dhruv1249', repo: 'LLM-Document-Processing-System', label: 'LLM Parser', icon: 'file-text' },
-  { owner: 'Dhruv1249', repo: 'my-customized-nvim-config', label: 'Neovim Config', icon: 'zap' },
+  { owner: 'Dhruv1249', repo: 'linux-dotfiles', label: 'Linux Dotfiles', icon: 'zap' },
 ];
 
 // Client-side in-memory cache (avoids repeat fetches within the same session)

@@ -19,6 +19,7 @@ import {
 import { TbBinaryTree } from "react-icons/tb";
 import TiltedCard from '../ui/TiltedCard';
 import BrowserNavbar from './BrowserNavbar';
+import { useWindowManager } from '@/app/contexts/WindowContext';
 import Image from 'next/image';
 
 /* ═══════════════ Mongo-first portfolio data with neutral fallbacks ═══════════════ */
@@ -79,6 +80,7 @@ interface AchievementItem {
   award: string;
   detail: string;
   period?: string;
+  link?: string;
 }
 
 interface CertificationItem {
@@ -239,7 +241,7 @@ function AnimateOnScroll({ children, delay = 0, direction = 'up', style }: {
 
 /* ═══════════════ HomePage (exact non-tech replica) ═══════════════ */
 
-function HomePage({ openTab }: { openTab: (url: string, title: string) => void }) {
+function HomePage({ openTab, openResume }: { openTab: (url: string, title: string) => void; openResume: () => void }) {
   const [photoVisible, setPhotoVisible] = useState(true);
   const [portfolioData, setPortfolioData] = useState(FALLBACK_PORTFOLIO_DATA);
 
@@ -305,7 +307,7 @@ function HomePage({ openTab }: { openTab: (url: string, title: string) => void }
 
   return (
     <div style={{ position: 'relative' }}>
-      <BrowserNavbar name={personalInfo.name || 'Portfolio'} resumeUrl={personalInfo.resume} />
+      <BrowserNavbar name={personalInfo.name || 'Portfolio'} resumeUrl={personalInfo.resume} onOpenResume={openResume} />
       {/* ── HERO ── */}
       <section style={{ position: 'relative', minHeight: '80vh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', overflow: 'hidden', padding: '48px 24px' }}>
         {/* Ambient glows */}
@@ -349,11 +351,12 @@ function HomePage({ openTab }: { openTab: (url: string, title: string) => void }
             <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.9 }}
               style={{ display: 'flex', gap: '12px', flexWrap: 'wrap', marginTop: '40px', justifyContent: photoVisible ? 'flex-start' : 'center' }}>
               {personalInfo.resume && (
-                <a href={personalInfo.resume} download={`${personalInfo.name || 'Portfolio'}_Resume.pdf`} style={{
+                <button type="button" onClick={openResume} style={{
                   padding: '14px 28px', borderRadius: '12px', display: 'inline-flex', alignItems: 'center', gap: '8px',
                   background: V.accentDim, color: V.accent, fontWeight: 600, fontSize: '0.875rem',
                   border: `1px solid ${V.accentGlow}`, textDecoration: 'none',
-                }}><FileText size={16} /> Download CV</a>
+                  cursor: 'pointer',
+                }}><FileText size={16} /> View CV</button>
               )}
               {personalInfo.email && (
                 <a href={`mailto:${personalInfo.email}`} style={{
@@ -763,6 +766,17 @@ function HomePage({ openTab }: { openTab: (url: string, title: string) => void }
                   </div>
                   <h4 style={{ color: V.textPrimary, fontWeight: 700, fontSize: '1.125rem', marginBottom: '8px' }}>{ach.title}</h4>
                   <p style={{ color: V.textMuted, fontSize: '0.875rem', margin: 0 }}>{ach.detail}</p>
+                  {ach.link && (
+                    <a
+                      href={ach.link}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', marginTop: '12px', fontSize: '0.75rem', color: V.textMuted, textDecoration: 'none' }}
+                    >
+                      <span>View Proof</span>
+                      <ExternalLink size={12} />
+                    </a>
+                  )}
                 </div>
               </motion.div>
             </AnimateOnScroll>
@@ -889,6 +903,7 @@ interface BrowserTab {
 /* ═══════════════ Main Browser ═══════════════ */
 
 export default function Browser() {
+  const { openWindow } = useWindowManager();
   const [tabs, setTabs] = useState<BrowserTab[]>([
     { id: 'main', url: 'portfolio.dev', title: 'Portfolio', type: 'portfolio' },
   ]);
@@ -904,6 +919,10 @@ export default function Browser() {
     setActiveTabId(id);
     setUrlInput(url);
   }, []);
+
+  const openResume = useCallback(() => {
+    openWindow('pdfviewer', 'resume.pdf');
+  }, [openWindow]);
 
   const closeTab = useCallback((id: string) => {
     if (tabs.length <= 1) return;
@@ -928,7 +947,7 @@ export default function Browser() {
           sandbox="allow-scripts allow-same-origin allow-popups" />
       );
     }
-    return <HomePage openTab={openTab} />;
+    return <HomePage openTab={openTab} openResume={openResume} />;
   };
 
   return (

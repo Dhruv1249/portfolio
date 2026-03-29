@@ -79,12 +79,12 @@ const PROJECTS = [
     github: 'https://github.com/Dhruv1249/LLM-Document-Processing-System',
   },
   {
-    name: 'Neovim Config',
-    desc: 'Personal Development Environment',
-    details: 'Byte-compiled Lua config with <20ms startup time. Custom LSP handlers for TypeScript/Rust/Python.',
-    tech: 'Lua, Lazy.nvim, Treesitter',
-    link: 'https://github.com/Dhruv1249/my-customized-nvim-config',
-    github: 'https://github.com/Dhruv1249/my-customized-nvim-config',
+    name: 'Linux Dotfiles',
+    desc: 'Personal Linux + Neovim Environment',
+    details: 'Unified Linux dotfiles repository with Neovim config, shell tooling, and developer workflow automation.',
+    tech: 'Linux, Neovim, Lua, Shell',
+    link: 'https://github.com/Dhruv1249/linux-dotfiles',
+    github: 'https://github.com/Dhruv1249/linux-dotfiles',
   },
 ];
 
@@ -159,6 +159,7 @@ interface RemotePortfolioData {
     award?: string;
     detail?: string;
     period?: string;
+    link?: string;
   }>;
   certifications?: Array<{
     title?: string;
@@ -905,6 +906,16 @@ export const commands: Record<string, CommandHandler> = {
                 <div style={{ color: 'var(--text-muted)', marginTop: '6px', fontSize: '12px' }}>
                   {achievement.period}
                 </div>
+              )}
+              {achievement.link && (
+                <a
+                  href={achievement.link}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  style={{ display: 'inline-block', color: 'var(--accent-primary)', marginTop: '8px', fontSize: '12px', textDecoration: 'none' }}
+                >
+                  View Proof
+                </a>
               )}
             </div>
           ))}

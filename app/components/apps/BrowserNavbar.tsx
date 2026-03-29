@@ -18,9 +18,10 @@ const navLinks = [
 interface BrowserNavbarProps {
   name?: string;
   resumeUrl?: string;
+  onOpenResume?: () => void;
 }
 
-export default function BrowserNavbar({ name = "Portfolio", resumeUrl = "" }: BrowserNavbarProps) {
+export default function BrowserNavbar({ name = "Portfolio", resumeUrl = "", onOpenResume }: BrowserNavbarProps) {
   const [scrolled, setScrolled] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
   const [moreOpen, setMoreOpen] = useState(false);
@@ -34,7 +35,7 @@ export default function BrowserNavbar({ name = "Portfolio", resumeUrl = "" }: Br
 
   const desktopItems = [
     ...navLinks,
-    ...(resumeUrl ? [{ label: "Resume", href: resumeUrl, download: `${name || "Portfolio"}_Resume.pdf` as const }] : []),
+    ...(resumeUrl ? [{ label: "Resume", href: resumeUrl }] : []),
   ];
 
   const visibleDesktopItems = desktopItems.slice(0, visibleItemCount);
@@ -144,19 +145,33 @@ export default function BrowserNavbar({ name = "Portfolio", resumeUrl = "" }: Br
           </div>
 
           {visibleDesktopItems.map((item, i) => (
-            <motion.a
-              key={item.href}
-              href={item.href}
-              download={item.label === 'Resume' && 'download' in item ? item.download : undefined}
-              initial={{ opacity: 0, y: -10 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.4 + i * 0.08 }}
+            item.label === 'Resume' ? (
+              <motion.button
+                key={item.href}
+                type="button"
+                onClick={onOpenResume}
+                initial={{ opacity: 0, y: -10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.4 + i * 0.08 }}
                 className="text-sm font-medium tracking-wide transition-colors duration-300 hover:text-[var(--accent-primary, #2dd4bf)] inline-flex items-center"
-                style={{ color: "var(--text-muted)", fontSize: '0.9rem', gap: item.label === 'Resume' ? '0.35rem' : 0, whiteSpace: 'nowrap', flexShrink: 0 }}
-            >
-              {item.label === 'Resume' && <FileText size={14} />}
-              {item.label}
-            </motion.a>
+                style={{ color: "var(--text-muted)", fontSize: '0.9rem', gap: '0.35rem', whiteSpace: 'nowrap', flexShrink: 0, background: 'none', border: 'none', cursor: 'pointer' }}
+              >
+                <FileText size={14} />
+                {item.label}
+              </motion.button>
+            ) : (
+              <motion.a
+                key={item.href}
+                href={item.href}
+                initial={{ opacity: 0, y: -10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.4 + i * 0.08 }}
+                className="text-sm font-medium tracking-wide transition-colors duration-300 hover:text-[var(--accent-primary, #2dd4bf)] inline-flex items-center"
+                style={{ color: "var(--text-muted)", fontSize: '0.9rem', whiteSpace: 'nowrap', flexShrink: 0 }}
+              >
+                {item.label}
+              </motion.a>
+            )
           ))}
 
           <div ref={desktopControlsRef} style={{ display: 'flex', alignItems: 'center', gap: '1rem', flexShrink: 0 }}>
@@ -193,26 +208,53 @@ export default function BrowserNavbar({ name = "Portfolio", resumeUrl = "" }: Br
                   }}
                 >
                   {overflowDesktopItems.map((item) => (
-                    <a
-                      key={item.href}
-                      href={item.href}
-                      download={item.label === 'Resume' && 'download' in item ? item.download : undefined}
-                      onClick={() => setMoreOpen(false)}
-                      style={{
-                        display: 'flex',
-                        alignItems: 'center',
-                        gap: '8px',
-                        padding: '8px 10px',
-                        borderRadius: '8px',
-                        color: 'var(--text-secondary)',
-                        textDecoration: 'none',
-                        fontSize: '0.85rem',
-                        marginBottom: '2px'
-                      }}
-                    >
-                      {item.label === 'Resume' && <FileText size={14} />}
-                      {item.label}
-                    </a>
+                    item.label === 'Resume' ? (
+                      <button
+                        key={item.href}
+                        type="button"
+                        onClick={() => {
+                          onOpenResume?.();
+                          setMoreOpen(false);
+                        }}
+                        style={{
+                          display: 'flex',
+                          alignItems: 'center',
+                          gap: '8px',
+                          padding: '8px 10px',
+                          borderRadius: '8px',
+                          color: 'var(--text-secondary)',
+                          textDecoration: 'none',
+                          fontSize: '0.85rem',
+                          marginBottom: '2px',
+                          width: '100%',
+                          background: 'none',
+                          border: 'none',
+                          cursor: 'pointer'
+                        }}
+                      >
+                        <FileText size={14} />
+                        {item.label}
+                      </button>
+                    ) : (
+                      <a
+                        key={item.href}
+                        href={item.href}
+                        onClick={() => setMoreOpen(false)}
+                        style={{
+                          display: 'flex',
+                          alignItems: 'center',
+                          gap: '8px',
+                          padding: '8px 10px',
+                          borderRadius: '8px',
+                          color: 'var(--text-secondary)',
+                          textDecoration: 'none',
+                          fontSize: '0.85rem',
+                          marginBottom: '2px'
+                        }}
+                      >
+                        {item.label}
+                      </a>
+                    )
                   ))}
                 </motion.div>
               )}
@@ -293,18 +335,20 @@ export default function BrowserNavbar({ name = "Portfolio", resumeUrl = "" }: Br
                 </motion.a>
               ))}
               {resumeUrl && (
-                <motion.a
-                  href={resumeUrl}
-                  download={`${name || "Portfolio"}_Resume.pdf`}
-                  onClick={() => setMobileOpen(false)}
+                <motion.button
+                  type="button"
+                  onClick={() => {
+                    onOpenResume?.();
+                    setMobileOpen(false);
+                  }}
                   initial={{ opacity: 0, x: -20 }}
                   animate={{ opacity: 1, x: 0 }}
                   transition={{ delay: navLinks.length * 0.06 }}
                   className="text-base font-medium tracking-wide py-2 inline-flex items-center gap-2 transition-colors hover:text-[var(--accent)]"
-                  style={{ color: "var(--text-secondary)", fontSize: '1.1rem' }}
+                  style={{ color: "var(--text-secondary)", fontSize: '1.1rem', background: 'none', border: 'none', cursor: 'pointer', textAlign: 'left' }}
                 >
                   <FileText size={18} /> Resume
-                </motion.a>
+                </motion.button>
               )}
             </div>
           </motion.div>
